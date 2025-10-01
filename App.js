@@ -36,7 +36,7 @@ export default function App() {
         <Stack.Screen 
           name="Dashboard" 
           component={Dashboard} 
-          options={{ headerTitle: "Create Account" }}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
