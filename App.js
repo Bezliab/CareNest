@@ -1,29 +1,44 @@
-import {
-  SafeAreaProvider,
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-} from 'react-native-safe-area-context';
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LoginScreen from './src/screens/LoginScreen';
-import SignUpScreen from './src/screens/SignUpScreen';
-import Dashboard from './src/screens/Dashboard';
+import LandingPage from "./src/screens/LandingScreen/LandingScreen";
+import LoginScreen from "./src/screens/Loginscreen/LoginScreen";
+import SignUpScreen from "./src/screens/SigninScreen/SignUpScreen";
+import Dashboard from "./src/screens/Dashboard/Dashboard";
 
 const Stack = createNativeStackNavigator();
-function App() {
 
+export default function App() {
   return (
-    <SafeAreaProvider>
-       <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="Login" component={LoginScreen} />
-              <Stack.Screen name="SignUp" component={SignUpScreen} />
-              <Stack.Screen name="Dashboard" component={Dashboard} /> 
-            </Stack.Navigator>
-          </NavigationContainer>
-    </SafeAreaProvider>
+    <NavigationContainer>
+      <Stack.Navigator>
+        
+        {/* Hide header only on LandingPage */}
+        <Stack.Screen 
+          name="LandingPage" 
+          component={LandingPage} 
+          options={{ headerShown: false }}
+        />
+
+        {/* Keep header + automatic back button */}
+        <Stack.Screen 
+          name="Login" 
+          component={LoginScreen} 
+          options={{ headerTitle: "Login" }}
+        />
+
+        <Stack.Screen 
+          name="SignUp" 
+          component={SignUpScreen} 
+          options={{ headerTitle: "Create Account" }}
+        />
+
+        <Stack.Screen 
+          name="Dashboard" 
+          component={Dashboard} 
+          options={{ headerTitle: "Create Account" }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-
-export default App;
