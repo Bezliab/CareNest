@@ -15,6 +15,7 @@ const LoginScreen = ({ navigation }) => {
   const handleLogin = () => {
     // TODO: call Firebase auth signInWithEmailAndPassword
     console.log(email, password);
+    navigation.navigate('Dashboard');
   };
 
   return (
