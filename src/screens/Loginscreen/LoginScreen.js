@@ -14,6 +14,7 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = () => {
     console.log(email, password);
+    navigation.navigate('Dashboard');
   };
 
   return (
