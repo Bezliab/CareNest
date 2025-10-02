@@ -5,6 +5,12 @@ import LandingPage from "./src/screens/LandingScreen/LandingScreen";
 import LoginScreen from "./src/screens/Loginscreen/LoginScreen";
 import SignUpScreen from "./src/screens/SigninScreen/SignUpScreen";
 import Dashboard from "./src/screens/Dashboard/Dashboard";
+import HealthScreen from "./src/screens/HealthPage/Healthscreen";
+import ReminderScreen from "./src/screens/ReminderScreen/ReminderScreen";
+import TodayScreen from "./src/screens/ReminderScreen/TodayScreen/TodayScreen";
+import ScheduleScreen from "./src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen";
+import AllReminderScreen from "./src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen";
+import CompletedScreen from "./src/screens/ReminderScreen/CompletedScreen/CompletedScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +44,21 @@ export default function App() {
           component={Dashboard} 
           options={{ headerShown: false }}
         />
+        <Stack.Screen 
+          name="Health" 
+          component={HealthScreen} 
+          options={{ headerShown:false}}
+        />
+        <Stack.Screen name="Reminder" component={ReminderScreen} />
+
+        <Stack.Screen name="TodayScreen" component={TodayScreen} 
+        options={{ headerShown:false}}/>
+        <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} 
+        options={{ headerShown:false}}/>
+          <Stack.Screen name="AllReminderScreen" component={AllReminderScreen} 
+        options={{ headerShown:false}}/>
+          <Stack.Screen name="CompletedScreen" component={CompletedScreen} 
+        options={{ headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
