@@ -131,14 +131,14 @@ const Dashboard = ({ navigation }) => {
               icon: "calendar-month",
               text: "Appointments",
               sub: "3 days left",
-              colors: ["#ff9a9e", "#fad0c4"],
-              route: "Appointments",
+              colors: ["#ff9a9e", "#f5a691c9"],
+              route: "Appointment",
             },
             {
               icon: "medical-services",
               text: "Doctor",
               sub: "Dr. Aisha",
-              colors: ["#a1c4fd", "#c2e9fb"],
+              colors: ["#a1c4fd", "#1facedad"],
               route: "Doctor",
             },
             {
@@ -299,39 +299,39 @@ const Dashboard = ({ navigation }) => {
       </Animated.ScrollView>
 
       {/* Enhanced Bottom Navigation */}
-      <View style={styles.navContainer}>
-        <View style={styles.navBackground}>
-          {[
-            { icon: "home", label: "Home" },
-            { icon: "favorite", label: "Health" },
-            { icon: "menu-book", label: "Resources" },
-            { icon: "person", label: "Profile" },
-            { icon: "settings", label: "Settings" },
-          ].map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.navItem}
-              onPress={() =>
-                navigation.navigate(item.label === "Home" ? "Dashboard" : item.label)
-              }
-            >
-              <Icon
-                name={item.icon}
-                size={24}
-                color={index === 0 ? "#667eea" : "#666"}
-              />
-              <Text
-                style={[
-                  styles.navLabel,
-                  { color: index === 0 ? "#667eea" : "#666" },
-                ]}
-              >
-                {item.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
+     <View style={styles.navContainer}>
+  <View style={styles.navBackground}>
+    {[
+      { icon: "home", label: "Home" },
+      { icon: "favorite", label: "Health" },
+      { icon: "menu-book", label: "Resources" },
+      { icon: "person", label: "Profile" },
+      { icon: "settings", label: "Settings" },
+    ].map((item, index) => (
+      <TouchableOpacity
+        key={index}
+        style={styles.navItem}
+        onPress={() =>
+          navigation.navigate(item.label === "Home" ? "Dashboard" : item.label)
+        }
+      >
+        <Icon
+          name={item.icon}
+          size={24}
+          color={index === 0 ? "#667eea" : "#666"}
+        />
+        <Text
+          style={[
+            styles.navLabel,
+            { color: index === 0 ? "#667eea" : "#666" },
+          ]}
+        >
+          {item.label}
+        </Text>
+      </TouchableOpacity>
+    ))}
+  </View>
+</View>
     </SafeAreaView>
   );
 };

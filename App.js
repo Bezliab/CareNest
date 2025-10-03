@@ -11,6 +11,8 @@ import TodayScreen from "./src/screens/ReminderScreen/TodayScreen/TodayScreen";
 import ScheduleScreen from "./src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen";
 import AllReminderScreen from "./src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen";
 import CompletedScreen from "./src/screens/ReminderScreen/CompletedScreen/CompletedScreen";
+import AppointmentScreen from "./src/screens/AppointmentScreen/AppointmentScreen";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -58,6 +60,10 @@ export default function App() {
           <Stack.Screen name="AllReminderScreen" component={AllReminderScreen} 
         options={{ headerShown:false}}/>
           <Stack.Screen name="CompletedScreen" component={CompletedScreen} 
+        options={{ headerShown:false}}/>
+        <Stack.Screen name="Appointment" component={AppointmentScreen} 
+        options={{ headerShown:false}}/>
+         <Stack.Screen name="Appointment" component={AppointmentScreen} 
         options={{ headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>

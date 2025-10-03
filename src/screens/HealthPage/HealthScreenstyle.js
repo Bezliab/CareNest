@@ -27,7 +27,11 @@ export default StyleSheet.create({
     color: "#fff",
   },
   subHeader: {
-    fontSize: 15,
+    fontSize: 25,
+    paddingVertical: 14,
+    gap: 6,
+    lineHeight: 30,
+    fontWeight: "600",
     color: "#444",
     marginVertical: 12,
     lineHeight: 20,
@@ -50,13 +54,24 @@ export default StyleSheet.create({
     color: "#555",
     lineHeight: 20,
   },
-  linkText: {
-    marginTop: 10,
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#667eea",
-    textAlign: "right",
-  },
+linkText: {
+  alignSelf: "flex-start",
+  marginTop: 12,
+  backgroundColor: "#667eea", // soft indigo/purple
+  color: "#fff",
+  fontSize: 14,
+  fontWeight: "600",
+  paddingVertical: 8,
+  paddingHorizontal: 18,
+  borderRadius: 25, // pill button
+  overflow: "hidden",
+  elevation: 3, // shadow for Android
+  shadowColor: "#000", // shadow for iOS
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.15,
+  shadowRadius: 3,
+},
+
   cardWarning: {
     backgroundColor: "#d32f2f",
     borderRadius: 16,
@@ -95,4 +110,36 @@ export default StyleSheet.create({
     color: "#555",
     lineHeight: 20,
   },
+    navContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 85,
+    paddingBottom: 8,
+  },
+  navBackground: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  navItem: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  navLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 4,
+  }
 });

@@ -1,14 +1,12 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import styles from "./ReminderScreenStyle";
 
 const ReminderScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Title */}
-        <Text style={styles.title}>Reminders</Text>
-        <Text style={styles.subtitle}>Manage your health reminders easily.</Text>
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
@@ -94,75 +92,4 @@ const ReminderScreen = ({ navigation }) => {
 
 export default ReminderScreen;
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9f9f9" },
-  scrollContainer: { padding: 16, paddingBottom: 100 },
 
-  title: { fontSize: 24, fontWeight: "bold", textAlign: "center", marginVertical: 10 },
-  subtitle: { fontSize: 16, color: "#666", textAlign: "center", marginBottom: 15 },
-
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  searchInput: { flex: 1, marginLeft: 8, fontSize: 16, color: "#333" },
-
-  gridContainer: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
-  card: {
-    width: "48%",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  cardLeft: { flexDirection: "row", alignItems: "center", gap: 6 },
-  cardTitle: { fontSize: 15, color: "#fff", fontWeight: "600", marginLeft: 4 },
-  cardCount: { fontSize: 22, color: "#fff", fontWeight: "bold" },
-
-  section: { marginTop: 20 },
-  sectionTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10, color: "#333" },
-
-  reminderCardDoctor: {
-    backgroundColor: "#ffe4e1",
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 12,
-  },
-  reminderCard: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  reminderTitle: { fontSize: 16, fontWeight: "600", marginBottom: 2 },
-  reminderDesc: { fontSize: 14, color: "#555" },
-
-  addBtn: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: "#667eea",
-    paddingVertical: 14,
-    borderRadius: 12,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  addBtnText: { color: "#fff", fontSize: 18, fontWeight: "bold", marginLeft: 6 },
-});
