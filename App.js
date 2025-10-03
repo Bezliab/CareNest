@@ -12,9 +12,13 @@ import ScheduleScreen from './src/screens/ReminderScreen/ScheduleScreen/Schedule
 import AllReminderScreen from './src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen';
 import CompletedScreen from './src/screens/ReminderScreen/CompletedScreen/CompletedScreen';
 import AppointmentScreen from './src/screens/AppointmentScreen/AppointmentScreen';
-import HistoryScreen from './src/screens/HistoryScreen/HistoryScreen';
-import DoctorScreen from './src/screens/DoctorsScreen/DoctorScreen'; // added import
-
+import EmergencyScreen from './src/screens/Emergency/Emergency';
+import { TouchableOpacity, Text } from 'react-native';
+import SettingsScreen from './src/screens/SettingsPage/SettingsScreen';
+import ProfileScreen from './src/screens/ProfilePage/ProfileScreen';
+import ArticleScreen from './src/screens/ArticleScreen/ArticleScreen';
+import FaqScreen from './src/screens/FaqScreen/FaqScreen';
+import HealthCentreScreen from './src/screens/HelpCentreScreen/HelpCentreScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -51,14 +55,6 @@ export default function App() {
           component={HealthScreen}
           options={{ headerShown: false }}
         />
-
-        {/* Doctors screen added so it shows like other pages */}
-        <Stack.Screen
-          name="Doctors"
-          component={DoctorScreen}
-          options={{ headerShown: false }}
-        />
-
         <Stack.Screen name="Reminder" component={ReminderScreen} />
 
         <Stack.Screen
@@ -87,9 +83,34 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="history"
-          component={HistoryScreen}
+          name="Emergency"
+          component={EmergencyScreen}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{ headerTitle: 'Setting' }}
+        />
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{ headerTitle: 'Profile' }}
+        />
+        <Stack.Screen
+          name="Article"
+          component={ArticleScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Faq"
+          component={FaqScreen}
+          options={{ headerTitle: 'Faq' }}
+        />
+        <Stack.Screen
+          name="HelpCenter"
+          component={HealthCentreScreen}
+          options={{ headerTitle: 'Health Center' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

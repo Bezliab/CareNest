@@ -139,7 +139,7 @@ const Dashboard = ({ navigation }) => {
               text: 'Doctor',
               sub: 'Dr. Aisha',
               colors: ['#a1c4fd', '#1facedad'],
-              route: 'Doctors',
+              route: 'Doctor',
             },
             {
               icon: 'notifications-active',
@@ -153,7 +153,7 @@ const Dashboard = ({ navigation }) => {
               text: 'History',
               sub: '3 records',
               colors: ['#84fab0', '#8fd3f4'],
-              route: 'history',
+              route: 'History',
             },
           ].map((action, index) => (
             <TouchableOpacity
@@ -272,7 +272,10 @@ const Dashboard = ({ navigation }) => {
                   <Text style={styles.emergencyNumber}>+234 802 123 4567</Text>
                 </View>
               </View>
-              <TouchableOpacity style={styles.callBtn}>
+              <TouchableOpacity
+                style={styles.callBtn}
+                onPress={() => navigation.navigate('Emergency')}
+              >
                 <Icon name="call" size={20} color="#ff6b6b" />
                 <Text style={styles.callText}>Call</Text>
               </TouchableOpacity>
@@ -289,7 +292,7 @@ const Dashboard = ({ navigation }) => {
             { icon: 'favorite', label: 'Health' },
             { icon: 'menu-book', label: 'Resources' },
             { icon: 'person', label: 'Profile' },
-            { icon: 'settings', label: 'Settings' },
+            { icon: 'Settings', label: 'Settings' },
           ].map((item, index) => (
             <TouchableOpacity
               key={index}
