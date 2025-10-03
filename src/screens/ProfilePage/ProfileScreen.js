@@ -72,7 +72,7 @@ const ProfileScreen = ({ navigation }) => {
             <Icon name="create" size={17} color="#fff" />
             <Text style={styles.actionText}>Edit Profile</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate("Reminders")}>
+          <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate("Reminder")}>
             <Icon name="alarm" size={17} color="#fff" />
             <Text style={styles.actionText}>Reminders</Text>
           </TouchableOpacity>
@@ -94,7 +94,7 @@ const ProfileScreen = ({ navigation }) => {
           <Icon name="help-circle" size={20} color="#1976d2" />
           <Text style={styles.linkText}>FAQs</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.linkRow}>
+        <TouchableOpacity style={styles.linkRow} onPress={() => navigation.navigate("HelpCenter")}>
           <Icon name="call" size={20} color="#1976d2" />
           <Text style={styles.linkText}>Help Center</Text>
         </TouchableOpacity>

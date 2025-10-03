@@ -18,7 +18,8 @@ import SettingsScreen from "./src/screens/SettingsPage/SettingsScreen";
 import ProfileScreen from "./src/screens/ProfilePage/ProfileScreen";
 import ArticleScreen from "./src/screens/ArticleScreen/ArticleScreen";
 import FaqScreen from "./src/screens/FaqScreen/FaqScreen";
-
+import HealthCentreScreen from "./src/screens/HelpCentreScreen/HelpCentreScreen";
+import EditProfileScreen from "./src/screens/EditProfileScreen/EditProfileScreen";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -83,6 +84,16 @@ export default function App() {
     name="Faq" 
     component={FaqScreen} 
     options={{headerTitle: "Faq"}} 
+  />
+    <Stack.Screen 
+    name="HelpCenter" 
+    component={HealthCentreScreen} 
+    options={{headerTitle: "Health Center"}} 
+  />
+  <Stack.Screen 
+    name="EditProfile" 
+    component={EditProfileScreen} 
+    options={{headerTitle: "Edit Profile"}} 
   />
       </Stack.Navigator>
     </NavigationContainer>
