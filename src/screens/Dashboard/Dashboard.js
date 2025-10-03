@@ -289,7 +289,7 @@ const Dashboard = ({ navigation }) => {
                   <Text style={styles.emergencyNumber}>+234 802 123 4567</Text>
                 </View>
               </View>
-              <TouchableOpacity style={styles.callBtn}>
+              <TouchableOpacity style={styles.callBtn} onPress={() => navigation.navigate("Emergency")}>
                 <Icon name="call" size={20} color="#ff6b6b" />
                 <Text style={styles.callText}>Call</Text>
               </TouchableOpacity>
@@ -306,7 +306,7 @@ const Dashboard = ({ navigation }) => {
       { icon: "favorite", label: "Health" },
       { icon: "menu-book", label: "Resources" },
       { icon: "person", label: "Profile" },
-      { icon: "settings", label: "Settings" },
+      { icon: "Settings", label: "Settings" },
     ].map((item, index) => (
       <TouchableOpacity
         key={index}

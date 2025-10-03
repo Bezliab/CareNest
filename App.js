@@ -12,7 +12,12 @@ import ScheduleScreen from "./src/screens/ReminderScreen/ScheduleScreen/Schedule
 import AllReminderScreen from "./src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen";
 import CompletedScreen from "./src/screens/ReminderScreen/CompletedScreen/CompletedScreen";
 import AppointmentScreen from "./src/screens/AppointmentScreen/AppointmentScreen";
-
+import EmergencyScreen from "./src/screens/Emergency/Emergency";
+import { TouchableOpacity, Text } from "react-native";
+import SettingsScreen from "./src/screens/SettingsPage/SettingsScreen";
+import ProfileScreen from "./src/screens/ProfilePage/ProfileScreen";
+import ArticleScreen from "./src/screens/ArticleScreen/ArticleScreen";
+import FaqScreen from "./src/screens/FaqScreen/FaqScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -63,8 +68,22 @@ export default function App() {
         options={{ headerShown:false}}/>
         <Stack.Screen name="Appointment" component={AppointmentScreen} 
         options={{ headerShown:false}}/>
-         <Stack.Screen name="Appointment" component={AppointmentScreen} 
+          <Stack.Screen name="Emergency" component={EmergencyScreen} 
         options={{ headerShown:false}}/>
+        <Stack.Screen name="Settings" component={SettingsScreen} 
+        options={{ headerTitle: "Setting" }}/>
+        <Stack.Screen name="Profile" component={ProfileScreen} 
+        options={{ headerTitle: "Profile" }}/>
+          <Stack.Screen 
+    name="Article" 
+    component={ArticleScreen} 
+    options={{ headerShown: false }} 
+  />
+  <Stack.Screen 
+    name="Faq" 
+    component={FaqScreen} 
+    options={{headerTitle: "Faq"}} 
+  />
       </Stack.Navigator>
     </NavigationContainer>
   );
