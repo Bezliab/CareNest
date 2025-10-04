@@ -76,7 +76,7 @@ const ProfileScreen = ({ navigation }) => {
             <Icon name="alarm" size={17} color="#fff" />
             <Text style={styles.actionText}>Reminders</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
+          <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate("Doctor")}>
             <Icon name="chatbubbles" size={17} color="#fff" />
             <Text style={styles.actionText}>Contact Doctor</Text>
           </TouchableOpacity>
