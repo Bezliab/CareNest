@@ -33,19 +33,22 @@ const Dashboard = ({ navigation }) => {
     extrapolate: "clamp",
   });
 
-  // ✅ Fetch user info from Firestore
+  // ✅ Fetch user info from Firestore using Auth UID
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const user = auth.currentUser;
         if (user) {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists()) {
-            setUserData(userDoc.data());
+          const userRef = doc(db, "users", user.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            setUserData(userSnap.data());
+          } else {
+            console.log("⚠️ No user data found for:", user.uid);
           }
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("❌ Error fetching user data:", error);
       } finally {
         setLoading(false);
       }
@@ -54,7 +57,7 @@ const Dashboard = ({ navigation }) => {
     fetchUserData();
   }, []);
 
-  // Custom gradient
+  // Custom gradient component
   const GradientView = ({ colors, style, children }) => (
     <View style={[style, { overflow: "hidden" }]}>
       <View
@@ -110,7 +113,7 @@ const Dashboard = ({ navigation }) => {
           <View style={styles.headerContent}>
             <View>
               <Text style={styles.greeting}>
-                Hello, {userData?.name || "Guest"} 👋
+                Hello, {userData?.name || "name"} 👋
               </Text>
               <Text style={styles.subGreeting}>
                 Welcome back! Stay healthy 💕
@@ -213,7 +216,7 @@ const Dashboard = ({ navigation }) => {
           ))}
         </View>
 
-        {/* ✅ Health Metrics Section */}
+        {/* Health Metrics */}
         <View style={styles.healthSection}>
           <View style={styles.sectionTitleRow}>
             <Text style={styles.sectionTitle}>Health Metrics</Text>
@@ -285,7 +288,7 @@ const Dashboard = ({ navigation }) => {
         </View>
       </Animated.ScrollView>
 
-      {/* Bottom Nav */}
+      {/* Bottom Navigation */}
       <View style={styles.navContainer}>
         <View style={styles.navBackground}>
           {[

@@ -4,147 +4,173 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
   Alert,
+  ScrollView,
   ActivityIndicator,
 } from "react-native";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "../../firebase"; // adjust path to your firebase.js
+import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
 import styles from "./Signupscreenstyle";
-const handleSignUp = async () => {
-  if (!name || !email || !phone || !password) {
-    Alert.alert("Missing Fields", "Please fill in all fields");
-    return;
-  }
 
-  try {
-    // 1️⃣ Create user in Firebase Auth
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    const user = userCredential.user;
-
-    // 2️⃣ Update display name
-    await user.updateProfile({ displayName: name });
-
-    // 3️⃣ Save extra info in Firestore
-    await firestore.collection('users').doc(user.uid).set({
-      name,
-      email,
-      phone,
-      createdAt: new Date().toISOString(),
-    });
-
-    Alert.alert("Account Created", "Welcome!");
-    navigation.replace("Dashboard"); // navigate to main screen
-
-  } catch (error) {
-    Alert.alert("Sign Up Failed", error.message);
-  }
-};
-
-
-const SignUpScreen = ({ navigation }) => {
+export default function SignupScreen({ navigation }) {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [emergencyRelation, setEmergencyRelation] = useState("");
+  const [emergencyName, setEmergencyName] = useState("");
+  const [emergencyPhone, setEmergencyPhone] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSignUp = async () => {
-    if (!name || !email || !phone || !password) {
-      Alert.alert("Missing Fields", "Please fill in all fields");
+  const relations = ["Husband", "Friend", "Son", "Daughter", "Others"];
+
+  const handleSignup = async () => {
+    if (
+      !name ||
+      !emailOrPhone ||
+      !password ||
+      !emergencyRelation ||
+      !emergencyName ||
+      !emergencyPhone
+    ) {
+      Alert.alert("Error", "Please fill in all fields.");
       return;
     }
 
-    setLoading(true);
     try {
-      // Step 1: Create user with Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      setLoading(true);
 
-      // Step 2: Update display name
-      await updateProfile(user, { displayName: name });
+      // ✅ Create user in Firebase Authentication
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        emailOrPhone,
+        password
+      );
 
-      // Step 3: Save user profile in Firestore
-      await setDoc(doc(db, "users", user.uid), {
+      const userId = userCredential.user.uid;
+
+      // ✅ Store additional info in Firestore
+      await firestore().collection("users").doc(userId).set({
         name,
-        email,
-        phone,
+        emailOrPhone,
+        emergencyRelation,
+        emergencyName,
+        emergencyPhone,
         createdAt: new Date().toISOString(),
       });
 
-      Alert.alert("Account Created", "Welcome to MaternalCare!");
-      navigation.replace("Dashboard"); // navigate to your main page
-
+      // ✅ Auto login (Firebase already signs in user after signup)
+      Alert.alert("Success", "Account created successfully!");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Dashboard" }],
+      });
     } catch (error) {
-      console.error("Signup error:", error);
-      Alert.alert("Sign Up Failed", error.message);
+      console.error("Signup Error:", error);
+      let message = error.message;
+
+      if (error.code === "auth/email-already-in-use") {
+        message = "This email is already in use.";
+      } else if (error.code === "auth/invalid-email") {
+        message = "Invalid email address.";
+      } else if (error.code === "auth/weak-password") {
+        message = "Password should be at least 6 characters.";
+      }
+
+      Alert.alert("Signup Failed", message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <Text style={styles.title}>Create Account</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.header}>Create Account</Text>
 
       <TextInput
         style={styles.input}
         placeholder="Full Name"
-        placeholderTextColor="#999"
         value={name}
         onChangeText={setName}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#999"
+        placeholder="Email or Phone Number"
+        value={emailOrPhone}
+        onChangeText={setEmailOrPhone}
         keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Phone"
-        placeholderTextColor="#999"
-        keyboardType="phone-pad"
-        value={phone}
-        onChangeText={setPhone}
       />
 
       <TextInput
         style={styles.input}
         placeholder="Password"
-        placeholderTextColor="#999"
-        secureTextEntry
-        autoCapitalize="none"
         value={password}
         onChangeText={setPassword}
+        secureTextEntry
+      />
+
+      {/* Emergency Contact Dropdown */}
+      <TouchableOpacity
+        style={styles.dropdown}
+        onPress={() => setShowDropdown(!showDropdown)}
+      >
+        <Text style={styles.dropdownText}>
+          {emergencyRelation || "Select Emergency Contact"}
+        </Text>
+      </TouchableOpacity>
+
+      {showDropdown && (
+        <View style={styles.dropdownList}>
+          {relations.map((relation) => (
+            <TouchableOpacity
+              key={relation}
+              onPress={() => {
+                setEmergencyRelation(relation);
+                setShowDropdown(false);
+              }}
+              style={styles.dropdownItem}
+            >
+              <Text style={styles.dropdownItemText}>{relation}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
+      <TextInput
+        style={styles.input}
+        placeholder="Emergency Contact Name"
+        value={emergencyName}
+        onChangeText={setEmergencyName}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Emergency Contact Phone Number"
+        value={emergencyPhone}
+        onChangeText={setEmergencyPhone}
+        keyboardType="phone-pad"
       />
 
       <TouchableOpacity
-        style={styles.button}
-        onPress={handleSignUp}
+        style={[styles.button, loading && { opacity: 0.6 }]}
+        onPress={handleSignup}
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#FFF" />
+          <ActivityIndicator color="#fff" />
         ) : (
           <Text style={styles.buttonText}>Sign Up</Text>
         )}
       </TouchableOpacity>
 
-      <View style={styles.switchRow}>
-        <Text style={styles.switchText}>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.switchLink}>Log In</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+      <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>
+        <Text style={styles.loginText}>
+          Already have an account?{" "}
+          <Text style={{ color: "#3b82f6" }}>Login</Text>
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
-};
+}
 
-export default SignUpScreen;
+export { SignupScreen };

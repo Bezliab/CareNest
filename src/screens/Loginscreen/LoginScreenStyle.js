@@ -1,52 +1,51 @@
 import { StyleSheet } from "react-native";
 
-
 export default StyleSheet.create({
-
   container: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
-    justifyContent: 'center',
+    backgroundColor: "#f9f9f9",
+    justifyContent: "center",
     paddingHorizontal: 24,
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 32,
-    textAlign: 'center',
+    textAlign: "center",
+    color: "#333",
   },
   input: {
     height: 48,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 12,
     marginBottom: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     height: 48,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 8,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   switchRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 16,
   },
   switchText: {
-    color: '#333',
+    color: "#333",
   },
   switchLink: {
-    color: '#4CAF50',
-    fontWeight: '600',
+    color: "#4CAF50",
+    fontWeight: "600",
   },
 });

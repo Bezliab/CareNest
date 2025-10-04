@@ -1,48 +1,74 @@
-// SignUpScreenStyle.js
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    padding: 20,
+    flexGrow: 1,
+    backgroundColor: "#f8f9fa",
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 50,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+  header: {
+    fontSize: 26,
+    fontWeight: "700",
+    color: "#222",
+    marginBottom: 30,
+    textAlign: "center",
   },
   input: {
-    width: "100%",
+    backgroundColor: "#fff",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    fontSize: 16,
+    borderColor: "#ddd",
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    marginBottom: 15,
+    marginBottom: 14,
+  },
+  dropdown: {
+    backgroundColor: "#fff",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    borderColor: "#ddd",
+    borderWidth: 1,
+    marginBottom: 14,
+  },
+  dropdownText: {
+    fontSize: 16,
+    color: "#555",
+  },
+  dropdownList: {
+    backgroundColor: "#fff",
     borderRadius: 8,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    marginBottom: 14,
+  },
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  dropdownItemText: {
+    fontSize: 16,
+    color: "#333",
   },
   button: {
-    backgroundColor: "#2a9d8f",
-    padding: 15,
-    borderRadius: 8,
-    width: "100%",
+    backgroundColor: "#2563eb",
+    paddingVertical: 14,
+    borderRadius: 10,
     alignItems: "center",
     marginTop: 10,
+    marginBottom: 20,
   },
   buttonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "700",
   },
-  switchRow: {
-    flexDirection: "row",
-    marginTop: 20,
-  },
-  switchText: {
-    color: "#555",
-  },
-  switchLink: {
-    color: "#2a9d8f",
-    fontWeight: "bold",
+  loginText: {
+    textAlign: "center",
+    fontSize: 15,
+    color: "#333",
   },
 });

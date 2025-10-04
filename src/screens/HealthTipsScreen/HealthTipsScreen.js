@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import styles from "./HealthTipsScreenStyle";
+import styles from "./HealthTipsStyle";
 
 const healthTips = [
   {
