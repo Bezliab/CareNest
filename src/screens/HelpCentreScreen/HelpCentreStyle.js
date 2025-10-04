@@ -1,0 +1,77 @@
+// screens/HelpCenterStyle.js
+import { StyleSheet } from "react-native";
+
+export default StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f9f9f9",
+    padding: 16,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#1976d2",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 14,
+    color: "#333",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#444",
+    marginBottom: 12,
+    marginTop: 10,
+  },
+  helpItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 14,
+    borderRadius: 10,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  helpText: {
+    fontSize: 15,
+    marginLeft: 12,
+    color: "#333",
+  },
+  contactButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#1976d2",
+    paddingVertical: 14,
+    borderRadius: 10,
+    marginBottom: 12,
+  },
+  contactButtonText: {
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
+    marginLeft: 8,
+  },
+});
