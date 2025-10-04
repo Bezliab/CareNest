@@ -1,102 +1,156 @@
-// screens/ProfileScreen.js
-import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import LinearGradient from "react-native-linear-gradient";
 import Icon from "react-native-vector-icons/Ionicons";
+import { auth, firestore } from "../../api/firebaseConfig"; // ✅ Firebase setup
 import styles from "./ProfileScreenStyle";
 
 const ProfileScreen = ({ navigation }) => {
-  const [progress, setProgress] = useState(28); // current week of pregnancy (example: 28 weeks)
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const user = auth().currentUser;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const unsubscribe = firestore()
+      .collection("users")
+      .doc(user.uid)
+      .onSnapshot(
+        (doc) => {
+          if (doc.exists) {
+            setUserData(doc.data());
+          }
+          setLoading(false);
+        },
+        (error) => {
+          console.error("Error fetching user data:", error);
+          setLoading(false);
+        }
+      );
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color="#1976d2" />
+      </View>
+    );
+  }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      {/* Profile Header */}
-      <View style={styles.header}>
-        <Image
-          source={{ uri: "https://cdn-icons-png.flaticon.com/512/4333/4333609.png" }}
-          style={styles.avatar}
-        />
-        <Text style={styles.name}>Mary Johnson</Text>
-        <Text style={styles.subText}>Age: 29 | 28 Weeks Pregnant</Text>
-      </View>
-
-      {/* Pregnancy Progress */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Pregnancy Progress</Text>
-        <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: `${(progress / 40) * 100}%` }]} />
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 60 }}>
+      {/* 🔹 HEADER WITH GRADIENT */}
+      <LinearGradient colors={["#74b9ff", "#a29bfe"]} style={styles.headerGradient}>
+        <View style={styles.headerContent}>
+          <Image
+            source={{
+              uri:
+                userData?.avatar ||
+                "https://cdn-icons-png.flaticon.com/512/4333/4333609.png",
+            }}
+            style={styles.avatar}
+          />
+          <Text style={styles.name}>{userData?.name || "User"}</Text>
+          <Text style={styles.bio}>{userData?.bio || "Excited mom-to-be 💕"}</Text>
         </View>
-        <Text style={styles.progressText}>{progress} / 40 Weeks</Text>
-      </View>
+      </LinearGradient>
 
-      {/* Personal Info */}
+      {/* 🔹 PERSONAL INFO */}
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Personal Information</Text>
         <View style={styles.infoRow}>
-          <Icon name="calendar" size={20} color="#1976d2" />
-          <Text style={styles.infoText}>Due Date: 15th December 2025</Text>
+          <Icon name="mail" size={20} color="#1976d2" />
+          <Text style={styles.infoText}>{userData?.email || "No email provided"}</Text>
         </View>
         <View style={styles.infoRow}>
           <Icon name="call" size={20} color="#1976d2" />
-          <Text style={styles.infoText}>Emergency Contact: +234 801 234 5678</Text>
+          <Text style={styles.infoText}>{userData?.phone || "No phone number"}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Icon name="medkit" size={20} color="#1976d2" />
-          <Text style={styles.infoText}>Doctor: Dr. Akinwale (Obstetrician)</Text>
+          <Icon name="location" size={20} color="#1976d2" />
+          <Text style={styles.infoText}>{userData?.address || "No address"}</Text>
         </View>
       </View>
 
-      {/* Health Stats */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Health Stats</Text>
-        <View style={styles.statsRow}>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>68 kg</Text>
-            <Text style={styles.statLabel}>Weight</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>110/75</Text>
-            <Text style={styles.statLabel}>BP</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>1 Sept</Text>
-            <Text style={styles.statLabel}>Last Checkup</Text>
-          </View>
+      {/* 🔹 QUICK STATS */}
+      <View style={styles.statsRow}>
+        <View style={styles.statBox}>
+          <Icon name="alarm-outline" size={24} color="#1976d2" />
+          <Text style={styles.statNumber}>3</Text>
+          <Text style={styles.statLabel}>Reminders</Text>
+        </View>
+        <View style={styles.statBox}>
+          <Icon name="chatbubbles-outline" size={24} color="#1976d2" />
+          <Text style={styles.statNumber}>5</Text>
+          <Text style={styles.statLabel}>Messages</Text>
+        </View>
+        <View style={styles.statBox}>
+          <Icon name="calendar-outline" size={24} color="#1976d2" />
+          <Text style={styles.statNumber}>2</Text>
+          <Text style={styles.statLabel}>Appointments</Text>
         </View>
       </View>
 
-      {/* Quick Actions */}
+      {/* 🔹 QUICK ACTIONS */}
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actionRow}>
-          <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate("EditProfile")}>
-            <Icon name="create" size={17} color="#fff" />
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => navigation.navigate("EditProfile")}
+          >
+            <Icon name="create-outline" size={17} color="#fff" />
             <Text style={styles.actionText}>Edit Profile</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate("Reminder")}>
-            <Icon name="alarm" size={17} color="#fff" />
+
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => navigation.navigate("Reminder")}
+          >
+            <Icon name="alarm-outline" size={17} color="#fff" />
             <Text style={styles.actionText}>Reminders</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate("Doctor")}>
-            <Icon name="chatbubbles" size={17} color="#fff" />
-            <Text style={styles.actionText}>Contact Doctor</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Support Section */}
+      {/* 🔹 SETTINGS */}
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Support & Education</Text>
-        <TouchableOpacity style={styles.linkRow} onPress={() => navigation.navigate("Article")}>
-          <Icon name="book" size={20} color="#1976d2" />
-          <Text style={styles.linkText}>Read Articles</Text>
+        <Text style={styles.sectionTitle}>Settings</Text>
+        <TouchableOpacity
+          style={styles.settingRow}
+          onPress={() => navigation.navigate("HelpCenter")}
+        >
+          <Icon name="help-circle-outline" size={22} color="#1976d2" />
+          <Text style={styles.settingText}>Help Center</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.linkRow} onPress={() => navigation.navigate("Faq")}>
-          <Icon name="help-circle" size={20} color="#1976d2" />
-          <Text style={styles.linkText}>FAQs</Text>
+
+        <TouchableOpacity style={styles.settingRow}>
+          <Icon name="notifications-outline" size={22} color="#1976d2" />
+          <Text style={styles.settingText}>Notifications</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.linkRow} onPress={() => navigation.navigate("HelpCenter")}>
-          <Icon name="call" size={20} color="#1976d2" />
-          <Text style={styles.linkText}>Help Center</Text>
+
+        <TouchableOpacity
+          style={styles.settingRow}
+          onPress={async () => {
+            await auth().signOut();
+            navigation.replace("Login");
+          }}
+        >
+          <Icon name="log-out-outline" size={22} color="red" />
+          <Text style={[styles.settingText, { color: "red" }]}>Log Out</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

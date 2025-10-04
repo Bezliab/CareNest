@@ -23,6 +23,7 @@ import DoctorScreen from "./src/screens/DoctorsScreen/DoctorScreen";
 import HelpCenterScreen from "./src/screens/HelpCentreScreen/HelpCentreScreen";
 import EditProfileScreen from "./src/screens/EditProfileScreen/EditProfileScreen";
 import bookingpageScreen from "./src/screens/bookingpage/bookingpageScreen";
+import AddRemider from './src/screens/AddReminder/AddReminderSreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -113,7 +114,11 @@ export default function App() {
             component={bookingpageScreen} 
             options={{headerTitle: "Book Appointment"}} 
           />
-
+           <Stack.Screen 
+            name="AddReminder" 
+            component={AddRemider} 
+            options={{headerShown: false}} 
+          />
       </Stack.Navigator>
     </NavigationContainer>
   );

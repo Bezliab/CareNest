@@ -7,6 +7,20 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import styles from "./LoginScreenStyle";
+const handleLogin = async () => {
+  if (!email || !password) {
+    Alert.alert("Missing Fields", "Please enter email and password");
+    return;
+  }
+
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+    Alert.alert("Logged In", "Welcome back!");
+    navigation.replace("Dashboard"); // navigate to main screen
+  } catch (error) {
+    Alert.alert("Login Failed", error.message);
+  }
+};
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');

@@ -1,5 +1,8 @@
+// Top-level build.gradle for CareNest Android project
+
 buildscript {
     ext {
+        // ✅ Android & Kotlin configuration
         buildToolsVersion = "36.0.0"
         minSdkVersion = 24
         compileSdkVersion = 36
@@ -7,15 +10,38 @@ buildscript {
         ndkVersion = "27.1.12297006"
         kotlinVersion = "2.1.20"
     }
+
+    repositories {
+        // ✅ Repositories where Gradle looks for dependencies
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        // ✅ Android Gradle plugin
+        classpath("com.android.tools.build:gradle:8.6.1")
+
+        // ✅ React Native Gradle plugin
+        classpath("com.facebook.react:react-native-gradle-plugin")
+
+        // ✅ Kotlin Gradle plugin
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.20")
+
+        // ✅ Firebase Google Services plugin (needed for Firebase integration)
+        classpath("com.google.gms:google-services:4.4.3")
+    }
+}
+
+// ✅ Plugins section
+plugins {
+    // React Native root project plugin
+    id("com.facebook.react.rootproject")
+}
+
+// ✅ Repositories used for all subprojects (modules)
+allprojects {
     repositories {
         google()
         mavenCentral()
     }
-    dependencies {
-        classpath("com.android.tools.build:gradle")
-        classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-    }
 }
-
-apply plugin: "com.facebook.react.rootproject"
