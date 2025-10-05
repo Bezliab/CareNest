@@ -1,11 +1,3 @@
-!!!! EMERGENCY OOOOOOOOOOO
-
-
-
-
-
-
-
 // screens/EmergencyScreen.js
 import React, { useEffect, useState, useRef } from 'react';
 import {
@@ -86,7 +78,7 @@ const EmergencyScreen = () => {
         JSON.stringify(contact),
       );
       setEmergencyContact(contact);
-      Alert.alert('Saved', ${contact.name} set as your emergency contact);
+      Alert.alert('Saved', `${contact.name} set as your emergency contact`);
     } catch (err) {
       console.warn('Error saving contact:', err);
     }
@@ -162,7 +154,7 @@ const EmergencyScreen = () => {
 
   // Call clinic
   const callClinic = phone => {
-    Linking.openURL(tel:${phone}).catch(err => {
+    Linking.openURL(`tel:${phone}`).catch(err => {
       console.warn('Call error', err);
       Alert.alert('Error', 'Unable to make a call.');
     });
@@ -180,7 +172,7 @@ const EmergencyScreen = () => {
     }
 
     const { latitude, longitude } = userLocation;
-    const message = 🚨 Emergency! I need help. My location: https://maps.google.com/?q=${latitude},${longitude};
+    const message = `🚨 Emergency! I need help. My location: https://maps.google.com/?q=${latitude},${longitude}`;
 
     const smsUrl = `sms:${emergencyContact.phone}${
       Platform.OS === 'ios' ? '&' : '?'
