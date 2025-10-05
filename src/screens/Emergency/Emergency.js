@@ -46,7 +46,8 @@ const EmergencyScreen = () => {
     try {
       await AsyncStorage.setItem("emergencyContact", JSON.stringify(contact));
       setEmergencyContact(contact);
-      Alert.alert("✅ Saved", `${contact.name} set as your emergency contact`);
+
+      Alert.alert('Saved', `${contact.name} set as your emergency contact`);
     } catch (err) {
       console.warn("Error saving contact:", err);
     }
@@ -83,8 +84,13 @@ const EmergencyScreen = () => {
   };
 
   // Call clinic
-  const callClinic = (phone) => {
-    Linking.openURL(`tel:${phone}`);
+
+  const callClinic = phone => {
+    Linking.openURL(`tel:${phone}`).catch(err => {
+      console.warn('Call error', err);
+      Alert.alert('Error', 'Unable to make a call.');
+    });
+
   };
 
   // Send emergency SMS with location
@@ -206,4 +212,13 @@ const styles = StyleSheet.create({
   },
   iconText: { color: "#fff", fontWeight: "600", marginLeft: 5 },
   savedContact: { textAlign: "center", marginTop: 10, fontSize: 14, fontWeight: "500" },
+
+  iconText: { color: '#fff', fontWeight: '600', marginLeft: 5 },
+  savedContact: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+
 });
