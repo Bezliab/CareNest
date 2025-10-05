@@ -1,3 +1,4 @@
+// src/screens/Dashboard/Dashboard.js
 import React, { useEffect, useState, useRef } from "react";
 import {
   View,
@@ -15,9 +16,9 @@ import styles from "./DashboardStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-// ✅ Firebase imports
+// Firebase (your existing firebaseConfig)
 import { auth, db } from "../../api/firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 
 const { width } = Dimensions.get("window");
 
@@ -33,59 +34,67 @@ const Dashboard = ({ navigation }) => {
     extrapolate: "clamp",
   });
 
-  // ✅ Fetch user info from Firestore using Auth UID
+  // Subscribe to user document so dashboard updates live when doctor is picked
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          const userRef = doc(db, "users", user.uid);
-          const userSnap = await getDoc(userRef);
-          if (userSnap.exists()) {
-            setUserData(userSnap.data());
-          } else {
-            console.log("⚠️ No user data found for:", user.uid);
-          }
+    const user = auth.currentUser;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const userRef = doc(db, "users", user.uid);
+
+    const unsubscribe = onSnapshot(
+      userRef,
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setUserData(docSnap.data());
+        } else {
+          setUserData(null);
         }
-      } catch (error) {
-        console.error("❌ Error fetching user data:", error);
-      } finally {
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error listening to user doc:", error);
         setLoading(false);
       }
-    };
+    );
 
-    fetchUserData();
+    return () => unsubscribe();
   }, []);
 
-  // Custom gradient component
+  // Helper: format doctor field into display string (or fallback)
+  const formatDoctor = (doctorField) => {
+    if (!doctorField) return "No doctor picked";
+    let name = "";
+    if (typeof doctorField === "string") {
+      name = doctorField.trim();
+    } else if (doctorField.name) {
+      name = doctorField.name.trim();
+    } else {
+      // Fallback - stringify whatever was stored
+      name = String(doctorField);
+    }
+
+    // Add "Dr." prefix if it doesn't already start with Dr or Dr.
+    if (!/^\s*dr\.?\s+/i.test(name)) name = `Dr. ${name}`;
+    return name;
+  };
+
+  const doctorDisplay = formatDoctor(userData?.doctor);
+
+  // Custom gradient view (same as before)
   const GradientView = ({ colors, style, children }) => (
     <View style={[style, { overflow: "hidden" }]}>
-      <View
-        style={[
-          StyleSheet.absoluteFill,
-          { backgroundColor: colors[0], opacity: 0.8 },
-        ]}
-      />
-      <View
-        style={[
-          StyleSheet.absoluteFill,
-          {
-            backgroundColor: colors[1],
-          },
-        ]}
-      />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: colors[0], opacity: 0.8 }]} />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: colors[1] }]} />
       {children}
     </View>
   );
 
   if (loading) {
     return (
-      <View
-        style={[
-          styles.container,
-          { justifyContent: "center", alignItems: "center" },
-        ]}
-      >
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
         <ActivityIndicator size="large" color="#667eea" />
       </View>
     );
@@ -95,51 +104,39 @@ const Dashboard = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
 
-      {/* Animated Header Background */}
-      <Animated.View
-        style={[styles.headerBackground, { opacity: headerOpacity }]}
-      />
+      <Animated.View style={[styles.headerBackground, { opacity: headerOpacity }]} />
 
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-        )}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+          useNativeDriver: true,
+        })}
         scrollEventThrottle={16}
       >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
             <View>
-              <Text style={styles.greeting}>
-                Hello, {userData?.name || "name"} 👋
-              </Text>
+              <Text style={styles.greeting}>Hello, {userData?.name || "Guest"} 👋</Text>
+
+              {/* Doctor line: shows "No doctor picked" initially, updates when doctor picked */}
               <Text style={styles.subGreeting}>
-                Welcome back! Stay healthy 💕
+                {doctorDisplay === "No doctor picked"
+                  ? "No doctor picked"
+                  : `Your doctor: ${doctorDisplay}`}
               </Text>
             </View>
-            <TouchableOpacity
-              style={styles.avatarContainer}
-              onPress={() => navigation.navigate("Profile")}
-            >
-              <Image
-                source={{
-                  uri: userData?.photoURL || "https://i.pravatar.cc/150?img=45",
-                }}
-                style={styles.avatar}
-              />
+
+            <TouchableOpacity style={styles.avatarContainer} onPress={() => navigation.navigate("Profile")}>
+              <Image source={{ uri: userData?.avatar || "https://i.pravatar.cc/150?img=45" }} style={styles.avatar} />
               <View style={styles.onlineIndicator} />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Pregnancy Progress */}
+        {/* Pregnancy Progress card (unchanged) */}
         <View style={styles.progressCard}>
-          <GradientView
-            colors={["#667eea", "#764ba2"]}
-            style={styles.progressGradient}
-          >
+          <GradientView colors={["#667eea", "#764ba2"]} style={styles.progressGradient}>
             <View style={styles.progressHeader}>
               <Text style={styles.progressTitle}>Pregnancy Progress</Text>
               <View style={styles.weekBadge}>
@@ -162,51 +159,23 @@ const Dashboard = ({ navigation }) => {
             <View style={styles.progressFooter}>
               <View style={styles.dueDateContainer}>
                 <Icon name="event" size={16} color="#fff" />
-                <Text style={styles.dueDate}>Dec 15, 2025</Text>
+                <Text style={styles.dueDate}>{userData?.dueDate || "Dec 15, 2025"}</Text>
               </View>
-              <Text style={styles.babyInfo}>👶 Papaya-sized baby</Text>
+              <Text style={styles.babyInfo}>{userData?.babySize || "👶 Papaya-sized baby"}</Text>
             </View>
           </GradientView>
         </View>
 
-        {/* Quick Actions */}
+        {/* Quick Actions - doctor sub now uses real data or fallback */}
         <Text style={styles.sectionHeader}>Quick Actions</Text>
         <View style={styles.quickActions}>
           {[
-            {
-              icon: "calendar-month",
-              text: "Appointments",
-              sub: "3 days left",
-              colors: ["#ff9a9e", "#f5a691c9"],
-              route: "Appointment",
-            },
-            {
-              icon: "medical-services",
-              text: "Doctor",
-              sub: "Dr. Aisha",
-              colors: ["#a1c4fd", "#1facedad"],
-              route: "Doctor",
-            },
-            {
-              icon: "notifications-active",
-              text: "Reminders",
-              sub: "2 pending",
-              colors: ["#ffecd2", "#fcb69f"],
-              route: "Reminder",
-            },
-            {
-              icon: "history",
-              text: "History",
-              sub: "3 records",
-              colors: ["#84fab0", "#8fd3f4"],
-              route: "History",
-            },
+            { icon: "calendar-month", text: "Appointments", sub: "3 days left", colors: ["#ff9a9e", "#f5a691c9"], route: "Appointment" },
+            { icon: "medical-services", text: "Doctor", sub: doctorDisplay, colors: ["#a1c4fd", "#1facedad"], route: "Doctor" },
+            { icon: "notifications-active", text: "Reminders", sub: "2 pending", colors: ["#ffecd2", "#fcb69f"], route: "Reminder" },
+            { icon: "history", text: "History", sub: "3 records", colors: ["#84fab0", "#8fd3f4"], route: "History" },
           ].map((action, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.quickActionCard}
-              onPress={() => navigation.navigate(action.route)}
-            >
+            <TouchableOpacity key={index} style={styles.quickActionCard} onPress={() => navigation.navigate(action.route)}>
               <GradientView colors={action.colors} style={styles.actionGradient}>
                 <Icon name={action.icon} size={32} color="#fff" />
                 <Text style={styles.actionText}>{action.text}</Text>
@@ -216,7 +185,7 @@ const Dashboard = ({ navigation }) => {
           ))}
         </View>
 
-        {/* Health Metrics */}
+        {/* Health Metrics (unchanged) */}
         <View style={styles.healthSection}>
           <View style={styles.sectionTitleRow}>
             <Text style={styles.sectionTitle}>Health Metrics</Text>
@@ -241,7 +210,7 @@ const Dashboard = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Daily Tip */}
+        {/* Rest of Dashboard (tips, emergency, etc.) unchanged */}
         <View style={styles.tipCard}>
           <View style={styles.tipHeader}>
             <View style={styles.tipIcon}>
@@ -259,12 +228,8 @@ const Dashboard = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Emergency Section */}
         <View style={styles.emergencySection}>
-          <GradientView
-            colors={["#ff6b6b", "#ee5a52"]}
-            style={styles.emergencyGradient}
-          >
+          <GradientView colors={["#ff6b6b", "#ee5a52"]} style={styles.emergencyGradient}>
             <View style={styles.emergencyContent}>
               <View style={styles.emergencyInfo}>
                 <View style={styles.emergencyIcon}>
@@ -272,14 +237,11 @@ const Dashboard = ({ navigation }) => {
                 </View>
                 <View>
                   <Text style={styles.emergencyText}>Emergency Contact</Text>
-                  <Text style={styles.emergencySub}>Dr. Aisha Kareem</Text>
-                  <Text style={styles.emergencyNumber}>+234 802 123 4567</Text>
+                  <Text style={styles.emergencySub}>{userData?.emergencyName || "No contact"}</Text>
+                  <Text style={styles.emergencyNumber}>{userData?.emergencyPhone || "—"}</Text>
                 </View>
               </View>
-              <TouchableOpacity
-                style={styles.callBtn}
-                onPress={() => navigation.navigate("Emergency")}
-              >
+              <TouchableOpacity style={styles.callBtn} onPress={() => navigation.navigate("Emergency")}>
                 <Icon name="call" size={20} color="#ff6b6b" />
                 <Text style={styles.callText}>Call</Text>
               </TouchableOpacity>
@@ -301,25 +263,10 @@ const Dashboard = ({ navigation }) => {
             <TouchableOpacity
               key={index}
               style={styles.navItem}
-              onPress={() =>
-                navigation.navigate(
-                  item.label === "Home" ? "Dashboard" : item.label
-                )
-              }
+              onPress={() => navigation.navigate(item.label === "Home" ? "Dashboard" : item.label)}
             >
-              <Icon
-                name={item.icon}
-                size={24}
-                color={index === 0 ? "#667eea" : "#666"}
-              />
-              <Text
-                style={[
-                  styles.navLabel,
-                  { color: index === 0 ? "#667eea" : "#666" },
-                ]}
-              >
-                {item.label}
-              </Text>
+              <Icon name={item.icon} size={24} color={index === 0 ? "#667eea" : "#666"} />
+              <Text style={[styles.navLabel, { color: index === 0 ? "#667eea" : "#666" }]}>{item.label}</Text>
             </TouchableOpacity>
           ))}
         </View>

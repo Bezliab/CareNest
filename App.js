@@ -13,6 +13,7 @@ import auth from "@react-native-firebase/auth";
 
 // ✅ All your screens
 import LandingPage from "./src/screens/LandingScreen/LandingScreen";
+import FirstPage from "./src/screens/FirstPage/FirstPage";
 import LoginScreen from "./src/screens/Loginscreen/LoginScreen";
 import SignUpScreen from "./src/screens/SigninScreen/SignUpScreen";
 import Dashboard from "./src/screens/Dashboard/Dashboard";
@@ -36,6 +37,7 @@ import bookingpageScreen from "./src/screens/bookingpage/bookingpageScreen";
 import AddRemider from "./src/screens/AddReminder/AddReminderSreen";
 import ResourcesScreen from "./src/screens/Rescources/ResourcesScreen";
 import HealthTipsScreen from "./src/screens/HealthTipsScreen/HealthTipsScreen";
+import Doctor_Sign from "./src/screens/Doctors_Sign/Doctors_Sign";
 
 const Stack = createNativeStackNavigator();
 
@@ -60,7 +62,7 @@ function SplashScreen({ navigation }) {
       }),
     ]).start();
 
-    // Check Firebase authentication
+    // Check Firebase authentication after delay
     const timeout = setTimeout(() => {
       const unsubscribe = auth().onAuthStateChanged((user) => {
         if (user) {
@@ -69,9 +71,10 @@ function SplashScreen({ navigation }) {
             routes: [{ name: "Dashboard" }],
           });
         } else {
+          // 👇 Show FirstPage before LandingPage
           navigation.reset({
             index: 0,
-            routes: [{ name: "LandingPage" }],
+            routes: [{ name: "FirstPage" }],
           });
         }
         setCheckingAuth(false);
@@ -91,7 +94,6 @@ function SplashScreen({ navigation }) {
           alignItems: "center",
         }}
       >
-        {/* Replace this with your app logo */}
         <Image
           source={require("../CareNest/src/Assets/health-image.jpg")}
           style={styles.logo}
@@ -125,12 +127,21 @@ export default function App() {
         {/* Splash Screen */}
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
 
-        {/* Authentication Screens */}
+        {/* Intro / First Page (before Login or Signup) */}
+        <Stack.Screen
+          name="FirstPage"
+          component={FirstPage}
+          options={{ headerShown: false }}
+        />
+
+        {/* Landing Page (Login/Signup Choice) */}
         <Stack.Screen
           name="LandingPage"
           component={LandingPage}
           options={{ headerShown: false }}
         />
+
+        {/* Auth Screens */}
         <Stack.Screen
           name="Login"
           component={LoginScreen}
@@ -175,6 +186,11 @@ export default function App() {
         <Stack.Screen
           name="Appointment"
           component={AppointmentScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Doctor_Sign"
+          component={Doctor_Sign}
           options={{ headerShown: false }}
         />
         <Stack.Screen
