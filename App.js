@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -6,38 +6,38 @@ import {
   StyleSheet,
   Animated,
   ActivityIndicator,
-} from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import auth from "@react-native-firebase/auth";
+} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import auth from '@react-native-firebase/auth';
 
 // ✅ All your screens
-import LandingPage from "./src/screens/LandingScreen/LandingScreen";
-import FirstPage from "./src/screens/FirstPage/FirstPage";
-import LoginScreen from "./src/screens/Loginscreen/LoginScreen";
-import SignUpScreen from "./src/screens/SigninScreen/SignUpScreen";
-import Dashboard from "./src/screens/Dashboard/Dashboard";
-import HealthScreen from "./src/screens/HealthPage/Healthscreen";
-import ReminderScreen from "./src/screens/ReminderScreen/ReminderScreen";
-import TodayScreen from "./src/screens/ReminderScreen/TodayScreen/TodayScreen";
-import ScheduleScreen from "./src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen";
-import AllReminderScreen from "./src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen";
-import CompletedScreen from "./src/screens/ReminderScreen/CompletedScreen/CompletedScreen";
-import AppointmentScreen from "./src/screens/AppointmentScreen/AppointmentScreen";
-import EmergencyScreen from "./src/screens/Emergency/Emergency";
-import SettingsScreen from "./src/screens/SettingsPage/SettingsScreen";
-import ProfileScreen from "./src/screens/ProfilePage/ProfileScreen";
-import ArticleScreen from "./src/screens/ArticleScreen/ArticleScreen";
-import FaqScreen from "./src/screens/FaqScreen/FaqScreen";
-import HistoryScreen from "./src/screens/HistoryScreen/HistoryScreen";
-import DoctorScreen from "./src/screens/DoctorsScreen/DoctorScreen";
-import HelpCenterScreen from "./src/screens/HelpCentreScreen/HelpCentreScreen";
-import EditProfileScreen from "./src/screens/EditProfileScreen/EditProfileScreen";
-import bookingpageScreen from "./src/screens/bookingpage/bookingpageScreen";
-import AddRemider from "./src/screens/AddReminder/AddReminderSreen";
-import ResourcesScreen from "./src/screens/Rescources/ResourcesScreen";
-import HealthTipsScreen from "./src/screens/HealthTipsScreen/HealthTipsScreen";
-import Doctor_Sign from "./src/screens/Doctors_Sign/Doctors_Sign";
+import LandingPage from './src/screens/LandingScreen/LandingScreen';
+import FirstPage from './src/screens/FirstPage/FirstPage';
+import LoginScreen from './src/screens/Loginscreen/LoginScreen';
+import SignUpScreen from './src/screens/SigninScreen/SignUpScreen';
+import Dashboard from './src/screens/Dashboard/Dashboard';
+import HealthScreen from './src/screens/HealthPage/Healthscreen';
+import ReminderScreen from './src/screens/ReminderScreen/ReminderScreen';
+import TodayScreen from './src/screens/ReminderScreen/TodayScreen/TodayScreen';
+import ScheduleScreen from './src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen';
+import AllReminderScreen from './src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen';
+import CompletedScreen from './src/screens/ReminderScreen/CompletedScreen/CompletedScreen';
+import AppointmentScreen from './src/screens/AppointmentScreen/AppointmentScreen';
+import EmergencyScreen from './src/screens/Emergency/Emergency';
+import SettingsScreen from './src/screens/SettingsPage/SettingsScreen';
+import ProfileScreen from './src/screens/ProfilePage/ProfileScreen';
+import ArticleScreen from './src/screens/ArticleScreen/ArticleScreen';
+import FaqScreen from './src/screens/FaqScreen/FaqScreen';
+import HistoryScreen from './src/screens/HistoryScreen/HistoryScreen';
+import DoctorScreen from './src/screens/DoctorsScreen/DoctorScreen';
+import HelpCenterScreen from './src/screens/HelpCentreScreen/HelpCentreScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen/EditProfileScreen';
+import bookingpageScreen from './src/screens/bookingpage/bookingpageScreen';
+import AddRemider from './src/screens/AddReminder/AddReminderSreen';
+import ResourcesScreen from './src/screens/Rescources/ResourcesScreen';
+import HealthTipsScreen from './src/screens/HealthTipsScreen/HealthTipsScreen';
+import Doctor_Sign from './src/screens/Doctors_Sign/Doctors_Sign';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,17 +64,17 @@ function SplashScreen({ navigation }) {
 
     // Check Firebase authentication after delay
     const timeout = setTimeout(() => {
-      const unsubscribe = auth().onAuthStateChanged((user) => {
+      const unsubscribe = auth().onAuthStateChanged(user => {
         if (user) {
           navigation.reset({
             index: 0,
-            routes: [{ name: "Dashboard" }],
+            routes: [{ name: 'Dashboard' }],
           });
         } else {
           // 👇 Show FirstPage before LandingPage
           navigation.reset({
             index: 0,
-            routes: [{ name: "FirstPage" }],
+            routes: [{ name: 'FirstPage' }],
           });
         }
         setCheckingAuth(false);
@@ -91,11 +91,11 @@ function SplashScreen({ navigation }) {
         style={{
           opacity: fadeAnim,
           transform: [{ translateY: slideAnim }],
-          alignItems: "center",
+          alignItems: 'center',
         }}
       >
         <Image
-          source={require("../CareNest/src/Assets/health-image.jpg")}
+          source={require('../CareNest/src/Assets/health-image.jpg')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -145,12 +145,12 @@ export default function App() {
         <Stack.Screen
           name="Login"
           component={LoginScreen}
-          options={{ headerShown: true, headerTitle: "Login" }}
+          options={{ headerShown: true, headerTitle: 'Login' }}
         />
         <Stack.Screen
           name="SignUp"
           component={SignUpScreen}
-          options={{ headerShown: true, headerTitle: "Create Account" }}
+          options={{ headerShown: true, headerTitle: 'Create Account' }}
         />
 
         {/* Dashboard */}
@@ -203,17 +203,17 @@ export default function App() {
         <Stack.Screen
           name="Settings"
           component={SettingsScreen}
-          options={{ headerShown: true, headerTitle: "Settings" }}
+          options={{ headerShown: true, headerTitle: 'Settings' }}
         />
         <Stack.Screen
           name="Profile"
           component={ProfileScreen}
-          options={{ headerShown: true, headerTitle: "Profile" }}
+          options={{ headerShown: true, headerTitle: 'Profile' }}
         />
         <Stack.Screen
           name="EditProfile"
           component={EditProfileScreen}
-          options={{ headerShown: true, headerTitle: "Edit Profile" }}
+          options={{ headerShown: true, headerTitle: 'Edit Profile' }}
         />
 
         {/* Info and Support */}
@@ -221,27 +221,27 @@ export default function App() {
         <Stack.Screen
           name="Faq"
           component={FaqScreen}
-          options={{ headerShown: true, headerTitle: "FAQ" }}
+          options={{ headerShown: true, headerTitle: 'FAQ' }}
         />
         <Stack.Screen
           name="HelpCenter"
           component={HelpCenterScreen}
-          options={{ headerShown: true, headerTitle: "Help Center" }}
+          options={{ headerShown: true, headerTitle: 'Help Center' }}
         />
         <Stack.Screen
           name="Doctor"
           component={DoctorScreen}
-          options={{ headerShown: true, headerTitle: "Doctors" }}
+          options={{ headerShown: true, headerTitle: 'Doctors' }}
         />
         <Stack.Screen
           name="History"
           component={HistoryScreen}
-          options={{ headerShown: true, headerTitle: "History" }}
+          options={{ headerShown: true, headerTitle: 'History' }}
         />
         <Stack.Screen
           name="bookingpage"
           component={bookingpageScreen}
-          options={{ headerShown: true, headerTitle: "Book Appointment" }}
+          options={{ headerShown: true, headerTitle: 'Book Appointment' }}
         />
 
         {/* Reminders and Resources */}
@@ -270,9 +270,9 @@ export default function App() {
 const styles = StyleSheet.create({
   splashContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f9fafb",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f9fafb',
   },
   logo: {
     width: 180,
@@ -280,8 +280,8 @@ const styles = StyleSheet.create({
   },
   appName: {
     fontSize: 28,
-    fontWeight: "700",
-    color: "#2563eb",
+    fontWeight: '700',
+    color: '#2563eb',
     marginTop: 15,
     letterSpacing: 1,
   },
