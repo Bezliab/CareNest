@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import auth from "@react-native-firebase/auth";
-import styles from "./Doctors_SignStyle"
+import styles from "./Doctors_loginStyle"
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -84,7 +84,7 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.headerRow}>
             <View style={styles.logoBox}>
               <Image
-                source={require("../../Assets/health-image.jpg")}
+                source={require("../../Assets/CareNest-logo.png")}
                 style={styles.logo}
               />
             </View>

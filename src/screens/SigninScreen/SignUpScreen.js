@@ -8,6 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import styles from "./Signupscreenstyle";
@@ -16,6 +17,7 @@ export default function SignupScreen({ navigation }) {
   const [name, setName] = useState("");
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [emergencyRelation, setEmergencyRelation] = useState("");
   const [emergencyName, setEmergencyName] = useState("");
   const [emergencyPhone, setEmergencyPhone] = useState("");
@@ -39,8 +41,6 @@ export default function SignupScreen({ navigation }) {
 
     try {
       setLoading(true);
-
-      // ✅ Create user in Firebase Authentication
       const userCredential = await auth().createUserWithEmailAndPassword(
         emailOrPhone,
         password
@@ -48,7 +48,6 @@ export default function SignupScreen({ navigation }) {
 
       const userId = userCredential.user.uid;
 
-      // ✅ Store additional info in Firestore
       await firestore().collection("users").doc(userId).set({
         name,
         emailOrPhone,
@@ -58,7 +57,6 @@ export default function SignupScreen({ navigation }) {
         createdAt: new Date().toISOString(),
       });
 
-      // ✅ Auto login (Firebase already signs in user after signup)
       Alert.alert("Success", "Account created successfully!");
       navigation.reset({
         index: 0,
@@ -86,37 +84,65 @@ export default function SignupScreen({ navigation }) {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Create Account</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        value={name}
-        onChangeText={setName}
-      />
+      {/* Full Name */}
+      <View style={styles.inputContainer}>
+        <Icon name="person-outline" size={20} color="#666" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your full name"
+          placeholderTextColor="#999"
+          value={name}
+          onChangeText={setName}
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email or Phone Number"
-        value={emailOrPhone}
-        onChangeText={setEmailOrPhone}
-        keyboardType="email-address"
-      />
+      {/* Email or Phone */}
+      <View style={styles.inputContainer}>
+        <Icon name="mail-outline" size={20} color="#666" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your email or phone number"
+          placeholderTextColor="#999"
+          value={emailOrPhone}
+          onChangeText={setEmailOrPhone}
+          keyboardType="email-address"
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      {/* Password */}
+      <View style={styles.inputContainer}>
+        <Icon name="lock-closed-outline" size={20} color="#666" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your password"
+          placeholderTextColor="#999"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Icon
+            name={showPassword ? "eye-outline" : "eye-off-outline"}
+            size={20}
+            color="#666"
+            style={styles.iconRight}
+          />
+        </TouchableOpacity>
+      </View>
 
-      {/* Emergency Contact Dropdown */}
+      {/* Emergency Contact Relation */}
       <TouchableOpacity
         style={styles.dropdown}
         onPress={() => setShowDropdown(!showDropdown)}
       >
         <Text style={styles.dropdownText}>
-          {emergencyRelation || "Select Emergency Contact"}
+          {emergencyRelation || "Select your emergency contact "}
         </Text>
+        <Icon
+          name={showDropdown ? "chevron-up-outline" : "chevron-down-outline"}
+          size={18}
+          color="#666"
+        />
       </TouchableOpacity>
 
       {showDropdown && (
@@ -136,21 +162,32 @@ export default function SignupScreen({ navigation }) {
         </View>
       )}
 
-      <TextInput
-        style={styles.input}
-        placeholder="Emergency Contact Name"
-        value={emergencyName}
-        onChangeText={setEmergencyName}
-      />
+      {/* Emergency Contact Name */}
+      <View style={styles.inputContainer}>
+        <Icon name="person-circle-outline" size={20} color="#666" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter emergency contact name"
+          placeholderTextColor="#999"
+          value={emergencyName}
+          onChangeText={setEmergencyName}
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Emergency Contact Phone Number"
-        value={emergencyPhone}
-        onChangeText={setEmergencyPhone}
-        keyboardType="phone-pad"
-      />
+      {/* Emergency Contact Phone */}
+      <View style={styles.inputContainer}>
+        <Icon name="call-outline" size={20} color="#666" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Emergency contact phone number"
+          placeholderTextColor="#999"
+          value={emergencyPhone}
+          onChangeText={setEmergencyPhone}
+          keyboardType="phone-pad"
+        />
+      </View>
 
+      {/* Sign Up Button */}
       <TouchableOpacity
         style={[styles.button, loading && { opacity: 0.6 }]}
         onPress={handleSignup}
@@ -163,14 +200,13 @@ export default function SignupScreen({ navigation }) {
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>
+      {/* Already Have Account */}
+      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
         <Text style={styles.loginText}>
           Already have an account?{" "}
-          <Text style={{ color: "#3b82f6" }}>Login</Text>
+          <Text style={{ color: "#2563eb", fontWeight: "600" }}>Login</Text>
         </Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
-
-export { SignupScreen };

@@ -37,8 +37,8 @@ import bookingpageScreen from "./src/screens/bookingpage/bookingpageScreen";
 import AddRemider from "./src/screens/AddReminder/AddReminderSreen";
 import ResourcesScreen from "./src/screens/Rescources/ResourcesScreen";
 import HealthTipsScreen from "./src/screens/HealthTipsScreen/HealthTipsScreen";
-import Doctor_Sign from "./src/screens/Doctors_Sign/Doctors_Sign";
-
+import Doctor_Sign from "./src/screens/Doctors_Sign/Doctors_login";
+import DoctorSignUpScreen from "./src/screens/DoctorSignupScreen/DoctorSignupScreen";
 const Stack = createNativeStackNavigator();
 
 //
@@ -95,11 +95,11 @@ function SplashScreen({ navigation }) {
         }}
       >
         <Image
-          source={require("../CareNest/src/Assets/health-image.jpg")}
+          source={require("./src/Assets/CARENEST APP.png")}
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={styles.appName}>CareNest</Text>
+        {/* <Text style={styles.appName}>CareNest</Text> */}
       </Animated.View>
 
       {checkingAuth && (
@@ -176,6 +176,11 @@ export default function App() {
         <Stack.Screen
           name="AllReminderScreen"
           component={AllReminderScreen}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="DoctorSignUp"
+          component={DoctorSignUpScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -275,8 +280,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9fafb",
   },
   logo: {
-    width: 180,
-    height: 180,
+    width: 580,
+    height: 380,
   },
   appName: {
     fontSize: 28,

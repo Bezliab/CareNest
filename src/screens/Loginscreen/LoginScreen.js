@@ -77,7 +77,7 @@ export default function LoginScreen({ navigation }) {
           {/* Header */}
           <View style={styles.headerRow}>
             <Image
-              source={{ uri: "https://placehold.co/64x64/0f172a/ffffff?text=H" }}
+              source={require("../../Assets/CareNest-logo.png")}
               style={styles.logo}
             />
             <View style={styles.titleBox}>

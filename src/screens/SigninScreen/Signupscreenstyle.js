@@ -3,27 +3,40 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#f9fafb",
     paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 50,
+    paddingTop: 50,
+    paddingBottom: 60,
   },
   header: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: "700",
-    color: "#222",
+    color: "#1e293b",
     marginBottom: 30,
     textAlign: "center",
   },
-  input: {
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#fff",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
     borderRadius: 10,
-    fontSize: 16,
-    borderColor: "#ddd",
     borderWidth: 1,
-    marginBottom: 14,
+    borderColor: "#ddd",
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    color: "#111827",
+  },
+  icon: {
+    marginRight: 8,
+  },
+  iconRight: {
+    marginLeft: 8,
   },
   dropdown: {
     backgroundColor: "#fff",
@@ -33,6 +46,9 @@ export default StyleSheet.create({
     borderColor: "#ddd",
     borderWidth: 1,
     marginBottom: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   dropdownText: {
     fontSize: 16,
