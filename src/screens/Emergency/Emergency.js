@@ -78,6 +78,10 @@ const EmergencyScreen = () => {
         JSON.stringify(contact),
       );
       setEmergencyContact(contact);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
       Alert.alert('Saved', `${contact.name} set as your emergency contact`);
     } catch (err) {
       console.warn('Error saving contact:', err);
@@ -153,11 +157,19 @@ const EmergencyScreen = () => {
   };
 
   // Call clinic
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
   const callClinic = phone => {
     Linking.openURL(`tel:${phone}`).catch(err => {
       console.warn('Call error', err);
       Alert.alert('Error', 'Unable to make a call.');
     });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
   };
 
   // Send emergency SMS with location
@@ -291,4 +303,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
+<<<<<<< HEAD
+=======
+  iconText: { color: "#fff", fontWeight: "600", marginLeft: 5 },
+  savedContact: { textAlign: "center", marginTop: 10, fontSize: 14, fontWeight: "500" },
+
+  iconText: { color: '#fff', fontWeight: '600', marginLeft: 5 },
+  savedContact: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+
+>>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
 });

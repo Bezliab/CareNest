@@ -1,23 +1,26 @@
-// screens/EditProfileStyle.js
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9f9",
-    padding: 16,
+    backgroundColor: "#f8faff",
+    paddingHorizontal: 20,
+    paddingTop: 30,
   },
+
   header: {
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: "700",
     color: "#1976d2",
     textAlign: "center",
     marginBottom: 20,
   },
+
   imageWrapper: {
     alignSelf: "center",
     marginBottom: 20,
   },
+
   profileImage: {
     width: 120,
     height: 120,
@@ -25,46 +28,58 @@ export default StyleSheet.create({
     borderWidth: 3,
     borderColor: "#1976d2",
   },
+
   placeholder: {
     width: 120,
     height: 120,
     borderRadius: 60,
     borderWidth: 2,
     borderColor: "#ccc",
-    alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#eee",
+    alignItems: "center",
+    backgroundColor: "#e6f0ff",
   },
+
   placeholderText: {
     fontSize: 12,
-    color: "#666",
-    marginTop: 4,
+    color: "#555",
+    marginTop: 5,
   },
+
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: 15,
   },
+
   label: {
     fontSize: 14,
+    color: "#1976d2",
     fontWeight: "600",
-    color: "#444",
-    marginBottom: 6,
+    marginBottom: 5,
   },
+
   input: {
     backgroundColor: "#fff",
+    borderRadius: 10,
     padding: 12,
-    borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#ddd",
-    fontSize: 14,
+    borderColor: "#e0e0e0",
+    fontSize: 15,
     color: "#333",
   },
+
   saveButton: {
     backgroundColor: "#1976d2",
-    paddingVertical: 14,
-    borderRadius: 10,
-    marginTop: 10,
+    paddingVertical: 15,
+    borderRadius: 12,
+    marginTop: 25,
     alignItems: "center",
+    shadowColor: "#1976d2",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 4,
   },
+
   saveButtonText: {
     color: "#fff",
     fontSize: 16,
