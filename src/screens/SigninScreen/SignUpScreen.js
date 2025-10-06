@@ -4,6 +4,31 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+<<<<<<< HEAD
+  KeyboardAvoidingView,
+} from 'react-native';
+import styles from './Signupscreenstyle';
+const SignUpScreen = ({ navigation }) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [emergencyContact, setEmergencyContact] = useState(null);
+  const [emergencyContactName, setEmergencyContactName] = useState(null);
+  const [emergencyContactPhone, setEmergencyContactPhone] = useState(null);
+
+  const handleSignUp = () => {
+    // TODO: call Firebase createUserWithEmailAndPassword + save profile
+    console.log(
+      name,
+      email,
+      phone,
+      password,
+      emergencyContact,
+      emergencyContactName,
+      emergencyContactPhone,
+    );
+=======
   Alert,
   ScrollView,
   ActivityIndicator,
@@ -105,6 +130,7 @@ export default function SignupScreen({ navigation }) {
     } finally {
       setLoading(false);
     }
+>>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
   };
 
   return (
@@ -248,4 +274,10 @@ export default function SignupScreen({ navigation }) {
       </TouchableOpacity>
     </ScrollView>
   );
+<<<<<<< HEAD
+};
+
+export default SignUpScreen;
+=======
 }
+>>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
