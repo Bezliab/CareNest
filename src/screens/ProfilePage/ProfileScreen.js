@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Icon from "react-native-vector-icons/Ionicons";
-import { auth, firestore } from "../../api/firebaseConfig"; // ✅ Firebase setup
+import { auth, firestore } from "../../api/firebaseConfig";
 import styles from "./ProfileScreenStyle";
 
 const ProfileScreen = ({ navigation }) => {
@@ -23,6 +23,7 @@ const ProfileScreen = ({ navigation }) => {
       return;
     }
 
+    // 🔹 Listen for user data from Firestore
     const unsubscribe = firestore()
       .collection("users")
       .doc(user.uid)
@@ -44,21 +45,30 @@ const ProfileScreen = ({ navigation }) => {
 
   if (loading) {
     return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
         <ActivityIndicator size="large" color="#1976d2" />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 60 }}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: 60 }}
+    >
       {/* 🔹 HEADER WITH GRADIENT */}
       <LinearGradient colors={["#74b9ff", "#a29bfe"]} style={styles.headerGradient}>
         <View style={styles.headerContent}>
+          {/* ✅ Corrected to use photoURL */}
           <Image
             source={{
               uri:
-                userData?.avatar ||
+                userData?.photoURL ||
                 "https://cdn-icons-png.flaticon.com/512/4333/4333609.png",
             }}
             style={styles.avatar}
@@ -71,17 +81,28 @@ const ProfileScreen = ({ navigation }) => {
       {/* 🔹 PERSONAL INFO */}
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Personal Information</Text>
+
         <View style={styles.infoRow}>
           <Icon name="mail" size={20} color="#1976d2" />
-          <Text style={styles.infoText}>{userData?.email || "No email provided"}</Text>
+          <Text style={styles.infoText}>
+            {userData?.emailOrPhone || "No email provided"}
+          </Text>
         </View>
+
         <View style={styles.infoRow}>
           <Icon name="call" size={20} color="#1976d2" />
-          <Text style={styles.infoText}>{userData?.phone || "No phone number"}</Text>
+          <Text style={styles.infoText}>
+            {userData?.emergencyPhone || "No phone number"}
+          </Text>
         </View>
+
         <View style={styles.infoRow}>
-          <Icon name="location" size={20} color="#1976d2" />
-          <Text style={styles.infoText}>{userData?.address || "No address"}</Text>
+          <Icon name="people" size={20} color="#1976d2" />
+          <Text style={styles.infoText}>
+            {userData?.emergencyRelation
+              ? `${userData.emergencyRelation} - ${userData.emergencyName}`
+              : "No emergency contact"}
+          </Text>
         </View>
       </View>
 
@@ -129,6 +150,7 @@ const ProfileScreen = ({ navigation }) => {
       {/* 🔹 SETTINGS */}
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Settings</Text>
+
         <TouchableOpacity
           style={styles.settingRow}
           onPress={() => navigation.navigate("HelpCenter")}

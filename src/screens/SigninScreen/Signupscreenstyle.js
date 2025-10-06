@@ -69,4 +69,23 @@ export default StyleSheet.create({
   roleTextSelected: {
     color: "#fff",
   },
+
+  imagePicker: {
+  alignItems: "center",
+  marginBottom: 20,
+},
+profileImage: {
+  width: 100,
+  height: 100,
+  borderRadius: 50,
+  marginBottom: 10,
+  borderWidth: 2,
+  borderColor: "#2563eb",
+},
+imageText: {
+  fontSize: 14,
+  color: "#2563eb",
+  fontWeight: "500",
+},
+
 });
