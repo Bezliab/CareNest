@@ -177,7 +177,9 @@ const Dashboard = ({ navigation }) => {
         <View style={styles.healthSection}>
           <View style={styles.sectionTitleRow}>
             <Text style={styles.sectionTitle}>Health Metrics</Text>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('HealthMetricsScreen')}
+            >
               <Text style={styles.seeAllText}>See All</Text>
             </TouchableOpacity>
           </View>

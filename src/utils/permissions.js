@@ -1,33 +1,41 @@
+// utils/permissions.js
+import { PermissionsAndroid, Platform, Alert } from 'react-native';
 
-import { PermissionsAndroid, Platform, Alert } from "react-native";
-
-export const requestPermissions = async () => {
-  try {
-    if (Platform.OS === "android") {
-      const granted = await PermissionsAndroid.requestMultiple([
+export async function requestLocationPermission() {
+  if (Platform.OS === 'android') {
+    try {
+      const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-        PermissionsAndroid.PERMISSIONS.SEND_SMS,
-        PermissionsAndroid.PERMISSIONS.CALL_PHONE,
-      ]);
-
-      const denied = Object.entries(granted).filter(
-        ([, status]) => status !== PermissionsAndroid.RESULTS.GRANTED
+        {
+          title: 'Location Permission',
+          message:
+            'This app needs access to your location to find nearby clinics and send it to your emergency contact.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
       );
-
-      if (denied.length > 0) {
-        Alert.alert(
-          "Permissions Needed",
-          "Some permissions were denied. Please allow location, SMS, and call permissions for emergency features to work."
-        );
-      } else {
-        console.log("✅ All permissions granted");
-      }
-    } else {
-      // iOS handles permissions differently (via Info.plist)
-      console.log("iOS permissions are handled via plist");
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (err) {
+      console.warn('Location permission error', err);
+      return false;
     }
-  } catch (err) {
-    console.warn("Permission error:", err);
   }
-};
+  // iOS: permission dialog shown automatically when API is used (Info.plist must contain NSLocationWhenInUseUsageDescription)
+  return true;
+}
+
+/**
+ * Convenience wrapper to ensure permission and show an alert if denied.
+ * Returns true if permission granted, false otherwise.
+ */
+export async function ensureLocationPermissionWithAlert() {
+  const ok = await requestLocationPermission();
+  if (!ok) {
+    Alert.alert(
+      'Permission Required',
+      'Location permission is required to find nearby clinics and send your location in an emergency.',
+    );
+  }
+  return ok;
+}
