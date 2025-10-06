@@ -84,7 +84,7 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.headerRow}>
             <View style={styles.logoBox}>
               <Image
-                source={require("../../Assets/CareNest-logo.png")}
+                source={require("../../Assets/LOGO.png")}
                 style={styles.logo}
               />
             </View>
