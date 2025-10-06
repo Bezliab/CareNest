@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,40 +8,40 @@ import {
   Image,
   Alert,
   ActivityIndicator,
-} from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
-import { launchImageLibrary } from "react-native-image-picker";
-import { auth, firestore, storage } from "../../api/firebaseConfig"; // ✅ React Native Firebase
-import styles from "./EditProfileScreenStyle";
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { auth, firestore, storage } from '../../api/firebaseConfig';
+import styles from './EditProfileScreenStyle';
 
 export default function EditProfileScreen({ navigation }) {
   const user = auth().currentUser;
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [bio, setBio] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [bio, setBio] = useState('');
 
-  // ✅ Fetch user profile
+  // 🔹 Load user data
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        if (!user) return;
-        const doc = await firestore().collection("users").doc(user.uid).get();
+        const doc = await firestore().collection('users').doc(user.uid).get();
         if (doc.exists) {
           const data = doc.data();
-          setName(data.name || "");
+          setName(data.name || '');
           setEmail(data.email || user.email);
-          setPhone(data.phone || "");
-          setAddress(data.address || "");
-          setBio(data.bio || "");
+          setPhone(data.phone || '');
+          setAddress(data.address || '');
+          setBio(data.bio || '');
           setProfileImage(data.avatar || null);
         }
       } catch (error) {
-        console.error("Error loading profile:", error);
-        Alert.alert("Error", "Could not load your profile data.");
+        console.error('Error loading profile:', error);
+        Alert.alert('Error', 'Could not load your profile data.');
       } finally {
         setLoading(false);
       }
@@ -49,70 +49,72 @@ export default function EditProfileScreen({ navigation }) {
     fetchProfile();
   }, []);
 
-  // ✅ Pick image from gallery
+  // 🔹 Pick image
   const pickImage = () => {
-    launchImageLibrary(
-      { mediaType: "photo", quality: 1 },
-      (response) => {
-        if (response.didCancel) return;
-        if (response.errorCode) Alert.alert("Error", response.errorMessage);
-        else setProfileImage(response.assets[0].uri);
-      }
-    );
+    launchImageLibrary({ mediaType: 'photo', quality: 1 }, response => {
+      if (response.didCancel) return;
+      if (response.errorCode) Alert.alert('Error', response.errorMessage);
+      else setProfileImage(response.assets[0].uri);
+    });
   };
 
-  // ✅ Upload image to Firebase Storage
+  // 🔹 Upload image
   const uploadImage = async () => {
     if (!profileImage) return null;
     const fileName = `${user.uid}_avatar.jpg`;
     const reference = storage().ref(`avatars/${fileName}`);
     await reference.putFile(profileImage);
-    const url = await reference.getDownloadURL();
-    return url;
+    return await reference.getDownloadURL();
   };
 
-  // ✅ Save changes to Firestore
+  // 🔹 Save changes
   const handleSave = async () => {
+    setSaving(true);
     try {
-      setLoading(true);
       const avatarUrl = await uploadImage();
 
-      await firestore().collection("users").doc(user.uid).set(
-        {
-          name,
-          email,
-          phone,
-          address,
-          bio,
-          avatar: avatarUrl || profileImage,
-          updatedAt: firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true } // merge keeps old data
-      );
+      await firestore()
+        .collection('users')
+        .doc(user.uid)
+        .set(
+          {
+            name,
+            email,
+            phone,
+            address,
+            bio,
+            avatar: avatarUrl || profileImage,
+            updatedAt: firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true },
+        );
 
-      Alert.alert("✅ Success", "Profile updated successfully!");
+      Alert.alert('✅ Success', 'Profile updated successfully!');
       navigation.goBack();
     } catch (error) {
-      console.error("Save Error:", error);
-      Alert.alert("❌ Error", "Failed to update profile. Try again.");
+      console.error('Save Error:', error);
+      Alert.alert('❌ Error', 'Failed to update profile. Try again.');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
   if (loading) {
     return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+      <View style={styles.centered}>
         <ActivityIndicator size="large" color="#1976d2" />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: 60 }}
+    >
       <Text style={styles.header}>Edit Profile</Text>
 
-      {/* Profile Image */}
+      {/* 🔹 Profile Image */}
       <TouchableOpacity style={styles.imageWrapper} onPress={pickImage}>
         {profileImage ? (
           <Image source={{ uri: profileImage }} style={styles.profileImage} />
@@ -124,51 +126,64 @@ export default function EditProfileScreen({ navigation }) {
         )}
       </TouchableOpacity>
 
-      {/* Form Fields */}
+      {/* 🔹 Input Fields */}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Full Name</Text>
-        <TextInput value={name} onChangeText={setName} style={styles.input} />
+        <TextInput style={styles.input} value={name} onChangeText={setName} />
       </View>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Email</Text>
         <TextInput
-          value={email}
-          onChangeText={setEmail}
           style={styles.input}
-          keyboardType="email-address"
+          value={email}
           editable={false}
+          keyboardType="email-address"
         />
       </View>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Phone Number</Text>
         <TextInput
+          style={styles.input}
           value={phone}
           onChangeText={setPhone}
-          style={styles.input}
           keyboardType="phone-pad"
         />
       </View>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Address</Text>
-        <TextInput value={address} onChangeText={setAddress} style={styles.input} />
+        <TextInput
+          style={styles.input}
+          value={address}
+          onChangeText={setAddress}
+          placeholder="Enter your address"
+        />
       </View>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Bio</Text>
         <TextInput
+          style={[styles.input, { height: 80 }]}
           value={bio}
           onChangeText={setBio}
-          style={[styles.input, { height: 80 }]}
           multiline
+          placeholder="Short bio..."
         />
       </View>
 
-      {/* Save Button */}
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Save Changes</Text>
+      {/* 🔹 Save Button */}
+      <TouchableOpacity
+        style={[styles.saveButton, saving && { opacity: 0.7 }]}
+        onPress={handleSave}
+        disabled={saving}
+      >
+        {saving ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.saveButtonText}>Save Changes</Text>
+        )}
       </TouchableOpacity>
     </ScrollView>
   );
