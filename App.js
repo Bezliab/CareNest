@@ -10,10 +10,14 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import auth from '@react-native-firebase/auth';
+import { AppProvider } from './src/utils/AppContext'; // ✅ add your context import
 
 // ✅ All your screens
 import LandingPage from "./src/screens/LandingScreen/LandingScreen";
 import FirstPage from "./src/screens/FirstPage/FirstPage";
+import ForgotPasswordScreen from "./src/screens/ForgotPasswordScreen";
+import OTPVerificationScreen from "./src/screens/OTPVerificationScreen";
+import ResetPasswordScreen from "./src/screens/ResetPasswordScreen";
 import LoginScreen from "./src/screens/Loginscreen/LoginScreen";
 import SignUpScreen from "./src/screens/SigninScreen/SignUpScreen";
 import Dashboard from "./src/screens/Dashboard/Dashboard";
@@ -39,6 +43,7 @@ import ResourcesScreen from "./src/screens/Rescources/ResourcesScreen";
 import HealthTipsScreen from "./src/screens/HealthTipsScreen/HealthTipsScreen";
 import Doctor_Sign from "./src/screens/Doctors_Sign/Doctors_login";
 import DoctorSignUpScreen from "./src/screens/DoctorSignupScreen/DoctorSignupScreen";
+
 const Stack = createNativeStackNavigator();
 
 //
@@ -62,7 +67,6 @@ function SplashScreen({ navigation }) {
       }),
     ]).start();
 
-    // Check Firebase authentication after delay
     const timeout = setTimeout(() => {
       const unsubscribe = auth().onAuthStateChanged(user => {
         if (user) {
@@ -71,7 +75,6 @@ function SplashScreen({ navigation }) {
             routes: [{ name: 'Dashboard' }],
           });
         } else {
-          // 👇 Show FirstPage before LandingPage
           navigation.reset({
             index: 0,
             routes: [{ name: 'FirstPage' }],
@@ -99,7 +102,6 @@ function SplashScreen({ navigation }) {
           style={styles.logo}
           resizeMode="contain"
         />
-        {/* <Text style={styles.appName}>CareNest</Text> */}
       </Animated.View>
 
       {checkingAuth && (
@@ -117,156 +119,117 @@ function SplashScreen({ navigation }) {
 // ---------- MAIN APP ----------
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="SplashScreen"
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        {/* Splash Screen */}
-        <Stack.Screen name="SplashScreen" component={SplashScreen} />
+    <AppProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="SplashScreen"
+          screenOptions={{ headerShown: false }}
+        >
+          {/* Splash Screen */}
+          <Stack.Screen name="SplashScreen" component={SplashScreen} />
 
-        {/* Intro / First Page (before Login or Signup) */}
-        <Stack.Screen
-          name="FirstPage"
-          component={FirstPage}
-          options={{ headerShown: false }}
-        />
+          {/* Intro / First Page */}
+          <Stack.Screen name="FirstPage" component={FirstPage} />
 
-        {/* Landing Page (Login/Signup Choice) */}
-        <Stack.Screen
-          name="LandingPage"
-          component={LandingPage}
-          options={{ headerShown: false }}
-        />
+          {/* Landing Page */}
+          <Stack.Screen name="LandingPage" component={LandingPage} />
 
-        {/* Auth Screens */}
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: true, headerTitle: 'Login' }}
-        />
-        <Stack.Screen
-          name="SignUp"
-          component={SignUpScreen}
-          options={{ headerShown: true, headerTitle: 'Create Account' }}
-        />
+          {/* Auth Screens */}
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: true, headerTitle: 'Login' }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUpScreen}
+            options={{ headerShown: true, headerTitle: 'Create Account' }}
+          />
+            <Stack.Screen
+            name="ForgotPassword"
+            component={ForgotPasswordScreen}
+            options={{ headerShown: true, headerTitle: 'Create Account' }}
+          />
+          <Stack.Screen name="OTPVerification" component={OTPVerificationScreen} options={{ headerShown: true }} />
+          <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{ headerShown: true }} />
 
-        {/* Dashboard */}
-        <Stack.Screen
-          name="Dashboard"
-          component={Dashboard}
-          options={{ headerShown: false }}
-        />
+          {/* Doctor Auth */}
+          <Stack.Screen
+            name="Doctor_Sign"
+            component={Doctor_Sign}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DoctorSignUp"
+            component={DoctorSignUpScreen}
+            options={{ headerShown: false }}
+          />
 
-        {/* Health Pages */}
-        <Stack.Screen name="Health" component={HealthScreen} />
-        <Stack.Screen name="Reminder" component={ReminderScreen} />
-        <Stack.Screen
-          name="TodayScreen"
-          component={TodayScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ScheduleScreen"
-          component={ScheduleScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="AllReminderScreen"
-          component={AllReminderScreen}
-          options={{ headerShown: false }}
-        />
-         <Stack.Screen
-          name="DoctorSignUp"
-          component={DoctorSignUpScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="CompletedScreen"
-          component={CompletedScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Appointment"
-          component={AppointmentScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Doctor_Sign"
-          component={Doctor_Sign}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Emergency"
-          component={EmergencyScreen}
-          options={{ headerShown: false }}
-        />
+          {/* Dashboard */}
+          <Stack.Screen name="Dashboard" component={Dashboard} />
 
-        {/* Profile and Settings */}
-        <Stack.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{ headerShown: true, headerTitle: 'Settings' }}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{ headerShown: true, headerTitle: 'Profile' }}
-        />
-        <Stack.Screen
-          name="EditProfile"
-          component={EditProfileScreen}
-          options={{ headerShown: true, headerTitle: 'Edit Profile' }}
-        />
+          {/* Health Pages */}
+          <Stack.Screen name="Health" component={HealthScreen} />
+          <Stack.Screen name="Reminder" component={ReminderScreen} />
+          <Stack.Screen name="TodayScreen" component={TodayScreen} />
+          <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
+          <Stack.Screen name="AllReminderScreen" component={AllReminderScreen} />
+          <Stack.Screen name="CompletedScreen" component={CompletedScreen} />
+          <Stack.Screen name="Appointment" component={AppointmentScreen} />
+          <Stack.Screen name="Emergency" component={EmergencyScreen} />
 
-        {/* Info and Support */}
-        <Stack.Screen name="Article" component={ArticleScreen} />
-        <Stack.Screen
-          name="Faq"
-          component={FaqScreen}
-          options={{ headerShown: true, headerTitle: 'FAQ' }}
-        />
-        <Stack.Screen
-          name="HelpCenter"
-          component={HelpCenterScreen}
-          options={{ headerShown: true, headerTitle: 'Help Center' }}
-        />
-        <Stack.Screen
-          name="Doctor"
-          component={DoctorScreen}
-          options={{ headerShown: true, headerTitle: 'Doctors' }}
-        />
-        <Stack.Screen
-          name="History"
-          component={HistoryScreen}
-          options={{ headerShown: true, headerTitle: 'History' }}
-        />
-        <Stack.Screen
-          name="bookingpage"
-          component={bookingpageScreen}
-          options={{ headerShown: true, headerTitle: 'Book Appointment' }}
-        />
+          {/* Profile and Settings */}
+          <Stack.Screen
+            name="Settings"
+            component={SettingsScreen}
+            options={{ headerShown: true, headerTitle: 'Settings' }}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={ProfileScreen}
+            options={{ headerShown: true, headerTitle: 'Profile' }}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            component={EditProfileScreen}
+            options={{ headerShown: true, headerTitle: 'Edit Profile' }}
+          />
 
-        {/* Reminders and Resources */}
-        <Stack.Screen
-          name="AddReminder"
-          component={AddRemider}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Resources"
-          component={ResourcesScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="HistoryTips"
-          component={HealthTipsScreen}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          {/* Info and Support */}
+          <Stack.Screen name="Article" component={ArticleScreen} />
+          <Stack.Screen
+            name="Faq"
+            component={FaqScreen}
+            options={{ headerShown: true, headerTitle: 'FAQ' }}
+          />
+          <Stack.Screen
+            name="HelpCenter"
+            component={HelpCenterScreen}
+            options={{ headerShown: true, headerTitle: 'Help Center' }}
+          />
+          <Stack.Screen
+            name="Doctor"
+            component={DoctorScreen}
+            options={{ headerShown: true, headerTitle: 'Doctors' }}
+          />
+          <Stack.Screen
+            name="History"
+            component={HistoryScreen}
+            options={{ headerShown: true, headerTitle: 'History' }}
+          />
+          <Stack.Screen
+            name="bookingpage"
+            component={bookingpageScreen}
+            options={{ headerShown: true, headerTitle: 'Book Appointment' }}
+          />
+
+          {/* Reminders and Resources */}
+          <Stack.Screen name="AddReminder" component={AddRemider} />
+          <Stack.Screen name="Resources" component={ResourcesScreen} />
+          <Stack.Screen name="HistoryTips" component={HealthTipsScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AppProvider>
   );
 }
 
@@ -282,12 +245,5 @@ const styles = StyleSheet.create({
   logo: {
     width: 580,
     height: 380,
-  },
-  appName: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#2563eb',
-    marginTop: 15,
-    letterSpacing: 1,
   },
 });

@@ -1,3 +1,6 @@
+// DoctorLoginScreen.js
+// React Native CLI — Firebase Auth + FineUI-inspired design
+
 import React, { useState, useRef } from "react";
 import {
   View,
@@ -11,17 +14,20 @@ import {
   Animated,
   Alert,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import auth from "@react-native-firebase/auth";
-import styles from "./Doctors_loginStyle"
-export default function LoginScreen({ navigation }) {
+import firestore from "@react-native-firebase/firestore";
+import styles from "./Doctors_loginStyle";
+
+export default function DoctorLoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const cardLift = useRef(new Animated.Value(0)).current;
- 
+
   const liftCard = (toValue) => {
     Animated.timing(cardLift, {
       toValue,
@@ -38,20 +44,33 @@ export default function LoginScreen({ navigation }) {
 
     setLoading(true);
     try {
-      await auth().signInWithEmailAndPassword(email, password);
-      Alert.alert("Success", "Welcome back!");
-      navigation.replace("Dashboard");
+      // Firebase sign-in
+      const userCredential = await auth().signInWithEmailAndPassword(email, password);
+      const userId = userCredential.user.uid;
+
+      // Optional: Check if doctor exists in Firestore
+      const docRef = await firestore().collection("doctors").doc(userId).get();
+      if (!docRef.exists) {
+        await auth().signOut();
+        Alert.alert(
+          "Access Denied",
+          "This account is not registered as a doctor."
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Success
+      Alert.alert("Success", "Welcome back, Doctor!");
+      navigation.replace("DoctorDashboard");
     } catch (error) {
-      console.log("Login Error:", error);
+      console.log("Doctor Login Error:", error);
       let message = "Login failed. Please try again.";
 
-      if (error.code === "auth/invalid-email") {
-        message = "Invalid email format.";
-      } else if (error.code === "auth/user-not-found") {
-        message = "No account found with this email.";
-      } else if (error.code === "auth/wrong-password") {
-        message = "Incorrect password.";
-      }
+      if (error.code === "auth/invalid-email") message = "Invalid email format.";
+      else if (error.code === "auth/user-not-found") message = "No account found with this email.";
+      else if (error.code === "auth/wrong-password") message = "Incorrect password.";
+      else if (error.code === "auth/too-many-requests") message = "Too many attempts. Please try again later.";
 
       Alert.alert("Login Failed", message);
     } finally {
@@ -89,9 +108,9 @@ export default function LoginScreen({ navigation }) {
               />
             </View>
             <View style={styles.titleBox}>
-              <Text style={styles.title}>Welcome Back</Text>
+              <Text style={styles.title}>Welcome Back, Doctor</Text>
               <Text style={styles.subtitle}>
-                Log in to continue your healthcare journey
+                Sign in to access your dashboard
               </Text>
             </View>
           </View>
@@ -107,7 +126,7 @@ export default function LoginScreen({ navigation }) {
               <TextInput
                 autoCapitalize="none"
                 keyboardType="email-address"
-                placeholder="you@example.com"
+                placeholder="doctor@example.com"
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
@@ -119,13 +138,6 @@ export default function LoginScreen({ navigation }) {
 
             <View style={[styles.inputLabelRow, { marginTop: 12 }]}>
               <Text style={styles.inputLabel}>Password</Text>
-              <TouchableOpacity
-                onPress={() =>
-                  Alert.alert("Password Tip", "Use at least 8 characters.")
-                }
-              >
-                <Text style={styles.helperText}>Password rules</Text>
-              </TouchableOpacity>
             </View>
 
             <View style={styles.inputRow}>
@@ -152,38 +164,21 @@ export default function LoginScreen({ navigation }) {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.rowBetween}>
-              <TouchableOpacity
-                onPress={() =>
-                  Alert.alert(
-                    "Remember Me",
-                    "We will remember you on this device."
-                  )
-                }
-              >
-                <Text style={styles.linkText}>Remember me</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => navigation.navigate("ForgotPassword")}
-              >
-                <Text style={styles.linkText}>Forgot password?</Text>
-              </TouchableOpacity>
-            </View>
-
             <TouchableOpacity
               style={[styles.submitBtn, loading && { opacity: 0.7 }]}
               onPress={handleLogin}
               disabled={loading}
             >
-              <Text style={styles.submitText}>
-                {loading ? "Logging in..." : "Log In"}
-              </Text>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitText}>Log In</Text>
+              )}
             </TouchableOpacity>
 
             <View style={styles.smallRow}>
               <Text style={styles.smallText}>Don’t have an account?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+              <TouchableOpacity onPress={() => navigation.navigate("DoctorSignUp")}>
                 <Text style={[styles.linkText, { marginLeft: 8 }]}>Sign Up</Text>
               </TouchableOpacity>
             </View>
@@ -200,7 +195,3 @@ export default function LoginScreen({ navigation }) {
     </SafeAreaView>
   );
 }
-
-//
-// ---------- STYLES ----------
-
