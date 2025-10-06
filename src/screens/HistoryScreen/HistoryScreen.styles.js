@@ -1,185 +1,217 @@
 import { StyleSheet } from 'react-native';
 
-export default StyleSheet.create({
-  /* ========== Layout ========== */
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB', // clean light background
+    backgroundColor: '#f8f9fa',
   },
-
-  /* ========== Header ========== */
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 10,
+    paddingVertical: 15,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  backButton: {
+    padding: 5,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1A202C', // dark slate
-    marginBottom: 4,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
   },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#718096', // muted gray
+  headerRight: {
+    width: 24,
   },
-
-  /* ========== Filters (Pill-style Tabs) ========== */
-  filterContainer: {
-    marginVertical: 10,
-    paddingLeft: 16,
-  },
-  filterContent: {
-    paddingRight: 16,
-    alignItems: 'center',
-  },
-  filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#FFF',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginRight: 10,
-    minWidth: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  filterButtonActive: {
-    backgroundColor: '#4C51BF', // deep indigo
-    borderColor: '#4C51BF',
-    shadowColor: '#4C51BF',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  filterButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#4A5568',
-  },
-  filterButtonTextActive: {
-    color: '#FFF',
-  },
-
-  /* ========== History List ========== */
-  historyList: {
-    flex: 1,
-    paddingHorizontal: 18,
-  },
-  historyListContent: {
-    paddingBottom: 30,
-  },
-  historyItem: {
-    marginBottom: 14,
-  },
-
-  /* ========== Cards ========== */
-  card: {
-    backgroundColor: '#FFF',
-    borderRadius: 14,
-    padding: 14,
+  statsContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    margin: 15,
+    borderRadius: 12,
+    padding: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#4A90E2',
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 5,
+    textAlign: 'center',
+  },
+  statDivider: {
+    width: 1,
+    backgroundColor: '#e0e0e0',
+    marginHorizontal: 10,
+  },
+  filterContainer: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+  filterButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  filterButtonActive: {
+    backgroundColor: '#4A90E2',
+    borderColor: '#4A90E2',
+  },
+  filterText: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '500',
+  },
+  filterTextActive: {
+    color: '#fff',
+  },
+  listContainer: {
+    padding: 15,
+    paddingBottom: 30,
+  },
+  historyCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
     elevation: 3,
   },
   cardHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#2D3748',
-    marginLeft: 8,
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  cardContent: {
-    marginTop: 4,
+  dateText: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 5,
   },
-  infoText: {
-    fontSize: 13,
-    color: '#4A5568',
-    marginTop: 2,
-  },
-  notes: {
-    fontSize: 13,
-    color: '#2D3748',
-    fontStyle: 'italic',
-    marginTop: 6,
-  },
-
-  /* ========== Status Badges ========== */
   statusBadge: {
-    alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 20,
-    marginTop: 6,
+    borderRadius: 12,
+  },
+  completedBadge: {
+    backgroundColor: '#E8F5E8',
+  },
+  pendingBadge: {
+    backgroundColor: '#FFF3E0',
   },
   statusText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '500',
+    color: '#333',
   },
-  completedBadge: {
-    backgroundColor: '#C6F6D5',
-  },
-  milestoneBadge: {
-    backgroundColor: '#FED7D7',
-  },
-  testBadge: {
-    backgroundColor: '#B2F5EA',
-  },
-
-  /* ========== Achievements ========== */
-  achievementsContainer: {
-    marginTop: 10,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#EDF2F7',
-  },
-  achievementsTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#2D3748',
-    marginBottom: 6,
-  },
-  achievementBadge: {
+  doctorInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EDF2F7',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 20,
-    marginBottom: 6,
-    alignSelf: 'flex-start',
+    marginBottom: 10,
   },
-  achievementText: {
-    fontSize: 12,
-    color: '#2D3748',
-    marginLeft: 6,
-    fontWeight: '500',
+  doctorDetails: {
+    marginLeft: 10,
   },
-
-  /* ========== Empty State ========== */
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 50,
-  },
-  emptyStateText: {
+  doctorName: {
     fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  hospitalText: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 2,
+  },
+  typeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  typeText: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 5,
+  },
+  notesContainer: {
+    marginBottom: 10,
+  },
+  notesLabel: {
+    fontSize: 14,
     fontWeight: '600',
-    color: '#4A5568',
-    marginTop: 12,
+    color: '#333',
+    marginBottom: 4,
+  },
+  notesText: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  medicationsContainer: {
+    marginBottom: 10,
+  },
+  medicationsLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
     marginBottom: 6,
   },
-  emptyStateSubtext: {
-    fontSize: 13,
-    color: '#A0AEC0',
-    textAlign: 'center',
+  medicationsList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  medicationItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F1F8E9',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginRight: 8,
+    marginBottom: 4,
+  },
+  medicationText: {
+    fontSize: 12,
+    color: '#4CAF50',
+    marginLeft: 4,
+  },
+  nextAppointment: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  nextAppointmentText: {
+    fontSize: 14,
+    color: '#FF6B6B',
+    fontWeight: '500',
+    marginLeft: 5,
   },
 });
+
+export default styles;

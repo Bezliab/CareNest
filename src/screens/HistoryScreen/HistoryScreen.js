@@ -6,179 +6,186 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
+  FlatList
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import styles from './HistoryScreen.styles';
+import styles from './HistoryPage.styles';
 
-const HistoryPage = () => {
-  const [selectedFilter, setSelectedFilter] = useState('all');
-
-  const historyData = {
-    appointments: [
-      {
-        id: 1,
-        type: 'appointment',
-        title: 'Routine Checkup',
-        doctor: 'Dr. Aisha',
-        date: 'Dec 10, 2025',
-        time: '10:00 AM',
-        status: 'completed',
-        notes: 'Baby heartbeat strong, all vitals normal',
-        achievements: ['Perfect weight gain', 'Blood pressure optimal'],
-      },
-      {
-        id: 2,
-        type: 'appointment',
-        title: 'Ultrasound Scan',
-        doctor: 'Dr. Chen',
-        date: 'Nov 28, 2025',
-        time: '2:30 PM',
-        status: 'completed',
-        notes: '20-week anatomy scan completed successfully',
-        achievements: ['Clear scan results', 'Baby developing perfectly'],
-      },
-    ],
-    milestones: [
-      {
-        id: 3,
-        type: 'milestone',
-        title: 'First Baby Kick',
-        date: 'Nov 15, 2025',
-        description: 'Felt the first strong kicks!',
-        icon: 'heart',
-        achievement: 'Milestone Reached',
-      },
-    ],
-    tests: [
-      {
-        id: 5,
-        type: 'test',
-        title: 'Blood Work',
-        doctor: 'Dr. Rodriguez',
-        date: 'Nov 5, 2025',
-        results: 'All levels normal',
-        status: 'completed',
-        achievements: ['Excellent iron levels', 'Perfect glucose reading'],
-      },
-    ],
-  };
-
-  const filters = [
-    { id: 'all', label: 'All History' },
-    { id: 'appointments', label: 'Appointments' },
-    { id: 'milestones', label: 'Milestones' },
-    { id: 'tests', label: 'Tests' },
-  ];
-
-  const getFilteredData = () => {
-    if (selectedFilter === 'all') {
-      return [
-        ...historyData.appointments,
-        ...historyData.milestones,
-        ...historyData.tests,
-      ].sort((a, b) => new Date(b.date) - new Date(a.date));
+const HistoryPage = ({ navigation }) => {
+  // Sample history data - replace with actual data from your backend
+  const [historyData, setHistoryData] = useState([
+    {
+      id: '1',
+      date: 'Dec 10, 2025',
+      doctorName: 'Dr. Sarah Johnson',
+      hospital: 'City General Hospital',
+      type: 'Regular Checkup',
+      status: 'Completed',
+      notes: 'Everything looks normal. Baby heartbeat strong.',
+      medications: ['Prenatal Vitamins', 'Folic Acid'],
+      nextAppointment: 'Dec 24, 2025'
+    },
+    {
+      id: '2',
+      date: 'Dec 3, 2025',
+      doctorName: 'Dr. Sarah Johnson',
+      hospital: 'City General Hospital',
+      type: 'Ultrasound Scan',
+      status: 'Completed',
+      notes: '20-week anatomy scan completed. All organs developing properly.',
+      medications: ['Prenatal Vitamins'],
+      nextAppointment: 'Dec 10, 2025'
+    },
+    {
+      id: '3',
+      date: 'Nov 26, 2025',
+      doctorName: 'Dr. Michael Chen',
+      hospital: 'Women Health Clinic',
+      type: 'Consultation',
+      status: 'Completed',
+      notes: 'Initial consultation. Discussed pregnancy care plan.',
+      medications: ['Prenatal Vitamins', 'Iron Supplement'],
+      nextAppointment: 'Dec 3, 2025'
+    },
+    {
+      id: '4',
+      date: 'Nov 19, 2025',
+      doctorName: 'Dr. Sarah Johnson',
+      hospital: 'City General Hospital',
+      type: 'Blood Test',
+      status: 'Completed',
+      notes: 'Routine blood work. All levels within normal range.',
+      medications: [],
+      nextAppointment: 'Nov 26, 2025'
     }
-    return historyData[selectedFilter];
-  };
+  ]);
 
-  const renderItem = item => {
-    return (
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Ionicons
-            name={
-              item.type === 'appointment'
-                ? 'calendar'
-                : item.type === 'milestone'
-                ? item.icon
-                : 'flask'
-            }
-            size={20}
-            color={
-              item.type === 'appointment'
-                ? '#6B73A3'
-                : item.type === 'milestone'
-                ? '#FF6B6B'
-                : '#4ECDC4'
-            }
-          />
-          <Text style={styles.cardTitle}>{item.title}</Text>
+  const renderHistoryItem = ({ item }) => (
+    <TouchableOpacity style={styles.historyCard}>
+      <View style={styles.cardHeader}>
+        <View style={styles.dateContainer}>
+          <Ionicons name="calendar-outline" size={16} color="#666" />
+          <Text style={styles.dateText}>{item.date}</Text>
         </View>
-        <View style={styles.cardContent}>
-          <Text style={styles.infoText}>{item.date}</Text>
-          {item.doctor && (
-            <Text style={styles.infoText}>Doctor: {item.doctor}</Text>
-          )}
-          {item.time && <Text style={styles.infoText}>Time: {item.time}</Text>}
-          {item.results && (
-            <Text style={styles.infoText}>Results: {item.results}</Text>
-          )}
-          {item.notes && <Text style={styles.notes}>{item.notes}</Text>}
+        <View style={[styles.statusBadge, 
+          item.status === 'Completed' ? styles.completedBadge : styles.pendingBadge
+        ]}>
+          <Text style={styles.statusText}>{item.status}</Text>
         </View>
       </View>
-    );
-  };
+
+      <View style={styles.doctorInfo}>
+        <Ionicons name="person-circle-outline" size={20} color="#4A90E2" />
+        <View style={styles.doctorDetails}>
+          <Text style={styles.doctorName}>{item.doctorName}</Text>
+          <Text style={styles.hospitalText}>{item.hospital}</Text>
+        </View>
+      </View>
+
+      <View style={styles.typeContainer}>
+        <Ionicons name="medical-outline" size={16} color="#666" />
+        <Text style={styles.typeText}>{item.type}</Text>
+      </View>
+
+      {item.notes && (
+        <View style={styles.notesContainer}>
+          <Text style={styles.notesLabel}>Notes:</Text>
+          <Text style={styles.notesText}>{item.notes}</Text>
+        </View>
+      )}
+
+      {item.medications.length > 0 && (
+        <View style={styles.medicationsContainer}>
+          <Text style={styles.medicationsLabel}>Medications:</Text>
+          <View style={styles.medicationsList}>
+            {item.medications.map((med, index) => (
+              <View key={index} style={styles.medicationItem}>
+                <Ionicons name="medkit-outline" size={14} color="#4CAF50" />
+                <Text style={styles.medicationText}>{med}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
+
+      {item.nextAppointment && (
+        <View style={styles.nextAppointment}>
+          <Ionicons name="arrow-forward-circle-outline" size={16} color="#FF6B6B" />
+          <Text style={styles.nextAppointmentText}>
+            Next: {item.nextAppointment}
+          </Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
-
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>History & Achievements</Text>
-        <Text style={styles.headerSubtitle}>Your pregnancy journey</Text>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Medical History</Text>
+        <View style={styles.headerRight} />
       </View>
 
-      {/* Filter Tabs */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterContainer}
-        contentContainerStyle={styles.filterContent}
-      >
-        {filters.map(filter => (
-          <TouchableOpacity
-            key={filter.id}
-            style={[
-              styles.filterButton,
-              selectedFilter === filter.id && styles.filterButtonActive,
-            ]}
-            onPress={() => setSelectedFilter(filter.id)}
-          >
-            <Text
-              style={[
-                styles.filterButtonText,
-                selectedFilter === filter.id && styles.filterButtonTextActive,
-              ]}
-            >
-              {filter.label}
-            </Text>
+      {/* Stats Summary */}
+      <View style={styles.statsContainer}>
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>{historyData.length}</Text>
+          <Text style={styles.statLabel}>Total Visits</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>
+            {historyData.filter(item => item.status === 'Completed').length}
+          </Text>
+          <Text style={styles.statLabel}>Completed</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>
+            {historyData.filter(item => item.doctorName === 'Dr. Sarah Johnson').length}
+          </Text>
+          <Text style={styles.statLabel}>With Dr. Sarah</Text>
+        </View>
+      </View>
+
+      {/* Filter Options */}
+      <View style={styles.filterContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <TouchableOpacity style={[styles.filterButton, styles.filterButtonActive]}>
+            <Text style={[styles.filterText, styles.filterTextActive]}>All</Text>
           </TouchableOpacity>
-        ))}
-      </ScrollView>
+          <TouchableOpacity style={styles.filterButton}>
+            <Text style={styles.filterText}>Checkups</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.filterButton}>
+            <Text style={styles.filterText}>Scans</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.filterButton}>
+            <Text style={styles.filterText}>Tests</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.filterButton}>
+            <Text style={styles.filterText}>Consultations</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
 
       {/* History List */}
-      <ScrollView
-        style={styles.historyList}
-        contentContainerStyle={styles.historyListContent}
+      <FlatList
+        data={historyData}
+        renderItem={renderHistoryItem}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
-      >
-        {getFilteredData().map(item => (
-          <View key={item.id} style={styles.historyItem}>
-            {renderItem(item)}
-          </View>
-        ))}
-
-        {getFilteredData().length === 0 && (
-          <View style={styles.emptyState}>
-            <Ionicons name="time-outline" size={64} color="#CCC" />
-            <Text style={styles.emptyStateText}>No records found</Text>
-            <Text style={styles.emptyStateSubtext}>
-              Your {selectedFilter} history will appear here
-            </Text>
-          </View>
-        )}
-      </ScrollView>
+      />
     </SafeAreaView>
   );
 };
