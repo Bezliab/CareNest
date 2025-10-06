@@ -32,10 +32,13 @@ const SignUpScreen = ({ navigation }) => {
   Alert,
   ScrollView,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
+import storage from "@react-native-firebase/storage";
+import { launchImageLibrary } from "react-native-image-picker";
 import styles from "./Signupscreenstyle";
 
 export default function SignupScreen({ navigation }) {
@@ -46,11 +49,22 @@ export default function SignupScreen({ navigation }) {
   const [emergencyRelation, setEmergencyRelation] = useState("");
   const [emergencyName, setEmergencyName] = useState("");
   const [emergencyPhone, setEmergencyPhone] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [photo, setPhoto] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const relations = ["Husband", "Friend", "Son", "Daughter", "Others"];
 
+  // 📸 Select Image Function
+  const selectImage = async () => {
+    const result = await launchImageLibrary({ mediaType: "photo" });
+    if (!result.didCancel && result.assets && result.assets.length > 0) {
+      setPhoto(result.assets[0]);
+    }
+  };
+
+  // 🧭 Handle Signup
   const handleSignup = async () => {
     if (
       !name ||
@@ -66,19 +80,32 @@ export default function SignupScreen({ navigation }) {
 
     try {
       setLoading(true);
+
       const userCredential = await auth().createUserWithEmailAndPassword(
         emailOrPhone,
         password
       );
-
       const userId = userCredential.user.uid;
 
+      let photoURL = null;
+
+      // 🖼 Upload Profile Picture to Firebase Storage (if selected)
+      if (photo) {
+        setUploading(true);
+        const reference = storage().ref(`profilePictures/${userId}.jpg`);
+        await reference.putFile(photo.uri);
+        photoURL = await reference.getDownloadURL();
+        setUploading(false);
+      }
+
+      // 💾 Save user data in Firestore
       await firestore().collection("users").doc(userId).set({
         name,
         emailOrPhone,
         emergencyRelation,
         emergencyName,
         emergencyPhone,
+        photoURL,
         createdAt: new Date().toISOString(),
       });
 
@@ -110,7 +137,19 @@ export default function SignupScreen({ navigation }) {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Create Account</Text>
 
-      {/* Full Name */}
+      {/* 📸 Profile Picture Upload */}
+      <TouchableOpacity style={styles.imagePicker} onPress={selectImage}>
+        {photo ? (
+          <Image source={{ uri: photo.uri }} style={styles.profileImage} />
+        ) : (
+          <Icon name="camera-outline" size={50} color="#666" />
+        )}
+        <Text style={styles.imageText}>
+          {photo ? "Change Photo" : "Upload Profile Picture"}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Name */}
       <View style={styles.inputContainer}>
         <Icon name="person-outline" size={20} color="#666" style={styles.icon} />
         <TextInput
@@ -122,7 +161,7 @@ export default function SignupScreen({ navigation }) {
         />
       </View>
 
-      {/* Email or Phone */}
+      {/* Email */}
       <View style={styles.inputContainer}>
         <Icon name="mail-outline" size={20} color="#666" style={styles.icon} />
         <TextInput
@@ -162,7 +201,7 @@ export default function SignupScreen({ navigation }) {
         onPress={() => setShowDropdown(!showDropdown)}
       >
         <Text style={styles.dropdownText}>
-          {emergencyRelation || "Select your emergency contact "}
+          {emergencyRelation || "Select your emergency contact"}
         </Text>
         <Icon
           name={showDropdown ? "chevron-up-outline" : "chevron-down-outline"}
