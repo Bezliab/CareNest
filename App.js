@@ -11,13 +11,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import auth from '@react-native-firebase/auth';
 
-<<<<<<< HEAD
+// ✅ All your screens
 import LandingPage from './src/screens/LandingScreen/LandingScreen';
+import FirstPage from './src/screens/FirstPage/FirstPage';
 import LoginScreen from './src/screens/Loginscreen/LoginScreen';
 import SignUpScreen from './src/screens/SigninScreen/SignUpScreen';
 import Dashboard from './src/screens/Dashboard/Dashboard';
 import HealthScreen from './src/screens/HealthPage/Healthscreen';
-import HealthMetricsScreen from './src/screens/HealthMetricsScreen/HealthMetricsScreen';
 import ReminderScreen from './src/screens/ReminderScreen/ReminderScreen';
 import TodayScreen from './src/screens/ReminderScreen/TodayScreen/TodayScreen';
 import ScheduleScreen from './src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen';
@@ -25,7 +25,6 @@ import AllReminderScreen from './src/screens/ReminderScreen/AllReminderScreen/Al
 import CompletedScreen from './src/screens/ReminderScreen/CompletedScreen/CompletedScreen';
 import AppointmentScreen from './src/screens/AppointmentScreen/AppointmentScreen';
 import EmergencyScreen from './src/screens/Emergency/Emergency';
-import { TouchableOpacity, Text } from 'react-native';
 import SettingsScreen from './src/screens/SettingsPage/SettingsScreen';
 import ProfileScreen from './src/screens/ProfilePage/ProfileScreen';
 import ArticleScreen from './src/screens/ArticleScreen/ArticleScreen';
@@ -35,36 +34,11 @@ import DoctorScreen from './src/screens/DoctorsScreen/DoctorScreen';
 import HelpCenterScreen from './src/screens/HelpCentreScreen/HelpCentreScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen/EditProfileScreen';
 import bookingpageScreen from './src/screens/bookingpage/bookingpageScreen';
-=======
-// ✅ All your screens
-import LandingPage from "./src/screens/LandingScreen/LandingScreen";
-import FirstPage from "./src/screens/FirstPage/FirstPage";
-import LoginScreen from "./src/screens/Loginscreen/LoginScreen";
-import SignUpScreen from "./src/screens/SigninScreen/SignUpScreen";
-import Dashboard from "./src/screens/Dashboard/Dashboard";
-import HealthScreen from "./src/screens/HealthPage/Healthscreen";
-import ReminderScreen from "./src/screens/ReminderScreen/ReminderScreen";
-import TodayScreen from "./src/screens/ReminderScreen/TodayScreen/TodayScreen";
-import ScheduleScreen from "./src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen";
-import AllReminderScreen from "./src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen";
-import CompletedScreen from "./src/screens/ReminderScreen/CompletedScreen/CompletedScreen";
-import AppointmentScreen from "./src/screens/AppointmentScreen/AppointmentScreen";
-import EmergencyScreen from "./src/screens/Emergency/Emergency";
-import SettingsScreen from "./src/screens/SettingsPage/SettingsScreen";
-import ProfileScreen from "./src/screens/ProfilePage/ProfileScreen";
-import ArticleScreen from "./src/screens/ArticleScreen/ArticleScreen";
-import FaqScreen from "./src/screens/FaqScreen/FaqScreen";
-import HistoryScreen from "./src/screens/HistoryScreen/HistoryScreen";
-import DoctorScreen from "./src/screens/DoctorsScreen/DoctorScreen";
-import HelpCenterScreen from "./src/screens/HelpCentreScreen/HelpCentreScreen";
-import EditProfileScreen from "./src/screens/EditProfileScreen/EditProfileScreen";
-import bookingpageScreen from "./src/screens/bookingpage/bookingpageScreen";
-import AddRemider from "./src/screens/AddReminder/AddReminderSreen";
-import ResourcesScreen from "./src/screens/Rescources/ResourcesScreen";
-import HealthTipsScreen from "./src/screens/HealthTipsScreen/HealthTipsScreen";
-import Doctor_Sign from "./src/screens/Doctors_Sign/Doctors_login";
-import DoctorSignUpScreen from "./src/screens/DoctorSignupScreen/DoctorSignupScreen";
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
+import AddRemider from './src/screens/AddReminder/AddReminderSreen';
+import ResourcesScreen from './src/screens/Rescources/ResourcesScreen';
+import HealthTipsScreen from './src/screens/HealthTipsScreen/HealthTipsScreen';
+import Doctor_Sign from './src/screens/Doctors_Sign/Doctors_login';
+import DoctorSignUpScreen from './src/screens/DoctorSignupScreen/DoctorSignupScreen';
 const Stack = createNativeStackNavigator();
 
 //
@@ -121,7 +95,7 @@ function SplashScreen({ navigation }) {
         }}
       >
         <Image
-          source={require("../CareNest/src/Assets/APP.png")}
+          source={require('../CareNest/src/Assets/APP.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -204,7 +178,7 @@ export default function App() {
           component={AllReminderScreen}
           options={{ headerShown: false }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="DoctorSignUp"
           component={DoctorSignUpScreen}
           options={{ headerShown: false }}
@@ -229,79 +203,16 @@ export default function App() {
           component={EmergencyScreen}
           options={{ headerShown: false }}
         />
-<<<<<<< HEAD
-        <Stack.Screen
-          name="HealthMetricsScreen"
-          component={HealthMetricsScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="Reminder" component={ReminderScreen} />
-
-        <Stack.Screen
-          name="TodayScreen"
-          component={TodayScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ScheduleScreen"
-          component={ScheduleScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="AllReminderScreen"
-          component={AllReminderScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="CompletedScreen"
-          component={CompletedScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Appointment"
-          component={AppointmentScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Emergency"
-          component={EmergencyScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{ headerTitle: 'Setting' }}
-=======
 
         {/* Profile and Settings */}
         <Stack.Screen
           name="Settings"
           component={SettingsScreen}
           options={{ headerShown: true, headerTitle: 'Settings' }}
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
         />
         <Stack.Screen
           name="Profile"
           component={ProfileScreen}
-<<<<<<< HEAD
-          options={{ headerTitle: 'Profile' }}
-        />
-
-        <Stack.Screen
-          name="Article"
-          component={ArticleScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Faq"
-          component={FaqScreen}
-          options={{ headerTitle: 'Faq' }}
-        />
-        <Stack.Screen
-          name="EditProfile"
-          component={EditProfileScreen}
-          options={{ headerTitle: 'Faq' }}
-=======
           options={{ headerShown: true, headerTitle: 'Profile' }}
         />
         <Stack.Screen
@@ -316,41 +227,25 @@ export default function App() {
           name="Faq"
           component={FaqScreen}
           options={{ headerShown: true, headerTitle: 'FAQ' }}
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
         />
         <Stack.Screen
           name="HelpCenter"
           component={HelpCenterScreen}
-<<<<<<< HEAD
-          options={{ headerTitle: 'Faq' }}
-=======
           options={{ headerShown: true, headerTitle: 'Help Center' }}
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
         />
         <Stack.Screen
           name="Doctor"
           component={DoctorScreen}
-<<<<<<< HEAD
-          options={{ headerTitle: 'Faq' }}
-=======
           options={{ headerShown: true, headerTitle: 'Doctors' }}
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
         />
         <Stack.Screen
           name="History"
           component={HistoryScreen}
-<<<<<<< HEAD
-          options={{ headerTitle: 'Faq' }}
-=======
           options={{ headerShown: true, headerTitle: 'History' }}
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
         />
         <Stack.Screen
           name="bookingpage"
           component={bookingpageScreen}
-<<<<<<< HEAD
-          options={{ headerTitle: 'Book Appointment' }}
-=======
           options={{ headerShown: true, headerTitle: 'Book Appointment' }}
         />
 
@@ -369,7 +264,6 @@ export default function App() {
           name="HistoryTips"
           component={HealthTipsScreen}
           options={{ headerShown: false }}
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
         />
       </Stack.Navigator>
     </NavigationContainer>
