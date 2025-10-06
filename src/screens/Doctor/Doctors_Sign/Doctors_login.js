@@ -62,7 +62,7 @@ export default function DoctorLoginScreen({ navigation }) {
 
       // Success
       Alert.alert("Success", "Welcome back, Doctor!");
-      navigation.replace("DoctorDashboard");
+      navigation.replace("docDashboard");
     } catch (error) {
       console.log("Doctor Login Error:", error);
       let message = "Login failed. Please try again.";
@@ -166,7 +166,7 @@ export default function DoctorLoginScreen({ navigation }) {
 
             <TouchableOpacity
               style={[styles.submitBtn, loading && { opacity: 0.7 }]}
-              onPress={handleLogin}
+              onPress={handleLogin} 
               disabled={loading}
             >
               {loading ? (

@@ -18,32 +18,34 @@ import FirstPage from "./src/screens/FirstPage/FirstPage";
 import ForgotPasswordScreen from "./src/screens/ForgotPasswordScreen";
 import OTPVerificationScreen from "./src/screens/OTPVerificationScreen";
 import ResetPasswordScreen from "./src/screens/ResetPasswordScreen";
-import LoginScreen from "./src/screens/Loginscreen/LoginScreen";
-import SignUpScreen from "./src/screens/SigninScreen/SignUpScreen";
-import Dashboard from "./src/screens/Dashboard/Dashboard";
-import HealthScreen from "./src/screens/HealthPage/Healthscreen";
+import LoginScreen from "./src/screens/pregnateuser/Loginscreen/LoginScreen";
+import SignUpScreen from "./src/screens/pregnateuser/SigninScreen/SignUpScreen";
+import Dashboard from "./src/screens/pregnateuser/Dashboard/Dashboard";
+import HealthScreen from "./src/screens/pregnateuser/HealthPage/Healthscreen";
 import ReminderScreen from "./src/screens/ReminderScreen/ReminderScreen";
 import TodayScreen from "./src/screens/ReminderScreen/TodayScreen/TodayScreen";
 import ScheduleScreen from "./src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen";
 import AllReminderScreen from "./src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen";
 import CompletedScreen from "./src/screens/ReminderScreen/CompletedScreen/CompletedScreen";
 import AppointmentScreen from "./src/screens/AppointmentScreen/AppointmentScreen";
-import EmergencyScreen from "./src/screens/Emergency/Emergency";
+import EmergencyScreen from "./src/screens/pregnateuser/Emergency/Emergency";
 import SettingsScreen from "./src/screens/SettingsPage/SettingsScreen";
-import ProfileScreen from "./src/screens/ProfilePage/ProfileScreen";
+import ProfileScreen from "./src/screens/pregnateuser/ProfilePage/ProfileScreen";
 import ArticleScreen from "./src/screens/ArticleScreen/ArticleScreen";
 import FaqScreen from "./src/screens/FaqScreen/FaqScreen";
-import HistoryScreen from "./src/screens/HistoryScreen/HistoryScreen";
-import DoctorScreen from "./src/screens/DoctorsScreen/DoctorScreen";
-import HelpCenterScreen from "./src/screens/HelpCentreScreen/HelpCentreScreen";
+import HistoryScreen from "./src/screens/pregnateuser/HistoryScreen/HistoryScreen";
+import DoctorScreen from "./src/screens/Doctor/DoctorsScreen/DoctorScreen";
+import HelpCenterScreen from "./src/screens/pregnateuser/HelpCentreScreen/HelpCentreScreen";
 import EditProfileScreen from "./src/screens/EditProfileScreen/EditProfileScreen";
 import bookingpageScreen from "./src/screens/bookingpage/bookingpageScreen";
-import AddRemider from "./src/screens/AddReminder/AddReminderSreen";
-import ResourcesScreen from "./src/screens/Rescources/ResourcesScreen";
-import HealthTipsScreen from "./src/screens/HealthTipsScreen/HealthTipsScreen";
-import Doctor_Sign from "./src/screens/Doctors_Sign/Doctors_login";
-import DoctorSignUpScreen from "./src/screens/DoctorSignupScreen/DoctorSignupScreen";
-
+import AddRemider from "./src/screens/pregnateuser/AddReminder/AddReminderSreen";
+import ResourcesScreen from "./src/screens/pregnateuser/Rescources/ResourcesScreen";
+import HealthTipsScreen from "./src/screens/pregnateuser/HealthTipsScreen/HealthTipsScreen";
+import Doctor_Sign from "./src/screens/Doctor/Doctors_Sign/Doctors_login";
+import DoctorSignUpScreen from "./src/screens/Doctor/DoctorSignupScreen/DoctorSignupScreen";
+import AntenatalTracker from "./src/screens/pregnateuser/AntenatalTrackerStyle/AntenatalTracker"
+import DoctorDshboard from './src/screens/Doctor/DoctorDashboard/DoctorDshboard';
+import HealthMetircsScreen from './src/screens/pregnateuser/HealthMetricsScreen/HealthMetricsScreen';
 const Stack = createNativeStackNavigator();
 
 //
@@ -167,6 +169,7 @@ export default function App() {
 
           {/* Dashboard */}
           <Stack.Screen name="Dashboard" component={Dashboard} />
+          <Stack.Screen name="docDashboard" component={DoctorDshboard} />
 
           {/* Health Pages */}
           <Stack.Screen name="Health" component={HealthScreen} />
@@ -177,7 +180,8 @@ export default function App() {
           <Stack.Screen name="CompletedScreen" component={CompletedScreen} />
           <Stack.Screen name="Appointment" component={AppointmentScreen} />
           <Stack.Screen name="Emergency" component={EmergencyScreen} />
-
+          <Stack.Screen name="antenatal" component={AntenatalTracker} />
+          <Stack.Screen name="HealthMetrics" component={HealthMetircsScreen} />
           {/* Profile and Settings */}
           <Stack.Screen
             name="Settings"

@@ -1,0 +1,172 @@
+import { StyleSheet, Dimensions } from "react-native";
+const { width } = Dimensions.get("window");
+const cardWidth = (width - 60) / 2;
+
+export default StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f0f4f8",
+  },
+  headerContainer: {
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
+  headerCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 20,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  headerText: { color: "#fff", fontSize: 18, fontWeight: "500" },
+  headerSubText: { color: "#fff", fontSize: 22, fontWeight: "700", marginTop: 4 },
+
+  // Stats Panel
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
+  statCard: {
+    width: (width - 60) / 3,
+    height: 80,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  statNumber: { color: "#fff", fontSize: 20, fontWeight: "700" },
+  statLabel: { color: "#fff", fontSize: 14, marginTop: 4 },
+
+  // Grid
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
+  cardWrapper: { width: cardWidth, marginBottom: 20 },
+  card: {
+    height: 140,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 8,
+    elevation: 6,
+    position: "relative",
+  },
+  cardText: { color: "#fff", fontSize: 16, fontWeight: "600", textAlign: "center", marginTop: 10 },
+  badge: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "#ff3b30",
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  badgeText: { color: "#fff", fontSize: 12, fontWeight: "700" },
+
+  // Recent Patients
+  sectionTitle: { fontSize: 18, fontWeight: "700", marginHorizontal: 20, marginTop: 25, marginBottom: 10 },
+  recentCard: {
+    width: 160,
+    height: 100,
+    borderRadius: 15,
+    marginLeft: 20,
+    padding: 12,
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  recentName: { fontSize: 16, fontWeight: "600", color: "#fff" },
+  recentVisit: { fontSize: 12, fontWeight: "400", color: "#fff", marginTop: 4 },
+
+  // Floating Action Button
+  floatingBtn: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#ff4757",
+    position: "absolute",
+    bottom: 25,
+    right: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  recentCardWrapper: {
+  width: 180,
+  height: 120,
+},
+recentCard: {
+  flex: 1,
+  borderRadius: 20,
+  padding: 12,
+  justifyContent: "space-between",
+  shadowColor: "#000",
+  shadowOpacity: 0.15,
+  shadowOffset: { width: 0, height: 5 },
+  shadowRadius: 8,
+  elevation: 6,
+},
+recentHeader: {
+  flexDirection: "row",
+  alignItems: "center",
+},
+patientAvatar: {
+  width: 40,
+  height: 40,
+  borderRadius: 20,
+  borderWidth: 2,
+  borderColor: "#fff",
+  marginRight: 10,
+},
+recentName: {
+  color: "#fff",
+  fontSize: 16,
+  fontWeight: "700",
+  flexShrink: 1,
+},
+visitBadge: {
+  alignSelf: "flex-start",
+  backgroundColor: "rgba(255,255,255,0.25)",
+  borderRadius: 12,
+  paddingHorizontal: 10,
+  paddingVertical: 4,
+},
+visitText: {
+  color: "#fff",
+  fontSize: 12,
+  fontWeight: "600",
+},
+
+});

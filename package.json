@@ -11,11 +11,8 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
-<<<<<<< HEAD
-=======
     "@react-native-community/datetimepicker": "^8.4.5",
     "@react-native-community/geolocation": "^3.4.0",
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
     "@react-native-firebase/app": "^23.4.0",
     "@react-native-firebase/auth": "^23.4.0",
     "@react-native-firebase/firestore": "^23.4.0",
@@ -30,6 +27,7 @@
     "gradle": "^1.0.8",
     "react": "19.1.0",
     "react-native": "0.81.4",
+    "react-native-calendars": "^1.1313.0",
     "react-native-geolocation-service": "^5.3.1",
     "react-native-gesture-handler": "^2.28.0",
     "react-native-get-random-values": "^1.11.0",
@@ -37,6 +35,7 @@
     "react-native-linear-gradient": "^2.8.3",
     "react-native-onboarding-swiper": "^1.3.0",
     "react-native-picker-select": "^9.3.1",
+    "react-native-push-notification": "^8.1.1",
     "react-native-reanimated": "^4.1.2",
     "react-native-safe-area-context": "^5.6.1",
     "react-native-screens": "^4.16.0",

@@ -17,7 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 // Firebase (your existing firebaseConfig)
-import { auth, db } from "../../api/firebaseConfig";
+import { auth, db } from "../../../api/firebaseConfig";
 import { doc, onSnapshot } from "firebase/firestore";
 
 const { width } = Dimensions.get("window");
@@ -189,13 +189,9 @@ const Dashboard = ({ navigation }) => {
         <View style={styles.healthSection}>
           <View style={styles.sectionTitleRow}>
             <Text style={styles.sectionTitle}>Health Metrics</Text>
-<<<<<<< HEAD
             <TouchableOpacity
-              onPress={() => navigation.navigate('HealthMetricsScreen')}
+              onPress={() => navigation.navigate('HealthMetrics')}
             >
-=======
-            <TouchableOpacity onPress={() => navigation.navigate("Health")}>
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
               <Text style={styles.seeAllText}>See All</Text>
             </TouchableOpacity>
           </View>
@@ -262,7 +258,7 @@ const Dashboard = ({ navigation }) => {
           {[
             { icon: "home", label: "Home" },
             { icon: "favorite", label: "Health" },
-            { icon: "menu-book", label: "Resources" },
+            { icon: "menu-book", label: "antenatal" },
             { icon: "person", label: "Profile" },
             { icon: "settings", label: "Settings" },
           ].map((item, index) => (

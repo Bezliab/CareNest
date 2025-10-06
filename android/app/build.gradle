@@ -2,7 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.facebook.react'
-    id 'com.google.gms.google-services' // ✅ required for Firebase
+    id 'com.google.gms.google-services' // Required for Firebase
 }
 
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
@@ -19,6 +19,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
 
     signingConfigs {
@@ -37,7 +38,36 @@ android {
         release {
             signingConfig signingConfigs.debug
             minifyEnabled false
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+    }
+
+    // ✅ Match Java and Kotlin to Java 17
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+    packagingOptions {
+        resources {
+            excludes += [
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/ASL2.0"
+            ]
         }
     }
 }
@@ -47,21 +77,32 @@ react {
 }
 
 dependencies {
-    // ✅ React Native core
     implementation("com.facebook.react:react-android")
 
-    // ✅ JS Engine
+    // JS Engine
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation 'io.github.react-native-community:jsc-android:2026004.+'
     }
 
-    // ✅ Firebase BoM (centralizes all versions)
+    // Firebase BoM (manages versions for Firebase libraries)
     implementation platform('com.google.firebase:firebase-bom:34.3.0')
-
-    // ✅ Add your Firebase products here
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-messaging'
+
+    // AndroidX dependencies
+    implementation 'androidx.core:core:1.16.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.multidex:multidex:2.0.1'
+}
+
+// Resolve AndroidX duplicates
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.core:core:1.16.0'
+        force 'androidx.appcompat:appcompat:1.6.1'
+    }
 }
