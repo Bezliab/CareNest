@@ -45,13 +45,11 @@ const EmergencyScreen = () => {
   const watchIdRef = useRef(null);
 
   useEffect(() => {
-    // Ask permission on mount and load saved contact
     (async () => {
       await ensureLocationPermissionWithAlert();
       loadSavedContact();
     })();
 
-    // cleanup watch if any
     return () => {
       if (watchIdRef.current !== null) {
         Geolocation.clearWatch(watchIdRef.current);
@@ -60,7 +58,6 @@ const EmergencyScreen = () => {
     };
   }, []);
 
-  // Load saved contact from storage
   const loadSavedContact = async () => {
     try {
       const saved = await AsyncStorage.getItem(EMERGENCY_CONTACT_KEY);
@@ -70,30 +67,20 @@ const EmergencyScreen = () => {
     }
   };
 
-  // Save emergency contact
   const saveContact = async contact => {
     try {
-      await AsyncStorage.setItem(
-        EMERGENCY_CONTACT_KEY,
-        JSON.stringify(contact),
-      );
+      await AsyncStorage.setItem(EMERGENCY_CONTACT_KEY, JSON.stringify(contact));
       setEmergencyContact(contact);
-<<<<<<< HEAD
-=======
-
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
       Alert.alert('Saved', `${contact.name} set as your emergency contact`);
     } catch (err) {
       console.warn('Error saving contact:', err);
     }
   };
 
-  // Helper: calculate simple squared Euclidean distance (enough for small deltas)
   const _distanceSq = (lat1, lon1, lat2, lon2) => {
     return Math.pow(lat1 - lat2, 2) + Math.pow(lon1 - lon2, 2);
   };
 
-  // Find nearest clinic (asks permission, gets current position)
   const findNearestClinic = async () => {
     const ok = await ensureLocationPermissionWithAlert();
     if (!ok) return;
@@ -106,12 +93,7 @@ const EmergencyScreen = () => {
         let nearest = null;
         let minDist = Number.POSITIVE_INFINITY;
         for (const clinic of clinics) {
-          const dist = _distanceSq(
-            latitude,
-            longitude,
-            clinic.latitude,
-            clinic.longitude,
-          );
+          const dist = _distanceSq(latitude, longitude, clinic.latitude, clinic.longitude);
           if (dist < minDist) {
             minDist = dist;
             nearest = clinic;
@@ -121,22 +103,17 @@ const EmergencyScreen = () => {
       },
       error => {
         console.warn('Location error:', error);
-        Alert.alert(
-          'Location error',
-          error.message || 'Unable to fetch location.',
-        );
+        Alert.alert('Location error', error.message || 'Unable to fetch location.');
       },
       {
         enableHighAccuracy: true,
         timeout: 20000,
         maximumAge: 1000,
-        // Android-only option that forces location prompt on some devices:
         forceRequestLocation: Platform.OS === 'android',
       },
     );
   };
 
-  // Optional: start watching user location (not used by default)
   const startWatchPosition = async () => {
     const ok = await ensureLocationPermissionWithAlert();
     if (!ok) return;
@@ -156,23 +133,14 @@ const EmergencyScreen = () => {
     );
   };
 
-  // Call clinic
-<<<<<<< HEAD
-=======
-
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
+  // ✅ FIXED: Closed the function properly
   const callClinic = phone => {
     Linking.openURL(`tel:${phone}`).catch(err => {
       console.warn('Call error', err);
       Alert.alert('Error', 'Unable to make a call.');
     });
-<<<<<<< HEAD
-=======
-
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
   };
 
-  // Send emergency SMS with location
   const sendEmergencySMS = () => {
     if (!emergencyContact) {
       Alert.alert('No Contact', 'Please save an emergency contact first.');
@@ -186,9 +154,7 @@ const EmergencyScreen = () => {
     const { latitude, longitude } = userLocation;
     const message = `🚨 Emergency! I need help. My location: https://maps.google.com/?q=${latitude},${longitude}`;
 
-    const smsUrl = `sms:${emergencyContact.phone}${
-      Platform.OS === 'ios' ? '&' : '?'
-    }body=${encodeURIComponent(message)}`;
+    const smsUrl = `sms:${emergencyContact.phone}${Platform.OS === 'ios' ? '&' : '?'}body=${encodeURIComponent(message)}`;
     Linking.openURL(smsUrl).catch(err => {
       console.warn('SMS error', err);
       Alert.alert('Error', 'Unable to open SMS app.');
@@ -236,8 +202,7 @@ const EmergencyScreen = () => {
 
       {emergencyContact && (
         <Text style={styles.savedContact}>
-          ⭐ Emergency Contact: {emergencyContact.name} (
-          {emergencyContact.phone})
+          ⭐ Emergency Contact: {emergencyContact.name} ({emergencyContact.phone})
         </Text>
       )}
     </View>
@@ -248,12 +213,7 @@ export default EmergencyScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#f8f8f8' },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
+  title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -297,24 +257,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconText: { color: '#fff', fontWeight: '600', marginLeft: 5 },
-  savedContact: {
-    textAlign: 'center',
-    marginTop: 10,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-<<<<<<< HEAD
-=======
-  iconText: { color: "#fff", fontWeight: "600", marginLeft: 5 },
-  savedContact: { textAlign: "center", marginTop: 10, fontSize: 14, fontWeight: "500" },
-
-  iconText: { color: '#fff', fontWeight: '600', marginLeft: 5 },
-  savedContact: {
-    textAlign: 'center',
-    marginTop: 10,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-
->>>>>>> 7981cc2f9e9fa9d86f7288c90993076e61f25a74
+  savedContact: { textAlign: 'center', marginTop: 10, fontSize: 14, fontWeight: '500' },
 });

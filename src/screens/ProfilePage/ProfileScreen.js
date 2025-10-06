@@ -94,7 +94,7 @@ const ProfileScreen = ({ navigation }) => {
           <Text style={styles.infoText}>
             {userData?.emergencyPhone || "No phone number"}
           </Text>
-        </View>
+        </View> 
 
         <View style={styles.infoRow}>
           <Icon name="people" size={20} color="#1976d2" />
