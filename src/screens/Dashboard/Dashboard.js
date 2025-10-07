@@ -22,10 +22,13 @@ import { doc, onSnapshot } from 'firebase/firestore';
 
 const { width } = Dimensions.get('window');
 
+const msPerDay = 1000 * 60 * 60 * 24;
+
 const Dashboard = ({ navigation }) => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [pregnancyProgress, setPregnancyProgress] = useState(null);
 
   // Header animation
   const headerOpacity = scrollY.interpolate({
@@ -34,7 +37,7 @@ const Dashboard = ({ navigation }) => {
     extrapolate: 'clamp',
   });
 
-  // Subscribe to user document so dashboard updates live when doctor is picked
+  // Subscribe to user document so dashboard updates live
   useEffect(() => {
     const user = auth.currentUser;
     if (!user) {
@@ -48,7 +51,8 @@ const Dashboard = ({ navigation }) => {
       userRef,
       docSnap => {
         if (docSnap.exists()) {
-          setUserData(docSnap.data());
+          const data = docSnap.data();
+          setUserData(data);
         } else {
           setUserData(null);
         }
@@ -62,6 +66,91 @@ const Dashboard = ({ navigation }) => {
 
     return () => unsubscribe();
   }, []);
+
+  // Compute pregnancy progress from expectedDeliveryDate (EDD)
+  const computeProgressFromEdd = eddInput => {
+    if (!eddInput) return null;
+    const edd = eddInput instanceof Date ? eddInput : new Date(eddInput);
+    if (isNaN(edd.getTime())) return null;
+
+    // Conception ~ 280 days before EDD
+    const conception = new Date(edd);
+    conception.setDate(edd.getDate() - 280);
+
+    const today = new Date();
+    // elapsed days since conception (clamped between 0 and 280)
+    let elapsedDays = Math.floor((today - conception) / msPerDay);
+    if (elapsedDays < 0) elapsedDays = 0;
+    if (elapsedDays > 280) elapsedDays = 280;
+
+    const weeks = Math.floor(elapsedDays / 7);
+    const days = elapsedDays % 7;
+
+    // remaining days until EDD
+    const remainingRaw = Math.ceil((edd - today) / msPerDay);
+    const remainingDays = remainingRaw > 0 ? remainingRaw : 0;
+
+    // progress percent of 40 weeks
+    const progressPercent = Math.round((elapsedDays / 280) * 100);
+
+    // trimester label
+    let trimester = 'First Trimester';
+    if (weeks >= 13 && weeks < 27) trimester = 'Second Trimester';
+    else if (weeks >= 27) trimester = 'Third Trimester';
+
+    // baby size simple mapping (optional)
+    const babySize = (() => {
+      if (weeks < 8) return 'Seed to bean';
+      if (weeks < 13) return 'Plum-sized';
+      if (weeks < 20) return 'Avocado-sized';
+      if (weeks < 27) return 'Papaya-sized';
+      if (weeks < 34) return 'Butternut squash';
+      return 'Pumpkin-sized';
+    })();
+
+    return {
+      weeks,
+      days,
+      elapsedDays,
+      remainingDays,
+      progressPercent: Math.min(Math.max(progressPercent, 0), 100),
+      trimester,
+      edd: edd.toISOString(),
+      eddDate: edd,
+      conceptionDate: conception.toISOString(),
+      babySize,
+    };
+  };
+
+  // Whenever userData changes, compute progress
+  useEffect(() => {
+    if (userData?.expectedDeliveryDate || userData?.dueDate || userData?.edd) {
+      const eddRaw =
+        userData.expectedDeliveryDate || userData.dueDate || userData.edd;
+      const progress = computeProgressFromEdd(eddRaw);
+      setPregnancyProgress(progress);
+    } else {
+      setPregnancyProgress(null);
+    }
+  }, [userData]);
+
+  // Recalculate periodically (every minute) so dashboard updates automatically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (
+        userData?.expectedDeliveryDate ||
+        userData?.dueDate ||
+        userData?.edd
+      ) {
+        const eddRaw =
+          userData.expectedDeliveryDate || userData.dueDate || userData.edd;
+        const progress = computeProgressFromEdd(eddRaw);
+        setPregnancyProgress(progress);
+      }
+    }, 60 * 1000); // every minute
+
+    return () => clearInterval(interval);
+  }, [userData]);
 
   // Helper: format doctor field into display string (or fallback)
   const formatDoctor = doctorField => {
@@ -110,6 +199,21 @@ const Dashboard = ({ navigation }) => {
     );
   }
 
+  // UI variables for progress card
+  const weeks = pregnancyProgress?.weeks ?? null;
+  const days = pregnancyProgress?.days ?? null;
+  const progressPercent = pregnancyProgress?.progressPercent ?? 0;
+  const remainingDays = pregnancyProgress?.remainingDays ?? null;
+  const trimester = pregnancyProgress?.trimester ?? '';
+  const eddDate = pregnancyProgress?.eddDate
+    ? pregnancyProgress.eddDate.toDateString()
+    : userData?.expectedDeliveryDate
+    ? new Date(userData.expectedDeliveryDate).toDateString()
+    : userData?.dueDate
+    ? new Date(userData.dueDate).toDateString()
+    : 'Not set';
+  const babySize = pregnancyProgress?.babySize ?? userData?.babySize ?? '—';
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
@@ -133,14 +237,17 @@ const Dashboard = ({ navigation }) => {
           <View style={styles.headerContent}>
             <View>
               <Text style={styles.greeting}>
-                Hello, {userData?.name || 'Guest'} 👋
+                {userData?.name
+                  ? `Hello, ${userData.name.split(' ')[0]} 👋`
+                  : 'Hello there 👋'}
               </Text>
 
-              {/* Doctor line: shows "No doctor picked" initially, updates when doctor picked */}
               <Text style={styles.subGreeting}>
-                {doctorDisplay === 'No doctor picked'
-                  ? 'No doctor picked'
-                  : `Your doctor: ${doctorDisplay}`}
+                {userData?.role === 'mother'
+                  ? doctorDisplay === 'No doctor picked'
+                    ? 'You haven’t selected a doctor yet.'
+                    : `Your doctor: ${doctorDisplay}`
+                  : 'You are logged in as a health worker'}
               </Text>
             </View>
 
@@ -159,7 +266,7 @@ const Dashboard = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Pregnancy Progress card (unchanged) */}
+        {/* Pregnancy Progress card */}
         <View style={styles.progressCard}>
           <GradientView
             colors={['#667eea', '#764ba2']}
@@ -168,37 +275,58 @@ const Dashboard = ({ navigation }) => {
             <View style={styles.progressHeader}>
               <Text style={styles.progressTitle}>Pregnancy Progress</Text>
               <View style={styles.weekBadge}>
-                <Text style={styles.weekBadgeText}>24/40</Text>
+                <Text style={styles.weekBadgeText}>
+                  {weeks !== null ? `${weeks}/40` : '—/40'}
+                </Text>
               </View>
             </View>
 
             <View style={styles.progressInfo}>
-              <Text style={styles.progressWeek}>Week 24</Text>
-              <Text style={styles.progressSubtitle}>Second Trimester</Text>
+              <Text style={styles.progressWeek}>
+                {weeks !== null ? `Week ${weeks}` : 'Week —'}
+                {days !== null ? ` • ${days} day${days === 1 ? '' : 's'}` : ''}
+              </Text>
+              <Text style={styles.progressSubtitle}>{trimester || '—'}</Text>
             </View>
 
             <View style={styles.progressBarContainer}>
               <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: '60%' }]} />
+                <View
+                  style={[
+                    styles.progressFill,
+                    { width: `${progressPercent}%` },
+                  ]}
+                />
               </View>
-              <Text style={styles.progressPercentage}>60%</Text>
+              <Text
+                style={styles.progressPercentage}
+              >{`${progressPercent}%`}</Text>
             </View>
 
             <View style={styles.progressFooter}>
               <View style={styles.dueDateContainer}>
                 <Icon name="event" size={16} color="#fff" />
-                <Text style={styles.dueDate}>
-                  {userData?.dueDate || 'Dec 15, 2025'}
+                <Text style={styles.dueDate}>{eddDate}</Text>
+              </View>
+              <Text style={styles.babyInfo}>{babySize}</Text>
+            </View>
+
+            {/* Countdown display */}
+            {remainingDays !== null && (
+              <View style={{ marginTop: 10, alignItems: 'center' }}>
+                <Text style={{ color: '#fff', fontWeight: '600' }}>
+                  {remainingDays > 0
+                    ? `${remainingDays} day${
+                        remainingDays === 1 ? '' : 's'
+                      } until due`
+                    : 'Due date passed — congratulations!'}
                 </Text>
               </View>
-              <Text style={styles.babyInfo}>
-                {userData?.babySize || '👶 Papaya-sized baby'}
-              </Text>
-            </View>
+            )}
           </GradientView>
         </View>
 
-        {/* Quick Actions - doctor sub now uses real data or fallback */}
+        {/* Quick Actions */}
         <Text style={styles.sectionHeader}>Quick Actions</Text>
         <View style={styles.quickActions}>
           {[

@@ -8,12 +8,14 @@ import {
   ScrollView,
   ActivityIndicator,
   Image,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { launchImageLibrary } from 'react-native-image-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from './Signupscreenstyle';
 
 export default function SignupScreen({ navigation }) {
@@ -29,6 +31,12 @@ export default function SignupScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  // 👶 Pregnancy tracking
+  const [useLmp, setUseLmp] = useState(false);
+  const [expectedDeliveryDate, setExpectedDeliveryDate] = useState(null);
+  const [lastPeriodDate, setLastPeriodDate] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
   const relations = ['Husband', 'Friend', 'Son', 'Daughter', 'Others'];
 
   // 📸 Select Image Function
@@ -36,6 +44,21 @@ export default function SignupScreen({ navigation }) {
     const result = await launchImageLibrary({ mediaType: 'photo' });
     if (!result.didCancel && result.assets && result.assets.length > 0) {
       setPhoto(result.assets[0]);
+    }
+  };
+
+  // 📅 Handle Date Selection
+  const handleDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (!selectedDate) return;
+
+    if (useLmp) {
+      setLastPeriodDate(selectedDate);
+      const edd = new Date(selectedDate);
+      edd.setDate(edd.getDate() + 280); // 40 weeks
+      setExpectedDeliveryDate(edd);
+    } else {
+      setExpectedDeliveryDate(selectedDate);
     }
   };
 
@@ -47,9 +70,10 @@ export default function SignupScreen({ navigation }) {
       !password ||
       !emergencyRelation ||
       !emergencyName ||
-      !emergencyPhone
+      !emergencyPhone ||
+      !expectedDeliveryDate
     ) {
-      Alert.alert('Error', 'Please fill in all fields.');
+      Alert.alert('Error', 'Please fill in all required fields.');
       return;
     }
 
@@ -64,7 +88,7 @@ export default function SignupScreen({ navigation }) {
 
       let photoURL = null;
 
-      // 🖼 Upload Profile Picture to Firebase Storage (if selected)
+      // 🖼 Upload Profile Picture
       if (photo) {
         setUploading(true);
         const reference = storage().ref(`profilePictures/${userId}.jpg`);
@@ -74,15 +98,20 @@ export default function SignupScreen({ navigation }) {
       }
 
       // 💾 Save user data in Firestore
-      await firestore().collection('users').doc(userId).set({
-        name,
-        emailOrPhone,
-        emergencyRelation,
-        emergencyName,
-        emergencyPhone,
-        photoURL,
-        createdAt: new Date().toISOString(),
-      });
+      await firestore()
+        .collection('users')
+        .doc(userId)
+        .set({
+          name,
+          emailOrPhone,
+          emergencyRelation,
+          emergencyName,
+          emergencyPhone,
+          photoURL,
+          expectedDeliveryDate: expectedDeliveryDate.toISOString(),
+          lastPeriodDate: lastPeriodDate ? lastPeriodDate.toISOString() : null,
+          createdAt: new Date().toISOString(),
+        });
 
       Alert.alert('Success', 'Account created successfully!');
       navigation.reset({
@@ -239,6 +268,56 @@ export default function SignupScreen({ navigation }) {
           onChangeText={setEmergencyPhone}
           keyboardType="phone-pad"
         />
+      </View>
+
+      {/* Pregnancy Details */}
+      <View style={{ marginVertical: 15 }}>
+        <Text style={{ fontSize: 16, fontWeight: '600', color: '#333' }}>
+          Pregnancy Details
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => setUseLmp(!useLmp)}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginVertical: 10,
+          }}
+        >
+          <Icon
+            name={useLmp ? 'checkbox-outline' : 'square-outline'}
+            size={20}
+            color="#2563eb"
+          />
+          <Text style={{ marginLeft: 8 }}>
+            Use Last Menstrual Period (LMP) to calculate EDD
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.datePickerButton}
+          onPress={() => setShowDatePicker(true)}
+        >
+          <Icon name="calendar-outline" size={20} color="#2563eb" />
+          <Text style={{ marginLeft: 8 }}>
+            {useLmp
+              ? lastPeriodDate
+                ? `LMP: ${lastPeriodDate.toDateString()}`
+                : 'Select Last Period Date'
+              : expectedDeliveryDate
+              ? `EDD: ${expectedDeliveryDate.toDateString()}`
+              : 'Select Expected Delivery Date'}
+          </Text>
+        </TouchableOpacity>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={new Date()}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={handleDateChange}
+          />
+        )}
       </View>
 
       {/* Sign Up Button */}

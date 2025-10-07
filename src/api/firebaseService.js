@@ -43,11 +43,19 @@ export async function getUser(uid) {
   const snap = await firestore().collection('users').doc(uid).get();
   if (snap.exists) {
     const data = snap.data();
+
+    // Auto compute pregnancy progress if data available
+    if (data.expectedDeliveryDate) {
+      const progress = calculatePregnancyProgress(data.expectedDeliveryDate);
+      data.pregnancyProgress = progress;
+    }
+
     await writeCache(CACHE_KEYS.USER(uid), data);
     return data;
   }
   return null;
 }
+
 export async function updateUser(uid, data) {
   await firestore()
     .collection('users')
@@ -58,9 +66,57 @@ export async function updateUser(uid, data) {
     });
 }
 
+/* ---------------- Pregnancy ---------------- */
+export async function savePregnancyDetails(
+  uid,
+  { expectedDeliveryDate, lastPeriodDate },
+) {
+  const data = {
+    expectedDeliveryDate: expectedDeliveryDate
+      ? new Date(expectedDeliveryDate).toISOString()
+      : null,
+    lastPeriodDate: lastPeriodDate
+      ? new Date(lastPeriodDate).toISOString()
+      : null,
+    updatedAt: firestore.FieldValue.serverTimestamp(),
+  };
+
+  await firestore().collection('users').doc(uid).update(data);
+  await writeCache(CACHE_KEYS.USER(uid), data);
+  return data;
+}
+
+/**
+ * Calculates pregnancy progress given an expected delivery date.
+ * Returns: { weeks, days, remainingDays, progressPercent }
+ */
+export function calculatePregnancyProgress(expectedDeliveryDate) {
+  if (!expectedDeliveryDate) return null;
+
+  const today = new Date();
+  const edd = new Date(expectedDeliveryDate);
+  const conceptionStart = new Date(edd);
+  conceptionStart.setDate(edd.getDate() - 280); // 40 weeks earlier
+
+  const totalDays = 280;
+  const elapsedDays = Math.max(
+    0,
+    Math.min(
+      totalDays,
+      Math.floor((today - conceptionStart) / (1000 * 60 * 60 * 24)),
+    ),
+  );
+  const remainingDays = totalDays - elapsedDays;
+
+  const weeks = Math.floor(elapsedDays / 7);
+  const days = elapsedDays % 7;
+  const progressPercent = Math.round((elapsedDays / totalDays) * 100);
+
+  return { weeks, days, remainingDays, progressPercent };
+}
+
 /* ---------------- Appointments ---------------- */
 export async function addAppointment(uid, appointment) {
-  // appointment: { doctorId, dateISO, notes, status }
   const docRef = await firestore()
     .collection('appointments')
     .add({
@@ -105,7 +161,6 @@ export function listenAppointments(uid, onUpdate, onError) {
 
 /* ---------------- Reminders ---------------- */
 export async function addReminder(uid, reminder) {
-  // reminder: { message, scheduledAt: ISO string or timestamp, language, metadata }
   const docRef = await firestore()
     .collection('reminders')
     .add({

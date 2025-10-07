@@ -12,10 +12,15 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { auth, db, storage } from '../../api/firebaseConfig';
-import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+  setDoc,
+} from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import styles from './EditProfileScreenStyle';
-import { useFocusEffect } from '@react-navigation/native';
 
 export default function EditProfileScreen({ navigation }) {
   const user = auth.currentUser;
@@ -35,6 +40,7 @@ export default function EditProfileScreen({ navigation }) {
       try {
         const userRef = doc(db, 'users', user.uid);
         const snapshot = await getDoc(userRef);
+
         if (snapshot.exists()) {
           const data = snapshot.data();
           setName(data.name || '');
@@ -42,6 +48,20 @@ export default function EditProfileScreen({ navigation }) {
           setAddress(data.address || '');
           setBio(data.bio || '');
           setProfileImage(data.avatar || null);
+          setEmail(data.email || user.email || '');
+        } else {
+          // If no document exists, create one
+          await setDoc(userRef, {
+            uid: user.uid,
+            email: user.email,
+            name: '',
+            phone: '',
+            address: '',
+            bio: '',
+            avatar: '',
+            createdAt: serverTimestamp(),
+          });
+          setEmail(user.email);
         }
       } catch (error) {
         console.error('Error loading profile:', error);
@@ -96,7 +116,7 @@ export default function EditProfileScreen({ navigation }) {
       });
 
       Alert.alert('✅ Success', 'Profile updated successfully!');
-      navigation.goBack(); // Dashboard auto-updates via onSnapshot
+      navigation.goBack(); // ProfileScreen auto-updates via onSnapshot
     } catch (error) {
       console.error('Error updating profile:', error);
       Alert.alert('❌ Error', 'Failed to update profile.');
@@ -135,13 +155,18 @@ export default function EditProfileScreen({ navigation }) {
       {/* 🔹 Input Fields */}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Full Name</Text>
-        <TextInput style={styles.input} value={name} onChangeText={setName} />
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="Enter your name"
+        />
       </View>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Email</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: '#f0f0f0' }]}
           value={email}
           editable={false}
           keyboardType="email-address"
@@ -155,6 +180,7 @@ export default function EditProfileScreen({ navigation }) {
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
+          placeholder="Enter your phone number"
         />
       </View>
 
