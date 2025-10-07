@@ -1,120 +1,176 @@
 import { StyleSheet } from "react-native";
 
-export default styles = StyleSheet.create({
+export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f3f4f6", // soft neutral background
+    backgroundColor: "#f9fafb",
+    padding: 16,
   },
 
-  scrollContainer: {
-    padding: 20,
-    paddingBottom: 120,
+  header: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1e3a8a",
+    textAlign: "center",
+    marginBottom: 15,
   },
 
-  // Search Bar
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    marginBottom: 22,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: 10,
-    fontSize: 16,
-    color: "#222",
+  subHeader: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#334155",
+    marginVertical: 10,
   },
 
-  // Top Grid Cards
-  gridContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  card: {
-    width: "48%",
-    padding: 18,
+  // 🔔 Reminder Cards
+  reminderCard: {
+    backgroundColor: "#ffffff",
     borderRadius: 16,
-    marginBottom: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    marginVertical: 10,
+    padding: 15,
     shadowColor: "#000",
     shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+    borderLeftWidth: 5,
   },
-  cardLeft: { flexDirection: "row", alignItems: "center" },
-  cardTitle: {
-    fontSize: 16,
+
+  reminderRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+
+  reminderTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    color: "#1f2937",
+  },
+
+  reminderDesc: {
+    fontSize: 14,
+    color: "#4b5563",
+    marginTop: 3,
+  },
+
+  reminderDate: {
+    fontSize: 13,
+    color: "#2563eb",
+    marginTop: 6,
+  },
+
+  reminderTime: {
+    fontSize: 13,
+    color: "#0f766e",
+    marginTop: 2,
+  },
+
+  // ➕ Add Button
+  addBtn: {
+    backgroundColor: "#2563eb",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    paddingVertical: 10,
+    marginVertical: 10,
+  },
+
+  addText: {
     color: "#fff",
     fontWeight: "600",
+    fontSize: 15,
     marginLeft: 6,
   },
-  cardCount: { fontSize: 24, color: "#fff", fontWeight: "bold" },
 
-  // Sections
-  section: { marginTop: 28 },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 14,
-    color: "#111",
-  },
-
-  // Reminder Cards
-  reminderCardDoctor: {
-    backgroundColor: "#ffecec",
-    padding: 18,
-    borderRadius: 14,
-    marginBottom: 14,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  reminderCard: {
-    backgroundColor: "#fff",
-    padding: 18,
-    borderRadius: 14,
-    marginBottom: 14,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  reminderTitle: { fontSize: 17, fontWeight: "600", marginBottom: 4 },
-  reminderDesc: { fontSize: 14, color: "#666" },
-
-  // Add Button
-  addBtn: {
-    position: "absolute",
-    bottom: 24,
-    left: 20,
-    right: 20,
-    backgroundColor: "#667eea",
-    paddingVertical: 16,
-    borderRadius: 30, // pill shape
+  // ⚙️ Action Row
+  actionRow: {
     flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 6,
+    justifyContent: "space-between",
+    marginTop: 12,
   },
-  addBtnText: {
+
+  editBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#0284c7",
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+
+  editBtnText: {
     color: "#fff",
+    fontWeight: "600",
+    fontSize: 13,
+  },
+
+  // 🧾 Modal
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
+
+  modalContent: {
+    backgroundColor: "#fff",
+    margin: 20,
+    borderRadius: 20,
+    padding: 20,
+    elevation: 5,
+  },
+
+  modalHeader: {
     fontSize: 18,
     fontWeight: "700",
-    marginLeft: 8,
+    color: "#1e3a8a",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+
+  input: {
+    backgroundColor: "#f1f5f9",
+    borderRadius: 8,
+    padding: 10,
+    marginVertical: 8,
+    fontSize: 14,
+    color: "#1f2937",
+  },
+
+  selectedDateText: {
+    textAlign: "center",
+    color: "#2563eb",
+    fontSize: 13,
+    marginVertical: 6,
+  },
+
+  saveBtn: {
+    backgroundColor: "#2563eb",
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+
+  saveText: {
+    color: "#fff",
+    fontWeight: "600",
+    textAlign: "center",
+    fontSize: 15,
+  },
+
+  cancelBtn: {
+    backgroundColor: "#f3f4f6",
+    paddingVertical: 8,
+    borderRadius: 10,
+    marginTop: 8,
+  },
+
+  cancelText: {
+    color: "#1f2937",
+    textAlign: "center",
+    fontWeight: "500",
+    fontSize: 14,
   },
 });

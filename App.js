@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
-  Text,
   Image,
   StyleSheet,
   Animated,
@@ -10,65 +9,45 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
-// ✅ All your screens
+// Screens
 import LandingPage from './src/screens/LandingScreen/LandingScreen';
 import FirstPage from './src/screens/FirstPage/FirstPage';
-import LoginScreen from './src/screens/Loginscreen/LoginScreen';
-import SignUpScreen from './src/screens/SigninScreen/SignUpScreen';
-import Dashboard from './src/screens/Dashboard/Dashboard';
-import HealthScreen from './src/screens/HealthPage/Healthscreen';
-import ReminderScreen from './src/screens/ReminderScreen/ReminderScreen';
-import TodayScreen from './src/screens/ReminderScreen/TodayScreen/TodayScreen';
-import ScheduleScreen from './src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen';
-import AllReminderScreen from './src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen';
+import LoginScreen from './src/screens/pregnateuser/Loginscreen/LoginScreen';
+import SignUpScreen from './src/screens/pregnateuser/SigninScreen/SignUpScreen';
+import Dashboard from './src/screens/pregnateuser/Dashboard/Dashboard';
+import HealthScreen from './src/screens/pregnateuser/HealthPage/Healthscreen';
 import BookAppointmentScreen from './src/screens/BookAppointment/BookAppointmentScreen';
-import CompletedScreen from './src/screens/ReminderScreen/CompletedScreen/CompletedScreen';
-import AppointmentScreen from './src/screens/AppointmentScreen/AppointmentScreen';
-import EmergencyScreen from './src/screens/Emergency/Emergency';
-import SettingsScreen from './src/screens/SettingsPage/SettingsScreen';
-import ProfileScreen from './src/screens/ProfilePage/ProfileScreen';
-import ArticleScreen from './src/screens/ArticleScreen/ArticleScreen';
-import FaqScreen from './src/screens/FaqScreen/FaqScreen';
-import HistoryScreen from './src/screens/HistoryScreen/HistoryScreen';
-import DoctorScreen from './src/screens/DoctorsScreen/DoctorScreen';
-import HelpCenterScreen from './src/screens/HelpCentreScreen/HelpCentreScreen';
-import EditProfileScreen from './src/screens/EditProfileScreen/EditProfileScreen';
-import bookingpageScreen from './src/screens/bookingpage/bookingpageScreen';
-
-// ✅ All your screens
-import LandingPage from './src/screens/LandingScreen/LandingScreen';
-import FirstPage from './src/screens/FirstPage/FirstPage';
-import LoginScreen from './src/screens/Loginscreen/LoginScreen';
-import SignUpScreen from './src/screens/SigninScreen/SignUpScreen';
-import Dashboard from './src/screens/Dashboard/Dashboard';
-import HealthScreen from './src/screens/HealthPage/Healthscreen';
 import ReminderScreen from './src/screens/ReminderScreen/ReminderScreen';
-import TodayScreen from './src/screens/ReminderScreen/TodayScreen/TodayScreen';
 import ScheduleScreen from './src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen';
-import AllReminderScreen from './src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen';
-import CompletedScreen from './src/screens/ReminderScreen/CompletedScreen/CompletedScreen';
 import AppointmentScreen from './src/screens/AppointmentScreen/AppointmentScreen';
-import EmergencyScreen from './src/screens/Emergency/Emergency';
+import EmergencyScreen from './src/screens/pregnateuser/Emergency/Emergency';
 import SettingsScreen from './src/screens/SettingsPage/SettingsScreen';
-import ProfileScreen from './src/screens/ProfilePage/ProfileScreen';
+import ProfileScreen from './src/screens/pregnateuser/ProfilePage/ProfileScreen';
 import ArticleScreen from './src/screens/ArticleScreen/ArticleScreen';
 import FaqScreen from './src/screens/FaqScreen/FaqScreen';
-import HistoryScreen from './src/screens/HistoryScreen/HistoryScreen';
-import DoctorScreen from './src/screens/DoctorsScreen/DoctorScreen';
+import HistoryScreen from './src/screens/pregnateuser/HistoryScreen/HistoryScreen';
+import DoctorScreen from './src/screens/Doctor/DoctorsScreen/DoctorScreen';
 import HelpCenterScreen from './src/screens/HelpCentreScreen/HelpCentreScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen/EditProfileScreen';
 import bookingpageScreen from './src/screens/bookingpage/bookingpageScreen';
 import AddRemider from './src/screens/AddReminder/AddReminderSreen';
 import ResourcesScreen from './src/screens/Rescources/ResourcesScreen';
-import HealthTipsScreen from './src/screens/HealthTipsScreen/HealthTipsScreen';
-import Doctor_Sign from './src/screens/Doctors_Sign/Doctors_login';
-import DoctorSignUpScreen from './src/screens/DoctorSignupScreen/DoctorSignupScreen';
+import HealthTipsScreen from './src/screens/pregnateuser/HealthTipsScreen/HealthTipsScreen';
+import Doctor_Sign from './src/screens/Doctor/Doctors_Sign/Doctors_login';
+import DoctorSignUpScreen from './src/screens/Doctor/DoctorSignupScreen/DoctorSignupScreen';
+import DoctorDshboard from './src/screens/Doctor/DoctorDashboard/DoctorDshboard';
+import HealthMetricsScreen from './src/screens/pregnateuser/HealthMetricsScreen/HealthMetricsScreen';
+import AntenatalTrackerStyle from './src/screens/pregnateuser/AntenatalTrackerStyle/AntenatalTracker';
+
+// Hooks and config
+import useFcmToken from './src/hooks/useFCMtoken';
+import { enablePersistenceIfAvailable } from './src/api/firebaseConfig';
+
 
 const Stack = createNativeStackNavigator();
 
-//
-// ---------- SPLASH SCREEN ----------
 function SplashScreen({ navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
@@ -88,7 +67,6 @@ function SplashScreen({ navigation }) {
       }),
     ]).start();
 
-    // Check Firebase authentication after delay
     const timeout = setTimeout(() => {
       const unsubscribe = auth().onAuthStateChanged(user => {
         if (user) {
@@ -97,7 +75,6 @@ function SplashScreen({ navigation }) {
             routes: [{ name: 'Dashboard' }],
           });
         } else {
-          // 👇 Show FirstPage before LandingPage
           navigation.reset({
             index: 0,
             routes: [{ name: 'FirstPage' }],
@@ -109,7 +86,6 @@ function SplashScreen({ navigation }) {
     }, 2000);
 
     return () => clearTimeout(timeout);
-    enablePersistenceIfAvailable();
   }, [fadeAnim, slideAnim, navigation]);
 
   return (
@@ -126,22 +102,15 @@ function SplashScreen({ navigation }) {
           style={styles.logo}
           resizeMode="contain"
         />
-        {/* <Text style={styles.appName}>CareNest</Text> */}
       </Animated.View>
 
       {checkingAuth && (
-        <ActivityIndicator
-          size="large"
-          color="#2563eb"
-          style={{ marginTop: 25 }}
-        />
+        <ActivityIndicator size="large" color="#2563eb" style={{ marginTop: 25 }} />
       )}
     </View>
   );
 }
 
-//
-// ---------- MAIN APP ----------
 export default function App() {
   useFcmToken();
 
@@ -152,166 +121,41 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="SplashScreen"
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        {/* Splash Screen */}
+      <Stack.Navigator initialRouteName="SplashScreen" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
-
-        {/* Intro / First Page (before Login or Signup) */}
-        <Stack.Screen
-          name="FirstPage"
-          component={FirstPage}
-          options={{ headerShown: false }}
-        />
-
-        {/* Landing Page (Login/Signup Choice) */}
-        <Stack.Screen
-          name="LandingPage"
-          component={LandingPage}
-          options={{ headerShown: false }}
-        />
-
-        {/* Auth Screens */}
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: true, headerTitle: 'Login' }}
-        />
-        <Stack.Screen
-          name="SignUp"
-          component={SignUpScreen}
-          options={{ headerShown: true, headerTitle: 'Create Account' }}
-        />
-
-        {/* Dashboard */}
-        <Stack.Screen
-          name="Dashboard"
-          component={Dashboard}
-          options={{ headerShown: false }}
-        />
-
-        {/* Appointment Pages */}
-        <Stack.Screen
-          name="BookAppointment"
-          component={BookAppointmentScreen}
-        />
-
-        {/* Health Pages */}
+        <Stack.Screen name="FirstPage" component={FirstPage} />
+        <Stack.Screen name="LandingPage" component={LandingPage} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="Dashboard" component={Dashboard} />
+        <Stack.Screen name="BookAppointment" component={BookAppointmentScreen} />
         <Stack.Screen name="Health" component={HealthScreen} />
         <Stack.Screen name="Reminder" component={ReminderScreen} />
-        <Stack.Screen
-          name="TodayScreen"
-          component={TodayScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ScheduleScreen"
-          component={ScheduleScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="AllReminderScreen"
-          component={AllReminderScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="DoctorSignUp"
-          component={DoctorSignUpScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="CompletedScreen"
-          component={CompletedScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Appointment"
-          component={AppointmentScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Doctor_Sign"
-          component={Doctor_Sign}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Emergency"
-          component={EmergencyScreen}
-          options={{ headerShown: false }}
-        />
-
-        {/* Profile and Settings */}
-        <Stack.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{ headerShown: true, headerTitle: 'Settings' }}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{ headerShown: true, headerTitle: 'Profile' }}
-        />
-        <Stack.Screen
-          name="EditProfile"
-          component={EditProfileScreen}
-          options={{ headerShown: true, headerTitle: 'Edit Profile' }}
-        />
-
-        {/* Info and Support */}
+        <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
+        <Stack.Screen name="Appointment" component={AppointmentScreen} />
+        <Stack.Screen name="Emergency" component={EmergencyScreen} />
+        <Stack.Screen name="DoctorSignUp" component={DoctorSignUpScreen} />
+        <Stack.Screen name="Doctor_Sign" component={Doctor_Sign} />
+        <Stack.Screen name="doctorDashboard" component={DoctorDshboard} />
+        <Stack.Screen name="Doctor" component={DoctorScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         <Stack.Screen name="Article" component={ArticleScreen} />
-        <Stack.Screen
-          name="Faq"
-          component={FaqScreen}
-          options={{ headerShown: true, headerTitle: 'FAQ' }}
-        />
-        <Stack.Screen
-          name="HelpCenter"
-          component={HelpCenterScreen}
-          options={{ headerShown: true, headerTitle: 'Help Center' }}
-        />
-        <Stack.Screen
-          name="Doctor"
-          component={DoctorScreen}
-          options={{ headerShown: true, headerTitle: 'Doctors' }}
-        />
-        <Stack.Screen
-          name="History"
-          component={HistoryScreen}
-          options={{ headerShown: true, headerTitle: 'History' }}
-        />
-        <Stack.Screen
-          name="bookingpage"
-          component={bookingpageScreen}
-          options={{ headerShown: true, headerTitle: 'Book Appointment' }}
-        />
-
-        {/* Reminders and Resources */}
-        <Stack.Screen
-          name="AddReminder"
-          component={AddRemider}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Resources"
-          component={ResourcesScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="HistoryTips"
-          component={HealthTipsScreen}
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="Faq" component={FaqScreen} />
+        <Stack.Screen name="HelpCenter" component={HelpCenterScreen} />
+        <Stack.Screen name="History" component={HistoryScreen} />
+        <Stack.Screen name="bookingpage" component={bookingpageScreen} />
+        <Stack.Screen name="AddReminder" component={AddRemider} />
+        <Stack.Screen name="Resources" component={ResourcesScreen} />
+        <Stack.Screen name="healthTips" component={HealthTipsScreen} />
+        <Stack.Screen name="healthmetrics" component={HealthMetricsScreen} />
+        <Stack.Screen name="AntenatalTracker" component={AntenatalTrackerStyle} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-//
-// ---------- STYLES ----------
 const styles = StyleSheet.create({
   splashContainer: {
     flex: 1,
@@ -322,12 +166,5 @@ const styles = StyleSheet.create({
   logo: {
     width: 580,
     height: 380,
-  },
-  appName: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#2563eb',
-    marginTop: 15,
-    letterSpacing: 1,
   },
 });
