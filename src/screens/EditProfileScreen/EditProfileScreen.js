@@ -11,29 +11,33 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { auth, firestore, storage } from '../../api/firebaseConfig';
+import { auth, db, storage } from '../../api/firebaseConfig';
+import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import styles from './EditProfileScreenStyle';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function EditProfileScreen({ navigation }) {
-  const user = auth().currentUser;
+  const user = auth.currentUser;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(user?.email || '');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [bio, setBio] = useState('');
 
-  // 🔹 Load user data
+  // 🔹 Load user profile data from Firestore
   useEffect(() => {
     const fetchProfile = async () => {
+      if (!user) return;
       try {
-        const doc = await firestore().collection('users').doc(user.uid).get();
-        if (doc.exists) {
-          const data = doc.data();
+        const userRef = doc(db, 'users', user.uid);
+        const snapshot = await getDoc(userRef);
+        if (snapshot.exists()) {
+          const data = snapshot.data();
           setName(data.name || '');
-          setEmail(data.email || user.email);
           setPhone(data.phone || '');
           setAddress(data.address || '');
           setBio(data.bio || '');
@@ -49,7 +53,7 @@ export default function EditProfileScreen({ navigation }) {
     fetchProfile();
   }, []);
 
-  // 🔹 Pick image
+  // 🔹 Pick image from gallery
   const pickImage = () => {
     launchImageLibrary({ mediaType: 'photo', quality: 1 }, response => {
       if (response.didCancel) return;
@@ -58,42 +62,44 @@ export default function EditProfileScreen({ navigation }) {
     });
   };
 
-  // 🔹 Upload image
+  // 🔹 Upload image to Firebase Storage
   const uploadImage = async () => {
     if (!profileImage) return null;
-    const fileName = `${user.uid}_avatar.jpg`;
-    const reference = storage().ref(`avatars/${fileName}`);
-    await reference.putFile(profileImage);
-    return await reference.getDownloadURL();
+
+    const response = await fetch(profileImage);
+    const blob = await response.blob();
+
+    const fileRef = ref(storage, `avatars/${user.uid}.jpg`);
+    await uploadBytes(fileRef, blob);
+    return await getDownloadURL(fileRef);
   };
 
-  // 🔹 Save changes
+  // 🔹 Save profile changes
   const handleSave = async () => {
     setSaving(true);
     try {
-      const avatarUrl = await uploadImage();
+      const userRef = doc(db, 'users', user.uid);
+      let avatarUrl = profileImage;
 
-      await firestore()
-        .collection('users')
-        .doc(user.uid)
-        .set(
-          {
-            name,
-            email,
-            phone,
-            address,
-            bio,
-            avatar: avatarUrl || profileImage,
-            updatedAt: firestore.FieldValue.serverTimestamp(),
-          },
-          { merge: true },
-        );
+      // Upload new image if it's a local file
+      if (profileImage && profileImage.startsWith('file://')) {
+        avatarUrl = await uploadImage();
+      }
+
+      await updateDoc(userRef, {
+        name,
+        phone,
+        address,
+        bio,
+        avatar: avatarUrl || null,
+        updatedAt: serverTimestamp(),
+      });
 
       Alert.alert('✅ Success', 'Profile updated successfully!');
-      navigation.goBack();
+      navigation.goBack(); // Dashboard auto-updates via onSnapshot
     } catch (error) {
-      console.error('Save Error:', error);
-      Alert.alert('❌ Error', 'Failed to update profile. Try again.');
+      console.error('Error updating profile:', error);
+      Alert.alert('❌ Error', 'Failed to update profile.');
     } finally {
       setSaving(false);
     }

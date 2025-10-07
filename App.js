@@ -22,6 +22,7 @@ import ReminderScreen from './src/screens/ReminderScreen/ReminderScreen';
 import TodayScreen from './src/screens/ReminderScreen/TodayScreen/TodayScreen';
 import ScheduleScreen from './src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen';
 import AllReminderScreen from './src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen';
+import BookAppointmentScreen from './src/screens/BookAppointment/BookAppointmentScreen';
 import CompletedScreen from './src/screens/ReminderScreen/CompletedScreen/CompletedScreen';
 import AppointmentScreen from './src/screens/AppointmentScreen/AppointmentScreen';
 import EmergencyScreen from './src/screens/Emergency/Emergency';
@@ -39,6 +40,12 @@ import ResourcesScreen from './src/screens/Rescources/ResourcesScreen';
 import HealthTipsScreen from './src/screens/HealthTipsScreen/HealthTipsScreen';
 import Doctor_Sign from './src/screens/Doctors_Sign/Doctors_login';
 import DoctorSignUpScreen from './src/screens/DoctorSignupScreen/DoctorSignupScreen';
+
+import useFcmToken from './src/hooks/useFcmToken';
+import { enablePersistenceIfAvailable } from './src/api/firebaseService';
+import firestore from '@react-native-firebase/firestore';
+import AppNavigator from './src/navigation/AppNavigator';
+
 const Stack = createNativeStackNavigator();
 
 //
@@ -83,6 +90,7 @@ function SplashScreen({ navigation }) {
     }, 2000);
 
     return () => clearTimeout(timeout);
+    enablePersistenceIfAvailable();
   }, [fadeAnim, slideAnim, navigation]);
 
   return (
@@ -116,6 +124,13 @@ function SplashScreen({ navigation }) {
 //
 // ---------- MAIN APP ----------
 export default function App() {
+  useFcmToken();
+
+  firestore()
+    .settings({ persistence: true })
+    .then(() => console.log('✅ Firestore offline persistence enabled'))
+    .catch(err => console.log('⚠️ Firestore persistence error:', err));
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -158,6 +173,12 @@ export default function App() {
           name="Dashboard"
           component={Dashboard}
           options={{ headerShown: false }}
+        />
+
+        {/* Appointment Pages */}
+        <Stack.Screen
+          name="BookAppointment"
+          component={BookAppointmentScreen}
         />
 
         {/* Health Pages */}
