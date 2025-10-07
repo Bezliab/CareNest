@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
-  FlatList
+  FlatList,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import styles from './HistoryPage.styles';
+import styles from './HistoryScreen.styles';
 
 const HistoryPage = ({ navigation }) => {
   // Sample history data - replace with actual data from your backend
@@ -23,7 +23,7 @@ const HistoryPage = ({ navigation }) => {
       status: 'Completed',
       notes: 'Everything looks normal. Baby heartbeat strong.',
       medications: ['Prenatal Vitamins', 'Folic Acid'],
-      nextAppointment: 'Dec 24, 2025'
+      nextAppointment: 'Dec 24, 2025',
     },
     {
       id: '2',
@@ -34,7 +34,7 @@ const HistoryPage = ({ navigation }) => {
       status: 'Completed',
       notes: '20-week anatomy scan completed. All organs developing properly.',
       medications: ['Prenatal Vitamins'],
-      nextAppointment: 'Dec 10, 2025'
+      nextAppointment: 'Dec 10, 2025',
     },
     {
       id: '3',
@@ -45,7 +45,7 @@ const HistoryPage = ({ navigation }) => {
       status: 'Completed',
       notes: 'Initial consultation. Discussed pregnancy care plan.',
       medications: ['Prenatal Vitamins', 'Iron Supplement'],
-      nextAppointment: 'Dec 3, 2025'
+      nextAppointment: 'Dec 3, 2025',
     },
     {
       id: '4',
@@ -56,8 +56,8 @@ const HistoryPage = ({ navigation }) => {
       status: 'Completed',
       notes: 'Routine blood work. All levels within normal range.',
       medications: [],
-      nextAppointment: 'Nov 26, 2025'
-    }
+      nextAppointment: 'Nov 26, 2025',
+    },
   ]);
 
   const renderHistoryItem = ({ item }) => (
@@ -67,9 +67,14 @@ const HistoryPage = ({ navigation }) => {
           <Ionicons name="calendar-outline" size={16} color="#666" />
           <Text style={styles.dateText}>{item.date}</Text>
         </View>
-        <View style={[styles.statusBadge, 
-          item.status === 'Completed' ? styles.completedBadge : styles.pendingBadge
-        ]}>
+        <View
+          style={[
+            styles.statusBadge,
+            item.status === 'Completed'
+              ? styles.completedBadge
+              : styles.pendingBadge,
+          ]}
+        >
           <Text style={styles.statusText}>{item.status}</Text>
         </View>
       </View>
@@ -110,7 +115,11 @@ const HistoryPage = ({ navigation }) => {
 
       {item.nextAppointment && (
         <View style={styles.nextAppointment}>
-          <Ionicons name="arrow-forward-circle-outline" size={16} color="#FF6B6B" />
+          <Ionicons
+            name="arrow-forward-circle-outline"
+            size={16}
+            color="#FF6B6B"
+          />
           <Text style={styles.nextAppointmentText}>
             Next: {item.nextAppointment}
           </Text>
@@ -122,10 +131,10 @@ const HistoryPage = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      
+
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
@@ -151,7 +160,11 @@ const HistoryPage = ({ navigation }) => {
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
           <Text style={styles.statNumber}>
-            {historyData.filter(item => item.doctorName === 'Dr. Sarah Johnson').length}
+            {
+              historyData.filter(
+                item => item.doctorName === 'Dr. Sarah Johnson',
+              ).length
+            }
           </Text>
           <Text style={styles.statLabel}>With Dr. Sarah</Text>
         </View>
@@ -160,8 +173,12 @@ const HistoryPage = ({ navigation }) => {
       {/* Filter Options */}
       <View style={styles.filterContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <TouchableOpacity style={[styles.filterButton, styles.filterButtonActive]}>
-            <Text style={[styles.filterText, styles.filterTextActive]}>All</Text>
+          <TouchableOpacity
+            style={[styles.filterButton, styles.filterButtonActive]}
+          >
+            <Text style={[styles.filterText, styles.filterTextActive]}>
+              All
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.filterButton}>
             <Text style={styles.filterText}>Checkups</Text>

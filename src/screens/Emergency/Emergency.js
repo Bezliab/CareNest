@@ -133,7 +133,7 @@ const EmergencyScreen = () => {
     );
   };
 
-  // ✅ FIXED: Closed the function properly
+  // Call clinic
   const callClinic = phone => {
     Linking.openURL(`tel:${phone}`).catch(err => {
       console.warn('Call error', err);
@@ -257,5 +257,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconText: { color: '#fff', fontWeight: '600', marginLeft: 5 },
-  savedContact: { textAlign: 'center', marginTop: 10, fontSize: 14, fontWeight: '500' },
+  savedContact: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  iconText: { color: '#fff', fontWeight: '600', marginLeft: 5 },
+  savedContact: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+
+  iconText: { color: '#fff', fontWeight: '600', marginLeft: 5 },
+  savedContact: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 14,
+    fontWeight: '500',
+  },
 });
