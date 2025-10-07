@@ -44,7 +44,9 @@ const PatientDetails = ({ route, navigation }) => {
   return (
     <SafeAreaView style={[styles.container, { padding: 16 }]}>
       <Text style={{ fontSize: 20, fontWeight: '700' }}>{patient.name}</Text>
-      <Text style={{ color: '#64748b', marginTop: 8 }}>{patient.age ? ${patient.age} yrs : 'Age not set'}</Text>
+        <Text style={{ color: '#64748b', marginTop: 8 }}>
+          {patient.age ? patient.age + ' yrs' : 'Age not set'}
+        </Text>
       <Text style={{ color: '#64748b', marginTop: 4 }}>{patient.phone ?? 'Phone not set'}</Text>
 
       <TouchableOpacity style={{ marginTop: 20, backgroundColor: '#0f766e', padding: 12, borderRadius: 8 }} onPress={markVisited}>

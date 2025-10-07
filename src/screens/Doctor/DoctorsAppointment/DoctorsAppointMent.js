@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import styles from './DoctorAppointmentsStyle';
+import styles from './DoctorsAppointmentStyle';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { db, auth } from '../../../api/firebaseConfig';
@@ -52,7 +52,8 @@ const DoctorAppointments = () => {
   const handleAction = async (appt, action) => {
     try {
       await updateDoc(doc(db, 'appointments', appt.id), { status: action });
-      Alert.alert('Success', Appointment ${action});
+  Alert.alert('Success', `Appointment ${action}`);
+
     } catch (e) {
       console.error(e);
       Alert.alert('Error', 'Could not update appointment');

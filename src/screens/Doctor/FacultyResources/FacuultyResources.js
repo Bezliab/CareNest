@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import styles from './FacilityResourcesStyle';
+import styles from './FacuultyResourcesStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { db } from '../../../api/firebaseConfig';
 import { collection, onSnapshot, updateDoc, doc } from 'firebase/firestore';
@@ -45,7 +45,8 @@ const FacilityResources = ({ navigation }) => {
     // sample quick action: toggle status available/maintenance
     try {
       await updateDoc(doc(db, 'resources', r.id), { status: r.status === 'available' ? 'maintenance' : 'available' });
-      Alert.alert('Updated', Resource status toggled.);
+    Alert.alert('Updated', 'Resource status toggled.');
+
     } catch (e) {
       console.error(e);
       Alert.alert('Error', 'Could not update resource');

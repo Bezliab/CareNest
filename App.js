@@ -109,7 +109,7 @@ function SplashScreen({ navigation }) {
         }}
       >
         <Image
-          source={require('../CareNest/src/Assets/APP.png')}
+          source={require('./src/Assets/APP.png')}
           style={styles.logo}
           resizeMode="contain"
         />
