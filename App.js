@@ -11,6 +11,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
+// 🧠 Import translation setup
+import '../src/js/translator';
+import { useTranslation } from 'react-i18next';
+
 // Screens
 import LandingPage from './src/screens/LandingScreen/LandingScreen';
 import FirstPage from './src/screens/FirstPage/FirstPage';
@@ -45,13 +49,13 @@ import AntenatalTrackerStyle from './src/screens/pregnateuser/AntenatalTrackerSt
 import useFcmToken from './src/hooks/useFCMtoken';
 import { enablePersistenceIfAvailable } from './src/api/firebaseConfig';
 
-
 const Stack = createNativeStackNavigator();
 
 function SplashScreen({ navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const { t } = useTranslation(); // ✅ make splash translatable too if needed
 
   useEffect(() => {
     Animated.parallel([
@@ -105,7 +109,11 @@ function SplashScreen({ navigation }) {
       </Animated.View>
 
       {checkingAuth && (
-        <ActivityIndicator size="large" color="#2563eb" style={{ marginTop: 25 }} />
+        <ActivityIndicator
+          size="large"
+          color="#2563eb"
+          style={{ marginTop: 25 }}
+        />
       )}
     </View>
   );
@@ -114,6 +122,7 @@ function SplashScreen({ navigation }) {
 export default function App() {
   useFcmToken();
 
+  // Enable Firestore offline persistence
   firestore()
     .settings({ persistence: true })
     .then(() => console.log('✅ Firestore offline persistence enabled'))
@@ -121,14 +130,20 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SplashScreen" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        initialRouteName="SplashScreen"
+        screenOptions={{ headerShown: false }}
+      >
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="FirstPage" component={FirstPage} />
         <Stack.Screen name="LandingPage" component={LandingPage} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="Dashboard" component={Dashboard} />
-        <Stack.Screen name="BookAppointment" component={BookAppointmentScreen} />
+        <Stack.Screen
+          name="BookAppointment"
+          component={BookAppointmentScreen}
+        />
         <Stack.Screen name="Health" component={HealthScreen} />
         <Stack.Screen name="Reminder" component={ReminderScreen} />
         <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
@@ -150,7 +165,10 @@ export default function App() {
         <Stack.Screen name="Resources" component={ResourcesScreen} />
         <Stack.Screen name="healthTips" component={HealthTipsScreen} />
         <Stack.Screen name="healthmetrics" component={HealthMetricsScreen} />
-        <Stack.Screen name="AntenatalTracker" component={AntenatalTrackerStyle} />
+        <Stack.Screen
+          name="AntenatalTracker"
+          component={AntenatalTrackerStyle}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
