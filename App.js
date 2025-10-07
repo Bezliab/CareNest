@@ -41,6 +41,8 @@ import HealthTipsScreen from './src/screens/pregnateuser/HealthTipsScreen/Health
 import Doctor_Sign from './src/screens/Doctor/Doctors_Sign/Doctors_login';
 import DoctorSignUpScreen from './src/screens/Doctor/DoctorSignupScreen/DoctorSignupScreen';
 import DoctorDshboard from './src/screens/Doctor/DoctorDashboard/DoctorDshboard';
+import HealthMetricsScreen from './src/screens/pregnateuser/HealthMetricsScreen/HealthMetricsScreen';
+import AntenatalTrackerStyle from './src/screens/pregnateuser/AntenatalTrackerStyle/AntenatalTracker';
 
 // Hooks and config
 import useFcmToken from './src/hooks/useFCMtoken';
@@ -153,6 +155,8 @@ export default function App() {
         <Stack.Screen name="AddReminder" component={AddRemider} />
         <Stack.Screen name="Resources" component={ResourcesScreen} />
         <Stack.Screen name="healthTips" component={HealthTipsScreen} />
+        <Stack.Screen name="healthmetrics" component={HealthMetricsScreen} />
+        <Stack.Screen name="AntenatalTracker" component={AntenatalTrackerStyle} />
       </Stack.Navigator>
     </NavigationContainer>
   );
