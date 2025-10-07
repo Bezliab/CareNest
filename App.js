@@ -20,10 +20,7 @@ import Dashboard from './src/screens/pregnateuser/Dashboard/Dashboard';
 import HealthScreen from './src/screens/pregnateuser/HealthPage/Healthscreen';
 import BookAppointmentScreen from './src/screens/BookAppointment/BookAppointmentScreen';
 import ReminderScreen from './src/screens/ReminderScreen/ReminderScreen';
-import TodayScreen from './src/screens/ReminderScreen/TodayScreen/TodayScreen';
 import ScheduleScreen from './src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen';
-import AllReminderScreen from './src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen';
-import CompletedScreen from './src/screens/ReminderScreen/CompletedScreen/CompletedScreen';
 import AppointmentScreen from './src/screens/AppointmentScreen/AppointmentScreen';
 import EmergencyScreen from './src/screens/pregnateuser/Emergency/Emergency';
 import SettingsScreen from './src/screens/SettingsPage/SettingsScreen';
@@ -134,10 +131,7 @@ export default function App() {
         <Stack.Screen name="BookAppointment" component={BookAppointmentScreen} />
         <Stack.Screen name="Health" component={HealthScreen} />
         <Stack.Screen name="Reminder" component={ReminderScreen} />
-        <Stack.Screen name="TodayScreen" component={TodayScreen} />
         <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
-        <Stack.Screen name="AllReminderScreen" component={AllReminderScreen} />
-        <Stack.Screen name="CompletedScreen" component={CompletedScreen} />
         <Stack.Screen name="Appointment" component={AppointmentScreen} />
         <Stack.Screen name="Emergency" component={EmergencyScreen} />
         <Stack.Screen name="DoctorSignUp" component={DoctorSignUpScreen} />

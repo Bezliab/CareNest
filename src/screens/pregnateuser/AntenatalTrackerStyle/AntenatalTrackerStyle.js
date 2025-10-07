@@ -3,115 +3,187 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#f9fafb", // soft background
     padding: 16,
   },
+
   header: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "700",
-    color: "#2563eb",
+    color: "#1e293b",
     textAlign: "center",
-    marginVertical: 10,
+    marginTop: 10,
+    marginBottom: 10,
   },
+
   subHeader: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#1f2937",
+    color: "#334155",
     marginVertical: 10,
   },
-  addBtn: {
-    flexDirection: "row",
-    backgroundColor: "#2563eb",
-    padding: 12,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 10,
+
+  // 🌸 Next Appointment Card
+  nextCard: {
+    backgroundColor: "#e0f2fe", // soft blue
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: "#bae6fd",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
-  addText: {
-    color: "#fff",
+
+  nextTitle: {
     fontSize: 16,
-    marginLeft: 6,
+    fontWeight: "700",
+    color: "#1d4ed8",
+    marginBottom: 6,
+  },
+
+  nextDate: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#0f172a",
+  },
+
+  nextDetail: {
+    fontSize: 15,
+    color: "#475569",
+    marginTop: 4,
+  },
+
+  noNextCard: {
+    backgroundColor: "#fef9c3",
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#fde68a",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+
+  noNextText: {
+    color: "#854d0e",
     fontWeight: "500",
   },
+
+  // 🩺 Appointment Cards
   card: {
     backgroundColor: "#fff",
+    borderRadius: 16,
     padding: 14,
-    borderRadius: 10,
-    marginVertical: 6,
-    borderLeftWidth: 4,
-    borderColor: "#2563eb",
+    marginVertical: 8,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
+
   cardDate: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#1f2937",
+    fontWeight: "700",
+    color: "#1e40af",
+    marginBottom: 4,
   },
+
   cardText: {
     fontSize: 14,
-    color: "#4b5563",
+    color: "#475569",
+    marginBottom: 2,
   },
+
   cardStatus: {
-    marginTop: 4,
     fontSize: 14,
     fontWeight: "600",
+    marginTop: 4,
   },
+
   completeBtn: {
-    marginTop: 8,
     backgroundColor: "#16a34a",
-    paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: 10,
+    paddingVertical: 8,
+    marginTop: 8,
     alignItems: "center",
   },
+
   completeText: {
     color: "#fff",
     fontWeight: "600",
   },
+
+  emptyText: {
+    textAlign: "center",
+    color: "#64748b",
+    marginTop: 20,
+    fontSize: 15,
+  },
+
+  // 💬 Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
   },
+
   modalContent: {
     backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
     width: "85%",
+    padding: 20,
+    borderRadius: 16,
     elevation: 6,
   },
+
   modalHeader: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#2563eb",
-    marginBottom: 10,
+    color: "#1e293b",
     textAlign: "center",
+    marginBottom: 10,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 8,
-    padding: 10,
-    marginVertical: 6,
-    fontSize: 14,
+
+  modalText: {
+    fontSize: 15,
+    color: "#475569",
+    marginVertical: 3,
   },
+
+  modalStatus: {
+    textAlign: "center",
+    marginVertical: 10,
+    fontWeight: "600",
+    fontSize: 15,
+  },
+
   saveBtn: {
     backgroundColor: "#2563eb",
-    padding: 10,
-    borderRadius: 8,
+    paddingVertical: 10,
+    borderRadius: 10,
     alignItems: "center",
-    marginTop: 8,
+    marginTop: 10,
   },
+
   saveText: {
     color: "#fff",
     fontWeight: "600",
   },
+
   cancelBtn: {
+    backgroundColor: "#f1f5f9",
+    paddingVertical: 10,
+    borderRadius: 10,
     alignItems: "center",
-    marginTop: 6,
+    marginTop: 10,
   },
+
   cancelText: {
-    color: "#6b7280",
-    fontWeight: "500",
+    color: "#475569",
+    fontWeight: "600",
   },
 });
