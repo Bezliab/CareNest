@@ -45,6 +45,13 @@ import MentalwellBeing from './src/screens/pregnateuser/MentalwellBeing/Mentalwe
 import PertanalExcercise from './src/screens/pregnateuser/PertanalExercise/PertanalExercise';
 import LaborDelivery from './src/screens/pregnateuser/LaborDelivery/LaborDelivery';
 import RecoveryGuide from './src/screens/pregnateuser/RecoveryGuide/RecoveryGuide';
+import PatientManagement from './src/screens/Doctor/PatientManagement/PatientManagement';
+import AddPatient from './src/screens/Doctor/PatientManagement/AddPatient';
+ import PatientDetails from './src/screens/Doctor/PatientManagement/PatientDetails';
+import FacilityResources from './src/screens/Doctor/FacultyResources/FacuultyResources';
+import Analytics from './src/screens/Doctor/Analytics/Analytics';
+import DoctorAppointments from './src/screens/Doctor/DoctorsAppointment/DoctorsAppointMent'
+import DoctorProfile from './src/screens/Doctor/DoctorProfile/DoctorProfile'
 
 import useFcmToken from './src/hooks/useFCMtoken';
 import { enablePersistenceIfAvailable } from './src/api/firebaseConfig';
@@ -160,6 +167,12 @@ export default function App() {
         <Stack.Screen name="mentalwell" component={MentalwellBeing} />
         <Stack.Screen name="delivery" component={LaborDelivery} />
         <Stack.Screen name="Recovery" component={RecoveryGuide} />
+              <Stack.Screen name="PatientList" component={PatientManagement} />
+      <Stack.Screen name="AddPatient" component={AddPatient} />
+      <Stack.Screen name="PatientDetails" component={PatientDetails} />
+      <Stack.Screen name="FacilityResources" component={FacilityResources} />
+      <Stack.Screen name="AnalyticsReports" component={Analytics} />
+      <Stack.Screen name="DoctorAppointments" component={DoctorAppointments} /> 
       </Stack.Navigator>
     </NavigationContainer>
   );
