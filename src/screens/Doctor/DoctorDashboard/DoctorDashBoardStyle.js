@@ -1,0 +1,243 @@
+import { StyleSheet, Dimensions } from "react-native";
+const { width } = Dimensions.get("window");
+const cardWidth = (width - 60) / 2;
+export default styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#F8FAFC",
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F8FAFC",
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: "#6B7280",
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 16,
+  },
+  greeting: {
+    fontSize: 16,
+    color: "#6B7280",
+    marginBottom: 4,
+  },
+  doctorName: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#111827",
+    marginBottom: 4,
+  },
+  specialty: {
+    fontSize: 16,
+    color: "#2563EB",
+    fontWeight: "600",
+  },
+  notificationButton: {
+    padding: 8,
+    borderRadius: 12,
+    backgroundColor: "#F3F4F6",
+    position: "relative",
+  },
+  notificationBadge: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#EF4444",
+  },
+  statsCard: {
+    marginHorizontal: 24,
+    marginVertical: 16,
+    borderRadius: 20,
+    padding: 24,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  statItem: {
+    alignItems: "center",
+    flex: 1,
+  },
+  statNumber: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: "#E5E7EB",
+    fontWeight: "500",
+  },
+  statSeparator: {
+    width: 1,
+    height: 40,
+    backgroundColor: "rgba(255,255,255,0.3)",
+  },
+  quickActions: {
+    paddingHorizontal: 24,
+    marginVertical: 16,
+  },
+  section: {
+    paddingHorizontal: 24,
+    marginVertical: 16,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#111827",
+  },
+  seeAllText: {
+    fontSize: 14,
+    color: "#2563EB",
+    fontWeight: "600",
+  },
+  actionButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 12,
+  },
+  actionButton: {
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    padding: 16,
+    borderRadius: 16,
+    flex: 1,
+    marginHorizontal: 4,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  actionText: {
+    marginTop: 8,
+    fontSize: 12,
+    color: "#374151",
+    fontWeight: "500",
+  },
+  appointmentCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  appointmentHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  patientInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  patientName: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#111827",
+    marginLeft: 8,
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  appointmentDetails: {
+    marginBottom: 12,
+  },
+  detailRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+  detailText: {
+    fontSize: 14,
+    color: "#6B7280",
+    marginLeft: 8,
+  },
+  appointmentFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  contactButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: "#EFF6FF",
+    borderRadius: 8,
+  },
+  contactText: {
+    fontSize: 12,
+    color: "#2563EB",
+    fontWeight: "500",
+    marginLeft: 4,
+  },
+  chevron: {
+    padding: 4,
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: 48,
+    paddingHorizontal: 24,
+  },
+  emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#374151",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyStateText: {
+    fontSize: 14,
+    color: "#6B7280",
+    textAlign: "center",
+    lineHeight: 20,
+  },
+});

@@ -2,46 +2,39 @@
 
 buildscript {
     ext {
-        // ✅ Android & Kotlin configuration
         buildToolsVersion = "36.0.0"
         minSdkVersion = 24
         compileSdkVersion = 36
         targetSdkVersion = 36
         ndkVersion = "27.1.12297006"
-        kotlinVersion = "2.1.20"
+        kotlinVersion = "1.9.10" // Fixed Kotlin version
     }
 
     repositories {
-        // ✅ Repositories where Gradle looks for dependencies
         google()
         mavenCentral()
     }
 
     dependencies {
-        // ✅ Android Gradle plugin
+        // Android Gradle plugin
         classpath("com.android.tools.build:gradle:8.6.1")
 
-        // ✅ React Native Gradle plugin
+        // Kotlin Gradle plugin
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+
+        // React Native Gradle plugin
         classpath("com.facebook.react:react-native-gradle-plugin")
 
-        // ✅ Kotlin Gradle plugin
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.20")
-
-        // ✅ Firebase Google Services plugin (needed for Firebase integration)
+        // Google Services plugin for Firebase
         classpath("com.google.gms:google-services:4.4.3")
     }
 }
 
-// ✅ Plugins section
-plugins {
-    // React Native root project plugin
-    id("com.facebook.react.rootproject")
-}
-
-// ✅ Repositories used for all subprojects (modules)
+// Repositories used for all subprojects
 allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url "https://www.jitpack.io" } // for some React Native libraries
     }
 }

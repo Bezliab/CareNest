@@ -12,7 +12,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { ensureLocationPermissionWithAlert } from '../../utils/permissions';
+import { ensureLocationPermissionWithAlert } from '../../../utils/permissions';
 
 // Demo JSON data (clinics with coordinates)
 const clinics = [

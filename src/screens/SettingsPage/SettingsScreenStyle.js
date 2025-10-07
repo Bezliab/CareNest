@@ -66,4 +66,42 @@ export default StyleSheet.create({
     color: "#d32f2f",
     fontWeight: "600",
   },
+  // Dropdown modal styling for language picker
+modalOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0,0,0,0.4)",
+  justifyContent: "center",
+  alignItems: "center",
+},
+modalContainer: {
+  width: "85%",
+  backgroundColor: "#fff",
+  borderRadius: 12,
+  padding: 20,
+  elevation: 5,
+},
+modalTitle: {
+  fontSize: 18,
+  fontWeight: "600",
+  color: "#222",
+  marginBottom: 10,
+  textAlign: "center",
+},
+picker: {
+  width: "100%",
+  height: Platform.OS === "ios" ? 180 : 50,
+},
+modalButton: {
+  backgroundColor: "#1976d2",
+  paddingVertical: 10,
+  borderRadius: 10,
+  alignItems: "center",
+  marginTop: 15,
+},
+modalButtonText: {
+  color: "#fff",
+  fontWeight: "600",
+  fontSize: 16,
+},
+
 });

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { auth, firestore } from '../../api/firebaseConfig';
+import { auth, firestore } from '../../../api/firebaseConfig';
 import styles from './ProfileScreenStyle';
 
 const ProfileScreen = ({ navigation }) => {
