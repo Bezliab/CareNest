@@ -33,15 +33,19 @@ import HelpCenterScreen from './src/screens/HelpCentreScreen/HelpCentreScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen/EditProfileScreen';
 import bookingpageScreen from './src/screens/bookingpage/bookingpageScreen';
 import AddRemider from './src/screens/AddReminder/AddReminderSreen';
-import ResourcesScreen from './src/screens/Rescources/ResourcesScreen';
 import HealthTipsScreen from './src/screens/pregnateuser/HealthTipsScreen/HealthTipsScreen';
 import Doctor_Sign from './src/screens/Doctor/Doctors_Sign/Doctors_login';
 import DoctorSignUpScreen from './src/screens/Doctor/DoctorSignupScreen/DoctorSignupScreen';
 import DoctorDshboard from './src/screens/Doctor/DoctorDashboard/DoctorDshboard';
 import HealthMetricsScreen from './src/screens/pregnateuser/HealthMetricsScreen/HealthMetricsScreen';
 import AntenatalTrackerStyle from './src/screens/pregnateuser/AntenatalTrackerStyle/AntenatalTracker';
+import FetalDevelopment from './src/screens/pregnateuser/FetalDevelopment/FetalDevelopment';
+import MotherNutrition from './src/screens/pregnateuser/MotherNutrition/MotherNutrition';
+import MentalwellBeing from './src/screens/pregnateuser/MentalwellBeing/MentalwellBeing';
+import PertanalExcercise from './src/screens/pregnateuser/PertanalExercise/PertanalExercise';
+import LaborDelivery from './src/screens/pregnateuser/LaborDelivery/LaborDelivery';
+import RecoveryGuide from './src/screens/pregnateuser/RecoveryGuide/RecoveryGuide';
 
-// Hooks and config
 import useFcmToken from './src/hooks/useFCMtoken';
 import { enablePersistenceIfAvailable } from './src/api/firebaseConfig';
 
@@ -147,10 +151,15 @@ export default function App() {
         <Stack.Screen name="History" component={HistoryScreen} />
         <Stack.Screen name="bookingpage" component={bookingpageScreen} />
         <Stack.Screen name="AddReminder" component={AddRemider} />
-        <Stack.Screen name="Resources" component={ResourcesScreen} />
         <Stack.Screen name="healthTips" component={HealthTipsScreen} />
         <Stack.Screen name="healthmetrics" component={HealthMetricsScreen} />
         <Stack.Screen name="AntenatalTracker" component={AntenatalTrackerStyle} />
+        <Stack.Screen name="fetaldeve" component={FetalDevelopment} />
+        <Stack.Screen name="MotherHealth" component={MotherNutrition} />
+        <Stack.Screen name="Pertanal" component={PertanalExcercise} />
+        <Stack.Screen name="mentalwell" component={MentalwellBeing} />
+        <Stack.Screen name="delivery" component={LaborDelivery} />
+        <Stack.Screen name="Recovery" component={RecoveryGuide} />
       </Stack.Navigator>
     </NavigationContainer>
   );
