@@ -1,44 +1,90 @@
-import React from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import LinearGradient from "react-native-linear-gradient";
-import styles from "./AppointmentScreenstyle";
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import LinearGradient from 'react-native-linear-gradient';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import styles from './AppointmentScreenstyle';
 
 export default function AppointmentScreen({ navigation }) {
-  // Appointments (in real app you’d fetch these from Firestore/API)
-  const appointments = [
-    {
-      id: 1,
-      date: "October 12, 2025",
-      time: "10:30 AM",
-      doctor: "Dr. Amina Yusuf",
-      type: "Prenatal Check-up",
-      location: "Maternal Care Clinic, Room 203",
-    },
-    {
-      id: 2,
-      date: "October 26, 2025",
-      time: "2:00 PM",
-      doctor: "Dr. Tunde Ade",
-      type: "Ultrasound Scan",
-      location: "Maternal Care Clinic, Room 105",
-    },
-    {
-      id: 3,
-      date: "November 10, 2025",
-      time: "11:00 AM",
-      doctor: "Dr. Chika Obi",
-      type: "Nutrition Counseling",
-      location: "Maternal Care Clinic, Room 310",
-    },
-  ];
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // first one is "Next Appointment"
-  const nextAppointment = appointments[0];
-  const upcomingAppointments = appointments.slice(1);
+  useEffect(() => {
+    const user = auth().currentUser;
+    if (!user) return;
+
+    // 🔹 Real-time listener for user's appointments (offline + sync)
+    const unsubscribe = firestore()
+      .collection('appointments')
+      .where('userId', '==', user.uid)
+      .onSnapshot(
+        snapshot => {
+          const data = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setAppointments(data);
+          setLoading(false);
+        },
+        error => {
+          console.error('Error fetching appointments:', error);
+          setLoading(false);
+        },
+      );
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#1976d2" />
+      </View>
+    );
+  }
+
+  // Handle empty state
+  if (!appointments || appointments.length === 0) {
+    return (
+      <LinearGradient colors={['#eef2f3', '#f8fbff']} style={styles.container}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
+          <Text style={styles.header}>My Appointments</Text>
+        </View>
+
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Ionicons name="calendar-outline" size={60} color="#ccc" />
+          <Text style={{ marginTop: 10, color: '#777' }}>
+            No appointments found.
+          </Text>
+        </View>
+      </LinearGradient>
+    );
+  }
+
+  // Split into next and upcoming appointments
+  const sortedAppointments = appointments.sort(
+    (a, b) => new Date(a.date) - new Date(b.date),
+  );
+  const nextAppointment = sortedAppointments[0];
+  const upcomingAppointments = sortedAppointments.slice(1);
 
   return (
-    <LinearGradient colors={["#eef2f3", "#f8fbff"]} style={styles.container}>
+    <LinearGradient colors={['#eef2f3', '#f8fbff']} style={styles.container}>
       {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity
@@ -60,17 +106,23 @@ export default function AppointmentScreen({ navigation }) {
 
           <View style={styles.detailRow}>
             <Ionicons name="person-circle-outline" size={22} color="#444" />
-            <Text style={styles.detail}>{nextAppointment.doctor}</Text>
+            <Text style={styles.detail}>
+              {nextAppointment.doctor || 'Dr. Unknown'}
+            </Text>
           </View>
 
           <View style={styles.detailRow}>
             <Ionicons name="heart-outline" size={22} color="#e53935" />
-            <Text style={styles.detail}>{nextAppointment.type}</Text>
+            <Text style={styles.detail}>
+              {nextAppointment.type || 'Antenatal Visit'}
+            </Text>
           </View>
 
           <View style={styles.detailRow}>
             <Ionicons name="location-outline" size={22} color="#0288d1" />
-            <Text style={styles.detail}>{nextAppointment.location}</Text>
+            <Text style={styles.detail}>
+              {nextAppointment.location || 'Clinic'}
+            </Text>
           </View>
 
           <TouchableOpacity style={styles.reminderButton}>
@@ -80,15 +132,21 @@ export default function AppointmentScreen({ navigation }) {
 
         {/* Upcoming Appointments Timeline */}
         <Text style={styles.subHeader}>Upcoming Appointments</Text>
-        {upcomingAppointments.map((appt) => (
+        {upcomingAppointments.map(appt => (
           <View key={appt.id} style={styles.timelineCard}>
             <View style={styles.timelineDot} />
             <View style={styles.timelineContent}>
               <Text style={styles.timelineDate}>{appt.date}</Text>
               <Text style={styles.timelineTime}>{appt.time}</Text>
-              <Text style={styles.timelineType}>{appt.type}</Text>
-              <Text style={styles.timelineDoctor}>{appt.doctor}</Text>
-              <Text style={styles.timelineLocation}>{appt.location}</Text>
+              <Text style={styles.timelineType}>
+                {appt.type || 'Antenatal Visit'}
+              </Text>
+              <Text style={styles.timelineDoctor}>
+                {appt.doctor || 'Doctor'}
+              </Text>
+              <Text style={styles.timelineLocation}>
+                {appt.location || 'Clinic'}
+              </Text>
             </View>
           </View>
         ))}

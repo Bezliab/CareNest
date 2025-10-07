@@ -153,13 +153,11 @@ const EmergencyScreen = () => {
   };
 
   // Call clinic
-
   const callClinic = phone => {
     Linking.openURL(`tel:${phone}`).catch(err => {
       console.warn('Call error', err);
       Alert.alert('Error', 'Unable to make a call.');
     });
-
   };
 
   // Send emergency SMS with location
@@ -293,10 +291,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-
-  iconText: { color: "#fff", fontWeight: "600", marginLeft: 5 },
-  savedContact: { textAlign: "center", marginTop: 10, fontSize: 14, fontWeight: "500" },
-
   iconText: { color: '#fff', fontWeight: '600', marginLeft: 5 },
   savedContact: {
     textAlign: 'center',
@@ -305,4 +299,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
+  iconText: { color: '#fff', fontWeight: '600', marginLeft: 5 },
+  savedContact: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 14,
+    fontWeight: '500',
+  },
 });

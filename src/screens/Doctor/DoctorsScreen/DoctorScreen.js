@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import Geolocation from "@react-native-community/geolocation";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../api/firebaseConfig"; // ✅ Firebase setup
+import { db } from "../../../api/firebaseConfig"; // ✅ Firebase setup
 
 export default function DoctorPage() {
   const [userLocation, setUserLocation] = useState(null);

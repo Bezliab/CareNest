@@ -1,188 +1,292 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Animated,
-  Dimensions,
+  StyleSheet,
   FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+  RefreshControl,
+  Alert,
+  SafeAreaView,
 } from "react-native";
+import { 
+  Calendar, 
+  Clock, 
+  MapPin, 
+  User, 
+  Phone, 
+  Mail, 
+  Star, 
+  ChevronRight,
+  Bell,
+  Search,
+  Filter
+} from "react-native-feather";
 import LinearGradient from "react-native-linear-gradient";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import styles from "./DoctorDashBoardStyle";
-import { auth, firestore } from "../../../api/firebaseConfig";
 
-const { width } = Dimensions.get("window");
-const cardWidth = (width - 60) / 2;
-
-const DashboardScreen = ({ navigation }) => {
-  const [userName, setUserName] = useState("Doctor");
+const DoctorDashboard = ({ navigation }) => {
+  const [doctorData, setDoctorData] = useState(null);
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState({
-    patients: 0,
-    appointments: 0,
-    alerts: 0,
+    today: 0,
+    upcoming: 0,
+    completed: 0
   });
-  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const dashboardItems = [
-    { title: "Patient List", icon: "account-group", screen: "PatientListScreen", badge: stats.patients },
-    { title: "Schedule", icon: "calendar-check", screen: "ScheduleScreen", badge: stats.appointments },
-    { title: "Record Health Data", icon: "stethoscope", screen: "HealthDataScreen" },
-    { title: "Reminders", icon: "bell-ring", screen: "RemindersScreen" },
-    { title: "Emergency", icon: "alert-circle", screen: "EmergencyScreen", badge: stats.alerts },
-    { title: "Education", icon: "book-open-page-variant", screen: "EducationScreen" },
-    { title: "Analytics", icon: "chart-line", screen: "AnalyticsScreen" },
-    { title: "Chat", icon: "chat", screen: "ChatScreen" },
-    { title: "Offline Mode", icon: "wifi-off", screen: "OfflineScreen" },
-    { title: "Settings", icon: "cog", screen: "Settings" },
+  // Demo doctor data
+  const demoDoctor = {
+    name: "Dr. Jane Doe",
+    specialty: "Cardiology",
+    email: "jane.doe@hospital.com"
+  };
+
+  // Demo appointments
+  const demoAppointments = [
+    {
+      id: "1",
+      patientName: "John Smith",
+      date: new Date().toISOString().split('T')[0],
+      time: "10:00 AM",
+      status: "confirmed",
+      location: "Room 101"
+    },
+    {
+      id: "2",
+      patientName: "Mary Johnson",
+      date: new Date().toISOString().split('T')[0],
+      time: "11:30 AM",
+      status: "pending",
+      location: "Room 102"
+    },
+    {
+      id: "3",
+      patientName: "Alex Lee",
+      date: "2025-10-07",
+      time: "2:00 PM",
+      status: "confirmed",
+      location: "Room 103"
+    },
+    {
+      id: "4",
+      patientName: "Sara Kim",
+      date: "2025-10-08",
+      time: "9:00 AM",
+      status: "completed",
+      location: "Room 104"
+    }
   ];
+
+  const fetchData = async () => {
+    // Simulate loading
+    setTimeout(() => {
+      setDoctorData(demoDoctor);
+      setAppointments(demoAppointments);
+      calculateStats(demoAppointments);
+      setLoading(false);
+      setRefreshing(false);
+    }, 1000);
+  };
+
+  const calculateStats = (appointments) => {
+    const today = new Date().toISOString().split('T')[0];
+    const todayAppointments = appointments.filter(apt => apt.date === today);
+    const upcomingAppointments = appointments.filter(apt => apt.date > today);
+    const completedAppointments = appointments.filter(apt => apt.status === 'completed');
+
+    setStats({
+      today: todayAppointments.length,
+      upcoming: upcomingAppointments.length,
+      completed: completedAppointments.length
+    });
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchData();
+  };
 
   useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }).start();
-
-    const user = auth().currentUser;
-    if (user) {
-      firestore().collection("doctors").doc(user.uid).get().then(doc => {
-        if (doc.exists) setUserName(doc.data().fullName || "Doctor");
-      });
-
-      // Fetch simple stats
-      firestore().collection("patients").get().then(snapshot => {
-        setStats(prev => ({ ...prev, patients: snapshot.size }));
-      });
-      firestore().collection("appointments").get().then(snapshot => {
-        setStats(prev => ({ ...prev, appointments: snapshot.size }));
-      });
-      firestore().collection("alerts").get().then(snapshot => {
-        setStats(prev => ({ ...prev, alerts: snapshot.size }));
-      });
-    }
+    fetchData();
   }, []);
 
-  const recentPatients = [
-    { id: 1, name: "Aliyat Adeleke", visit: "Tomorrow" },
-    { id: 2, name: "Mary Johnson", visit: "Today" },
-    { id: 3, name: "Fatima Bello", visit: "Sep 8" },
-  ];
+  const getAppointmentStatusColor = (status) => {
+    switch (status) {
+      case 'confirmed': return '#10B981';
+      case 'pending': return '#F59E0B';
+      case 'cancelled': return '#EF4444';
+      default: return '#6B7280';
+    }
+  };
 
-  return (
-    <View style={styles.container}>
-      <Animated.View style={[styles.headerContainer, { opacity: fadeAnim }]}>
-        <LinearGradient colors={["#667eea", "#764ba2"]} style={styles.headerCard}>
-          <Image source={require("../../Assets/LOGO.png")} style={styles.avatar} />
-          <View style={{ flex: 1, marginLeft: 15 }}>
-            <Text style={styles.headerText}>Welcome Back,</Text>
-            <Text style={styles.headerSubText}>{userName}</Text>
-          </View>
-        </LinearGradient>
-      </Animated.View>
+  const getUpcomingAppointments = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return appointments.filter(apt => apt.date >= today).slice(0, 5);
+  };
 
-      {/* Stats Panel */}
-      <View style={styles.statsContainer}>
-        <LinearGradient colors={["#43e97b", "#38f9d7"]} style={styles.statCard}>
-          <Text style={styles.statNumber}>{stats.patients}</Text>
-          <Text style={styles.statLabel}>Patients</Text>
-        </LinearGradient>
-        <LinearGradient colors={["#fa709a", "#fee140"]} style={styles.statCard}>
-          <Text style={styles.statNumber}>{stats.appointments}</Text>
-          <Text style={styles.statLabel}>Appointments</Text>
-        </LinearGradient>
-        <LinearGradient colors={["#f7971e", "#ffd200"]} style={styles.statCard}>
-          <Text style={styles.statNumber}>{stats.alerts}</Text>
-          <Text style={styles.statLabel}>Alerts</Text>
-        </LinearGradient>
+  const renderAppointmentItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.appointmentCard}
+      onPress={() => navigation.navigate("AppointmentDetails", { appointmentId: item.id })}
+    >
+      <View style={styles.appointmentHeader}>
+        <View style={styles.patientInfo}>
+          <User width={16} height={16} color="#4B5563" />
+          <Text style={styles.patientName}>{item.patientName}</Text>
+        </View>
+        <View style={[styles.statusBadge, { backgroundColor: getAppointmentStatusColor(item.status) + '20' }]}>
+          <Text style={[styles.statusText, { color: getAppointmentStatusColor(item.status) }]}>
+            {item.status?.charAt(0).toUpperCase() + item.status?.slice(1)}
+          </Text>
+        </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 10 }}>
-        {/* Dashboard Grid */}
-        <View style={styles.grid}>
-          {dashboardItems.map((item, index) => {
-            const scaleAnim = new Animated.Value(1);
-            const handlePressIn = () =>
-              Animated.spring(scaleAnim, { toValue: 0.95, useNativeDriver: true }).start();
-            const handlePressOut = () =>
-              Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+      <View style={styles.appointmentDetails}>
+        <View style={styles.detailRow}>
+          <Calendar width={14} height={14} color="#6B7280" />
+          <Text style={styles.detailText}>{new Date(item.date).toLocaleDateString()}</Text>
+        </View>
+        <View style={styles.detailRow}>
+          <Clock width={14} height={14} color="#6B7280" />
+          <Text style={styles.detailText}>{item.time}</Text>
+        </View>
+        {item.location && (
+          <View style={styles.detailRow}>
+            <MapPin width={14} height={14} color="#6B7280" />
+            <Text style={styles.detailText}>{item.location}</Text>
+          </View>
+        )}
+      </View>
 
-            return (
-              <Animated.View key={index} style={{ transform: [{ scale: scaleAnim }] }}>
-                <TouchableOpacity
-                  style={styles.cardWrapper}
-                  activeOpacity={0.8}
-                  onPress={() => navigation.navigate(item.screen)}
-                  onPressIn={handlePressIn}
-                  onPressOut={handlePressOut}
-                >
-                  <LinearGradient colors={["#667eea", "#764ba2"]} style={styles.card}>
-                    <Icon name={item.icon} size={38} color="#fff" />
-                    <Text style={styles.cardText}>{item.title}</Text>
-                    {item.badge ? <View style={styles.badge}><Text style={styles.badgeText}>{item.badge}</Text></View> : null}
-                  </LinearGradient>
-                </TouchableOpacity>
-              </Animated.View>
-            );
-          })}
+      <View style={styles.appointmentFooter}>
+        <TouchableOpacity style={styles.contactButton}>
+          <Phone width={14} height={14} color="#2563EB" />
+          <Text style={styles.contactText}>Call</Text>
+        </TouchableOpacity>
+        <View style={styles.chevron}>
+          <ChevronRight width={16} height={16} color="#9CA3AF" />
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderStatsCard = () => (
+    <LinearGradient
+      colors={['#2563EB', '#1D4ED8']}
+      style={styles.statsCard}
+    >
+      <View style={styles.statItem}>
+        <Text style={styles.statNumber}>{stats.today}</Text>
+        <Text style={styles.statLabel}>Today</Text>
+      </View>
+      <View style={styles.statSeparator} />
+      <View style={styles.statItem}>
+        <Text style={styles.statNumber}>{stats.upcoming}</Text>
+        <Text style={styles.statLabel}>Upcoming</Text>
+      </View>
+      <View style={styles.statSeparator} />
+      <View style={styles.statItem}>
+        <Text style={styles.statNumber}>{stats.completed}</Text>
+        <Text style={styles.statLabel}>Completed</Text>
+      </View>
+    </LinearGradient>
+  );
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color="#2563EB" />
+          <Text style={styles.loadingText}>Loading Dashboard...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>Welcome back,</Text>
+            <Text style={styles.doctorName}>{doctorData?.name || "Doctor"}</Text>
+            <Text style={styles.specialty}>{doctorData?.specialty}</Text>
+          </View>
+          <TouchableOpacity style={styles.notificationButton}>
+            <Bell width={24} height={24} color="#374151" />
+            <View style={styles.notificationBadge} />
+          </TouchableOpacity>
         </View>
 
-       {/* Recent Patients */}
-<Text style={styles.sectionTitle}>Recent Patients</Text>
-<FlatList
-  horizontal
-  data={recentPatients}
-  keyExtractor={(item) => item.id.toString()}
-  showsHorizontalScrollIndicator={false}
-  contentContainerStyle={{ paddingHorizontal: 20 }}
-  renderItem={({ item }) => {
-    const scaleAnim = useRef(new Animated.Value(1)).current;
+        {/* Stats Card */}
+        {renderStatsCard()}
 
-    const handlePressIn = () => Animated.spring(scaleAnim, {
-      toValue: 0.95,
-      useNativeDriver: true,
-    }).start();
+        {/* Quick Actions */}
+        <View style={styles.quickActions}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <View style={styles.actionButtons}>
+            <TouchableOpacity style={styles.actionButton}>
+              <Calendar width={20} height={20} color="#2563EB" />
+              <Text style={styles.actionText}>Schedule</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionButton}>
+              <User width={20} height={20} color="#10B981" />
+              <Text style={styles.actionText}>Patients</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionButton}>
+              <Mail width={20} height={20} color="#F59E0B" />
+              <Text style={styles.actionText}>Messages</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionButton}>
+              <Star width={20} height={20} color="#8B5CF6" />
+              <Text style={styles.actionText}>Reviews</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
-    const handlePressOut = () => Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
+        {/* Upcoming Appointments */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
+            <TouchableOpacity>
+              <Text style={styles.seeAllText}>See All</Text>
+            </TouchableOpacity>
+          </View>
 
-    return (
-      <Animated.View style={{ transform: [{ scale: scaleAnim }], marginRight: 15 }}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          style={styles.recentCardWrapper}
-        >
-          <LinearGradient
-            colors={["#6a11cb", "#2575fc"]}
-            style={styles.recentCard}
-          >
-            <View style={styles.recentHeader}>
-              <Image
-                source={require("../../Assets/patient.png")} // Add placeholder patient image
-                style={styles.patientAvatar}
-              />
-              <Text style={styles.recentName}>{item.name}</Text>
+          {getUpcomingAppointments().length > 0 ? (
+            <FlatList
+              data={getUpcomingAppointments()}
+              keyExtractor={item => item.id}
+              renderItem={renderAppointmentItem}
+              scrollEnabled={false}
+              showsVerticalScrollIndicator={false}
+            />
+          ) : (
+            <View style={styles.emptyState}>
+              <Calendar width={48} height={48} color="#9CA3AF" />
+              <Text style={styles.emptyStateTitle}>No Appointments</Text>
+              <Text style={styles.emptyStateText}>
+                You don't have any upcoming appointments scheduled.
+              </Text>
             </View>
-            <View style={styles.visitBadge}>
-              <Text style={styles.visitText}>Next Visit: {item.visit}</Text>
-            </View>
-          </LinearGradient>
-        </TouchableOpacity>
-      </Animated.View>
-    );
-  }}
-/>
-
+          )}
+        </View>
       </ScrollView>
-
-      {/* Floating Quick Action */}
-      <TouchableOpacity style={styles.floatingBtn} onPress={() => navigation.navigate("HealthDataScreen")}>
-        <Icon name="plus" size={28} color="#fff" />
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
-export default DashboardScreen;
+
+
+export default DoctorDashboard;

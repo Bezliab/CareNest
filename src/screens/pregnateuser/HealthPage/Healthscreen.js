@@ -31,7 +31,7 @@ export default function HealthScreen({ navigation }) {
       >
         {/* Hero Image */}
         <ImageBackground
-          source={require("../../Assets/health-image.jpg")}
+          source={require("../../../Assets/LOGO.png")}
           style={{
             width: "100%",
             height: 180,

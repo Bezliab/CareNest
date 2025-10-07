@@ -62,7 +62,7 @@ export default function DoctorLoginScreen({ navigation }) {
 
       // Success
       Alert.alert("Success", "Welcome back, Doctor!");
-      navigation.replace("docDashboard");
+      navigation.replace("doctorDashboard");
     } catch (error) {
       console.log("Doctor Login Error:", error);
       let message = "Login failed. Please try again.";
@@ -103,7 +103,7 @@ export default function DoctorLoginScreen({ navigation }) {
           <View style={styles.headerRow}>
             <View style={styles.logoBox}>
               <Image
-                source={require("../../Assets/LOGO.png")}
+                source={require("../../../Assets/LOGO.png")}
                 style={styles.logo}
               />
             </View>

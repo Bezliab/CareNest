@@ -77,7 +77,7 @@ export default function LoginScreen({ navigation }) {
           {/* Header */}
           <View style={styles.headerRow}>
             <Image
-              source={require("../../Assets/LOGO.png")}
+              source={require("../../../Assets/LOGO.png")}
               style={styles.logo}
             />
             <View style={styles.titleBox}>
