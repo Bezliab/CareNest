@@ -1,292 +1,306 @@
-import React, { useEffect, useState } from "react";
+//UPDATED DOCTOR'S DASHBOARD
+
+
+
+// src/screens/DoctorDashboard/DoctorDashboard.js
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  FlatList,
+  Image,
   TouchableOpacity,
+  Animated,
+  StatusBar,
   ActivityIndicator,
   ScrollView,
-  RefreshControl,
-  Alert,
-  SafeAreaView,
-} from "react-native";
-import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  User, 
-  Phone, 
-  Mail, 
-  Star, 
-  ChevronRight,
-  Bell,
-  Search,
-  Filter
-} from "react-native-feather";
-import LinearGradient from "react-native-linear-gradient";
-import styles from "./DoctorDashBoardStyle";
+  FlatList,
+  StyleSheet,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { auth, db } from '../../../api/firebaseConfig';
+import {
+  doc,
+  onSnapshot,
+  collection,
+  query,
+  orderBy,
+  limit,
+  getDocs,
+} from 'firebase/firestore';
+import styles from './DoctorDashBoardStyle';
+
+const AbsoluteFill = { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 };
+
+/**
+ * GradientView: lightweight gradient-like background using two overlays.
+ * (No extra libs required — keeps the light theme aesthetic.)
+ */
+const GradientView = ({ colors = ['#e6f7f5', '#dff3f1'], style, children }) => (
+  <View style={[style, { overflow: 'hidden' }]}>
+    <View style={[AbsoluteFill, { backgroundColor: colors[0], opacity: 1 }]} />
+    <View style={[AbsoluteFill, { backgroundColor: colors[1], opacity: 0.9 }]} />
+    {children}
+  </View>
+);
+
+const KPI = ({ label, value }) => (
+  <View style={styles.kpiCard}>
+    <Text style={styles.kpiValue}>{value}</Text>
+    <Text style={styles.kpiLabel}>{label}</Text>
+  </View>
+);
+
+const ActivityRow = ({ item }) => (
+  <View style={styles.activityCard}>
+    <Icon name={item.icon ?? 'notifications'} size={22} color="#0f766e" />
+    <View style={{ marginLeft: 12, flex: 1 }}>
+      <Text style={styles.activityText}>{item.title ?? item.text ?? 'Activity'}</Text>
+      <Text style={styles.activityTime}>
+        {item.createdAt?.toDate ? item.createdAt.toDate().toLocaleString() : item._createdAtString ?? ''}
+      </Text>
+    </View>
+  </View>
+);
 
 const DoctorDashboard = ({ navigation }) => {
-  const [doctorData, setDoctorData] = useState(null);
-  const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [stats, setStats] = useState({
-    today: 0,
-    upcoming: 0,
-    completed: 0
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 140],
+    outputRange: [1, 0.88],
+    extrapolate: 'clamp',
   });
 
-  // Demo doctor data
-  const demoDoctor = {
-    name: "Dr. Jane Doe",
-    specialty: "Cardiology",
-    email: "jane.doe@hospital.com"
-  };
-
-  // Demo appointments
-  const demoAppointments = [
-    {
-      id: "1",
-      patientName: "John Smith",
-      date: new Date().toISOString().split('T')[0],
-      time: "10:00 AM",
-      status: "confirmed",
-      location: "Room 101"
-    },
-    {
-      id: "2",
-      patientName: "Mary Johnson",
-      date: new Date().toISOString().split('T')[0],
-      time: "11:30 AM",
-      status: "pending",
-      location: "Room 102"
-    },
-    {
-      id: "3",
-      patientName: "Alex Lee",
-      date: "2025-10-07",
-      time: "2:00 PM",
-      status: "confirmed",
-      location: "Room 103"
-    },
-    {
-      id: "4",
-      patientName: "Sara Kim",
-      date: "2025-10-08",
-      time: "9:00 AM",
-      status: "completed",
-      location: "Room 104"
-    }
-  ];
-
-  const fetchData = async () => {
-    // Simulate loading
-    setTimeout(() => {
-      setDoctorData(demoDoctor);
-      setAppointments(demoAppointments);
-      calculateStats(demoAppointments);
-      setLoading(false);
-      setRefreshing(false);
-    }, 1000);
-  };
-
-  const calculateStats = (appointments) => {
-    const today = new Date().toISOString().split('T')[0];
-    const todayAppointments = appointments.filter(apt => apt.date === today);
-    const upcomingAppointments = appointments.filter(apt => apt.date > today);
-    const completedAppointments = appointments.filter(apt => apt.status === 'completed');
-
-    setStats({
-      today: todayAppointments.length,
-      upcoming: upcomingAppointments.length,
-      completed: completedAppointments.length
-    });
-  };
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchData();
-  };
+  const [doctorData, setDoctorData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [kpis, setKpis] = useState({ patients: 0, appointmentsToday: 0, pendingReports: 0 });
+  const [activities, setActivities] = useState([]);
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const getAppointmentStatusColor = (status) => {
-    switch (status) {
-      case 'confirmed': return '#10B981';
-      case 'pending': return '#F59E0B';
-      case 'cancelled': return '#EF4444';
-      default: return '#6B7280';
+    const user = auth.currentUser;
+    if (!user) {
+      setLoading(false);
+      return;
     }
-  };
 
-  const getUpcomingAppointments = () => {
-    const today = new Date().toISOString().split('T')[0];
-    return appointments.filter(apt => apt.date >= today).slice(0, 5);
-  };
+    // Doctor doc listener (real-time)
+    const docRef = doc(db, 'doctors', user.uid);
+    const unsubscribeDoctor = onSnapshot(
+      docRef,
+      snap => {
+        if (snap.exists()) {
+          const data = snap.data();
+          setDoctorData(data);
+          // If your doctor doc contains aggregated KPI fields, use them; otherwise these are fallbacks.
+          setKpis(prev => ({
+            patients: data.patientsCount ?? prev.patients,
+            appointmentsToday: data.appointmentsToday ?? prev.appointmentsToday,
+            pendingReports: data.pendingReports ?? prev.pendingReports,
+          }));
+        } else {
+          setDoctorData(null);
+        }
+        setLoading(false);
+      },
+      err => {
+        console.error('doctor listener error', err);
+        setLoading(false);
+      },
+    );
 
-  const renderAppointmentItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.appointmentCard}
-      onPress={() => navigation.navigate("AppointmentDetails", { appointmentId: item.id })}
-    >
-      <View style={styles.appointmentHeader}>
-        <View style={styles.patientInfo}>
-          <User width={16} height={16} color="#4B5563" />
-          <Text style={styles.patientName}>{item.patientName}</Text>
-        </View>
-        <View style={[styles.statusBadge, { backgroundColor: getAppointmentStatusColor(item.status) + '20' }]}>
-          <Text style={[styles.statusText, { color: getAppointmentStatusColor(item.status) }]}>
-            {item.status?.charAt(0).toUpperCase() + item.status?.slice(1)}
-          </Text>
-        </View>
-      </View>
+    // Recent activities: one-off fetch (keeps things light). Change to onSnapshot if you want live updates.
+    (async () => {
+      try {
+        const activitiesRef = collection(db, 'activities');
+        const q = query(activitiesRef, orderBy('createdAt', 'desc'), limit(8));
+        const snaps = await getDocs(q);
+        const arr = [];
+        snaps.forEach(s => {
+          const data = s.data();
+          // try to normalize createdAt to a readable string if it's a Firestore Timestamp
+          let _createdAtString = '';
+          if (data.createdAt?.toDate) _createdAtString = data.createdAt.toDate().toLocaleString();
+          arr.push({ id: s.id, ...data, _createdAtString });
+        });
+        setActivities(arr);
+      } catch (e) {
+        console.error('activities fetch error', e);
+      }
+    })();
 
-      <View style={styles.appointmentDetails}>
-        <View style={styles.detailRow}>
-          <Calendar width={14} height={14} color="#6B7280" />
-          <Text style={styles.detailText}>{new Date(item.date).toLocaleDateString()}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Clock width={14} height={14} color="#6B7280" />
-          <Text style={styles.detailText}>{item.time}</Text>
-        </View>
-        {item.location && (
-          <View style={styles.detailRow}>
-            <MapPin width={14} height={14} color="#6B7280" />
-            <Text style={styles.detailText}>{item.location}</Text>
-          </View>
-        )}
-      </View>
-
-      <View style={styles.appointmentFooter}>
-        <TouchableOpacity style={styles.contactButton}>
-          <Phone width={14} height={14} color="#2563EB" />
-          <Text style={styles.contactText}>Call</Text>
-        </TouchableOpacity>
-        <View style={styles.chevron}>
-          <ChevronRight width={16} height={16} color="#9CA3AF" />
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderStatsCard = () => (
-    <LinearGradient
-      colors={['#2563EB', '#1D4ED8']}
-      style={styles.statsCard}
-    >
-      <View style={styles.statItem}>
-        <Text style={styles.statNumber}>{stats.today}</Text>
-        <Text style={styles.statLabel}>Today</Text>
-      </View>
-      <View style={styles.statSeparator} />
-      <View style={styles.statItem}>
-        <Text style={styles.statNumber}>{stats.upcoming}</Text>
-        <Text style={styles.statLabel}>Upcoming</Text>
-      </View>
-      <View style={styles.statSeparator} />
-      <View style={styles.statItem}>
-        <Text style={styles.statNumber}>{stats.completed}</Text>
-        <Text style={styles.statLabel}>Completed</Text>
-      </View>
-    </LinearGradient>
-  );
+    return () => {
+      unsubscribeDoctor();
+    };
+  }, []);
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color="#2563EB" />
-          <Text style={styles.loadingText}>Loading Dashboard...</Text>
-        </View>
-      </SafeAreaView>
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#0f766e" />
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        style={styles.container}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+
+      <Animated.View style={[styles.headerBackground, { opacity: headerOpacity }]} />
+
+      <Animated.ScrollView
         showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+          useNativeDriver: true,
+        })}
       >
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Welcome back,</Text>
-            <Text style={styles.doctorName}>{doctorData?.name || "Doctor"}</Text>
-            <Text style={styles.specialty}>{doctorData?.specialty}</Text>
-          </View>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Bell width={24} height={24} color="#374151" />
-            <View style={styles.notificationBadge} />
-          </TouchableOpacity>
-        </View>
+          <View style={styles.headerContent}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.greeting}>
+                Hello, Dr. {doctorData?.lastName ?? doctorData?.name ?? '—'}
+              </Text>
+              <Text style={styles.subGreeting}>
+                {doctorData?.specialization ?? 'General Practitioner'}
+              </Text>
+              {doctorData?.clinic && (
+                <Text style={styles.clinicText}>{doctorData.clinic}</Text>
+              )}
+            </View>
 
-        {/* Stats Card */}
-        {renderStatsCard()}
-
-        {/* Quick Actions */}
-        <View style={styles.quickActions}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.actionButton}>
-              <Calendar width={20} height={20} color="#2563EB" />
-              <Text style={styles.actionText}>Schedule</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <User width={20} height={20} color="#10B981" />
-              <Text style={styles.actionText}>Patients</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Mail width={20} height={20} color="#F59E0B" />
-              <Text style={styles.actionText}>Messages</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Star width={20} height={20} color="#8B5CF6" />
-              <Text style={styles.actionText}>Reviews</Text>
+            <TouchableOpacity
+              style={styles.avatarContainer}
+              onPress={() => navigation.navigate('DoctorProfile')}
+            >
+              <Image
+                source={{
+                  uri: doctorData?.avatar || 'https://i.pravatar.cc/150?img=12',
+                }}
+                style={styles.avatar}
+              />
+              <View style={styles.onlineIndicator} />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Upcoming Appointments */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>See All</Text>
-            </TouchableOpacity>
-          </View>
+        {/* KPI Row */}
+        <View style={styles.kpiRow}>
+          <KPI label="Active Patients" value={kpis.patients} />
+          <KPI label="Appointments Today" value={kpis.appointmentsToday} />
+          <KPI label="Pending Reports" value={kpis.pendingReports} />
+        </View>
 
-          {getUpcomingAppointments().length > 0 ? (
-            <FlatList
-              data={getUpcomingAppointments()}
-              keyExtractor={item => item.id}
-              renderItem={renderAppointmentItem}
-              scrollEnabled={false}
-              showsVerticalScrollIndicator={false}
-            />
-          ) : (
-            <View style={styles.emptyState}>
-              <Calendar width={48} height={48} color="#9CA3AF" />
-              <Text style={styles.emptyStateTitle}>No Appointments</Text>
-              <Text style={styles.emptyStateText}>
-                You don't have any upcoming appointments scheduled.
+        {/* Performance / Quick Summary Card */}
+        <View style={styles.performanceContainer}>
+          <GradientView colors={['#e6f7f5', '#ffffff']} style={styles.performanceCard}>
+            <View>
+              <Text style={styles.performanceTitle}>Today — At a glance</Text>
+              <Text style={styles.performanceSubtitle}>
+                Manage patients, appointments, and resources from one place.
               </Text>
             </View>
+
+            <TouchableOpacity
+              style={styles.performanceBtn}
+              onPress={() => navigation.navigate('Reports')}
+            >
+              <Icon name="insert-chart" size={18} color="#fff" />
+              <Text style={styles.performanceBtnText}>Open Reports</Text>
+            </TouchableOpacity>
+          </GradientView>
+        </View>
+
+        {/* Quick Actions */}
+        <Text style={styles.sectionHeader}>Quick Actions</Text>
+        <View style={styles.quickActions}>
+          {[
+            {
+              icon: 'groups',
+              title: 'Patient Management',
+              subtitle: 'View & edit patients',
+              route: 'PatientManagement',
+              colors: ['#dff7f4', '#eafefe'],
+            },
+            {
+              icon: 'local-hospital',
+              title: 'Facility Resources',
+              subtitle: 'Check equipment & beds',
+              route: 'FacilityResources',
+              colors: ['#eef7f6', '#f7fbfb'],
+            },
+            {
+              icon: 'analytics',
+              title: 'Analytics & Reports',
+              subtitle: 'KPIs & exports',
+              route: 'Reports',
+              colors: ['#f0f7f6', '#fffdfa'],
+            },
+            {
+              icon: 'calendar-month',
+              title: 'Appointments',
+              subtitle: 'Manage schedule',
+              route: 'DoctorAppointments',
+              colors: ['#f6fbfa', '#ffffff'],
+            },
+          ].map((item, idx) => (
+            <TouchableOpacity
+              key={idx}
+              style={styles.actionCard}
+              onPress={() => navigation.navigate(item.route)}
+              activeOpacity={0.8}
+            >
+              <View style={styles.actionLeft}>
+                <View style={styles.actionIconWrap}>
+                  <Icon name={item.icon} size={22} color="#0f766e" />
+                </View>
+                <View style={{ marginLeft: 10 }}>
+                  <Text style={styles.actionTitle}>{item.title}</Text>
+                  <Text style={styles.actionSub}>{item.subtitle}</Text>
+                </View>
+              </View>
+
+              <Icon name="chevron-right" size={24} color="#94a3b8" />
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Recent Activity */}
+        <View style={styles.activitySection}>
+          <View style={styles.activityHeader}>
+            <Text style={styles.activityTitle}>Recent Activity</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Reports')}>
+              <Text style={styles.seeAllText}>See all</Text>
+            </TouchableOpacity>
+          </View>
+
+          {activities.length === 0 ? (
+            <View style={styles.emptyRow}>
+              <Text style={styles.emptyText}>No recent activity</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={activities}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => <ActivityRow item={item} />}
+              scrollEnabled={false}
+            />
           )}
         </View>
-      </ScrollView>
+
+        {/* spacing bottom */}
+        <View style={{ height: 140 }} />
+      </Animated.ScrollView>
+
+      {/* Floating Add Patient Button */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('AddPatient')}
+      >
+        <Icon name="person-add" size={22} color="#fff" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
-
-
 
 export default DoctorDashboard;

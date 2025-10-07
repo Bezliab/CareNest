@@ -1,156 +1,269 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
-import Geolocation from "@react-native-community/geolocation";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../../api/firebaseConfig"; // ✅ Firebase setup
+  FlatList,
+  TextInput,
+  SafeAreaView,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-export default function DoctorPage() {
-  const [userLocation, setUserLocation] = useState(null);
-  const [hasLocation, setHasLocation] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [doctors, setDoctors] = useState([]);
+const SpecialistListScreen = ({ navigation }) => {
+  const [searchText, setSearchText] = useState('');
+  const [selectedSpecialty, setSelectedSpecialty] = useState('All');
 
-  // ask permission (Android automatically prompts; iOS needs plist)
-  const requestLocationPermission = async () => {
-    return true; // permission handled automatically
-  };
+  const specialties = ['All', 'pediatrician', 'cardiologist', 'dentist'];
 
-  // convert degrees to km distance
-  function getDistance(lat1, lon1, lat2, lon2) {
-    const toRad = (v) => (v * Math.PI) / 180;
-    const R = 6371;
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
+  const specialists = [
+    {
+      id: '1',
+      name: 'Leslie Alexander',
+      specialty: 'pediatrician',
+      rating: 5.0,
+      availableToday: true,
+      availableTimes: ['10:30', '11:00', '14:00', '16:00'],
+      address: 'Tim Street, Springfield',
+    },
+    {
+      id: '2',
+      name: 'Ronald Richards',
+      specialty: 'cardiologist',
+      rating: 4.9,
+      availableToday: false,
+      availableTimes: ['06:00', '11:00', '13:00', '14:00'],
+      address: 'Tim Street, Springfield',
+    },
+    {
+      id: '3',
+      name: 'Annette Black',
+      specialty: 'pediatrician',
+      rating: 5.0,
+      availableToday: true,
+      availableTimes: [],
+      address: 'Tim Street, Springfield',
+    },
+  ];
 
-  const fetchAllDoctors = async () => {
-    const doctorsRef = collection(db, "doctors");
-    const snapshot = await getDocs(doctorsRef);
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  };
+  const filteredSpecialists = specialists.filter((specialist) => {
+    const matchesSearch = specialist.name.toLowerCase().includes(searchText.toLowerCase());
+    const matchesSpecialty =
+      selectedSpecialty === 'All' || specialist.specialty === selectedSpecialty;
+    return matchesSearch && matchesSpecialty;
+  });
 
-  const handleChooseLocation = async () => {
-    const permission = await requestLocationPermission();
-    if (!permission) {
-      Alert.alert("Permission denied", "Please allow location access.");
-      return;
-    }
+  const renderSpecialistCard = ({ item }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('BookAppointment', { specialist: item })}
+    >
+      <View style={styles.cardHeader}>
+        <View>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.specialty}>{item.specialty}</Text>
+        </View>
+        <View style={styles.ratingContainer}>
+          <Icon name="star" size={16} color="#FFD700" />
+          <Text style={styles.rating}>{item.rating}</Text>
+        </View>
+      </View>
 
-    setLoading(true);
+      <Text style={styles.availableText}>
+        Available time: {item.availableToday ? 'Today' : 'Tomorrow'}
+      </Text>
 
-    Geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        setUserLocation({ latitude, longitude });
-        setHasLocation(true);
-
-        try {
-          const allDoctors = await fetchAllDoctors();
-
-          // filter within 20 km radius
-          const nearbyDoctors = allDoctors.filter((doc) => {
-            if (doc.latitude && doc.longitude) {
-              const distance = getDistance(
-                latitude,
-                longitude,
-                doc.latitude,
-                doc.longitude
-              );
-              return distance <= 20;
-            }
-            return false;
-          });
-
-          setDoctors(nearbyDoctors);
-        } catch (e) {
-          console.error("Error fetching doctors:", e);
-          Alert.alert("Error", "Could not fetch doctors from database.");
-        } finally {
-          setLoading(false);
-        }
-      },
-      (error) => {
-        console.log(error);
-        Alert.alert("Error", "Unable to get your location.");
-        setLoading(false);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
-  };
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Find Nearby Doctors</Text>
-
-      {!hasLocation ? (
-        <TouchableOpacity
-          onPress={handleChooseLocation}
-          style={styles.locationButton}
-        >
-          <Text style={styles.locationButtonText}>Use My Location</Text>
-        </TouchableOpacity>
-      ) : loading ? (
-        <ActivityIndicator size="large" color="#007bff" style={{ marginTop: 20 }} />
-      ) : doctors.length === 0 ? (
-        <Text style={styles.noDoctorsText}>No nearby doctors found.</Text>
-      ) : (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {doctors.map((doc) => (
-            <View key={doc.id} style={styles.card}>
-              <Text style={styles.name}>{doc.name}</Text>
-              <Text style={styles.specialty}>{doc.specialty}</Text>
-              <Text style={styles.hospital}>{doc.hospital}</Text>
-              <Text style={styles.detail}>
-                ⭐ {doc.rating || "N/A"} | {doc.experience || 0} years exp.
-              </Text>
+      {item.availableTimes.length > 0 && (
+        <View style={styles.timeContainer}>
+          {item.availableTimes.map((time, index) => (
+            <View key={index} style={styles.timeSlot}>
+              <Text style={styles.timeText}>{time}</Text>
             </View>
           ))}
-        </ScrollView>
+        </View>
       )}
-    </View>
+
+      <Text style={styles.address}>{item.address}</Text>
+    </TouchableOpacity>
   );
-}
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Search and Filter Section */}
+      <View style={styles.searchSection}>
+        <Text style={styles.sectionTitle}>Search Specialists</Text>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search by name..."
+          value={searchText}
+          onChangeText={setSearchText}
+        />
+        <View style={styles.specialtyContainer}>
+          {specialties.map((specialty) => (
+            <TouchableOpacity
+              key={specialty}
+              style={[
+                styles.specialtyButton,
+                selectedSpecialty === specialty && styles.specialtyButtonSelected,
+              ]}
+              onPress={() => setSelectedSpecialty(specialty)}
+            >
+              <Text
+                style={[
+                  styles.specialtyText,
+                  selectedSpecialty === specialty && styles.specialtyTextSelected,
+                ]}
+              >
+                {specialty}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Specialists List */}
+      <FlatList
+        data={filteredSpecialists}
+        renderItem={renderSpecialistCard}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+      />
+
+  
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f6f8fa", padding: 16 },
-  header: { fontSize: 24, fontWeight: "700", marginBottom: 20, color: "#222" },
-  locationButton: {
-    backgroundColor: "#007bff",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
-  locationButtonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
-  noDoctorsText: { textAlign: "center", marginTop: 40, color: "#666" },
-  scrollContainer: { paddingBottom: 40 },
+  searchSection: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#E5E5E5',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 12,
+  },
+  specialtyContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  specialtyButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  specialtyButtonSelected: {
+    backgroundColor: '#007AFF',
+  },
+  specialtyText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  specialtyTextSelected: {
+    color: '#fff',
+    fontWeight: '500',
+  },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
-    marginBottom: 14,
-    shadowColor: "#000",
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E5E5',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
-  name: { fontSize: 18, fontWeight: "700", color: "#111" },
-  specialty: { color: "#007bff", marginTop: 4 },
-  hospital: { color: "#444", marginTop: 4 },
-  detail: { color: "#666", marginTop: 6, fontSize: 13 },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  specialty: {
+    fontSize: 14,
+    color: '#666',
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rating: {
+    marginLeft: 4,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  availableText: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 8,
+  },
+  timeSlot: {
+    backgroundColor: '#F5F5F5',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  timeText: {
+    fontSize: 12,
+    color: '#333',
+  },
+  address: {
+    fontSize: 12,
+    color: '#666',
+  },
+  bookButton: {
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
+    right: 16,
+    backgroundColor: '#007AFF',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+  },
+  bookButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
+
+export default SpecialistListScreen;
