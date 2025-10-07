@@ -100,7 +100,7 @@ const ProfileScreen = ({ navigation }) => {
           <Text style={styles.infoText}>
             {userData?.phone || 'No phone number'}
           </Text>
-        </View>
+        </View> 
 
         <View style={styles.infoRow}>
           <Icon name="location-outline" size={20} color="#1976d2" />
