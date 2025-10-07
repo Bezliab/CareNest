@@ -35,16 +35,35 @@ import DoctorScreen from './src/screens/DoctorsScreen/DoctorScreen';
 import HelpCenterScreen from './src/screens/HelpCentreScreen/HelpCentreScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen/EditProfileScreen';
 import bookingpageScreen from './src/screens/bookingpage/bookingpageScreen';
+
+// ✅ All your screens
+import LandingPage from './src/screens/LandingScreen/LandingScreen';
+import FirstPage from './src/screens/FirstPage/FirstPage';
+import LoginScreen from './src/screens/Loginscreen/LoginScreen';
+import SignUpScreen from './src/screens/SigninScreen/SignUpScreen';
+import Dashboard from './src/screens/Dashboard/Dashboard';
+import HealthScreen from './src/screens/HealthPage/Healthscreen';
+import ReminderScreen from './src/screens/ReminderScreen/ReminderScreen';
+import TodayScreen from './src/screens/ReminderScreen/TodayScreen/TodayScreen';
+import ScheduleScreen from './src/screens/ReminderScreen/ScheduleScreen/ScheduleScreen';
+import AllReminderScreen from './src/screens/ReminderScreen/AllReminderScreen/AllReminderScreen';
+import CompletedScreen from './src/screens/ReminderScreen/CompletedScreen/CompletedScreen';
+import AppointmentScreen from './src/screens/AppointmentScreen/AppointmentScreen';
+import EmergencyScreen from './src/screens/Emergency/Emergency';
+import SettingsScreen from './src/screens/SettingsPage/SettingsScreen';
+import ProfileScreen from './src/screens/ProfilePage/ProfileScreen';
+import ArticleScreen from './src/screens/ArticleScreen/ArticleScreen';
+import FaqScreen from './src/screens/FaqScreen/FaqScreen';
+import HistoryScreen from './src/screens/HistoryScreen/HistoryScreen';
+import DoctorScreen from './src/screens/DoctorsScreen/DoctorScreen';
+import HelpCenterScreen from './src/screens/HelpCentreScreen/HelpCentreScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen/EditProfileScreen';
+import bookingpageScreen from './src/screens/bookingpage/bookingpageScreen';
 import AddRemider from './src/screens/AddReminder/AddReminderSreen';
 import ResourcesScreen from './src/screens/Rescources/ResourcesScreen';
 import HealthTipsScreen from './src/screens/HealthTipsScreen/HealthTipsScreen';
 import Doctor_Sign from './src/screens/Doctors_Sign/Doctors_login';
 import DoctorSignUpScreen from './src/screens/DoctorSignupScreen/DoctorSignupScreen';
-
-import useFcmToken from './src/hooks/useFcmToken';
-import { enablePersistenceIfAvailable } from './src/api/firebaseService';
-import firestore from '@react-native-firebase/firestore';
-import AppNavigator from './src/navigation/AppNavigator';
 
 const Stack = createNativeStackNavigator();
 
