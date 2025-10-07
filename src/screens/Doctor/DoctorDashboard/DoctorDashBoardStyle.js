@@ -1,243 +1,149 @@
-import { StyleSheet, Dimensions } from "react-native";
-const { width } = Dimensions.get("window");
-const cardWidth = (width - 60) / 2;
-export default styles = StyleSheet.create({
-  safeArea: {
+//Doctors dashboard css
+
+
+import { StyleSheet } from 'react-native';
+
+export default StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f8fafc' },
+
+  headerBackground: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 220,
+    backgroundColor: '#ecfeff',
+  },
+
+  header: { paddingHorizontal: 20, paddingTop: 18, paddingBottom: 12 },
+  headerContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+
+  greeting: { fontSize: 22, fontWeight: '700', color: '#064e3b' },
+  subGreeting: { fontSize: 14, color: '#0f766e', marginTop: 4 },
+  clinicText: { fontSize: 12, color: '#6b7280', marginTop: 4 },
+
+  avatarContainer: { position: 'relative' },
+  avatar: { width: 56, height: 56, borderRadius: 28, backgroundColor: '#fff' },
+  onlineIndicator: {
+    position: 'absolute',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#10b981',
+    right: 0,
+    bottom: 0,
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+
+  // KPI row
+  kpiRow: {
+    marginHorizontal: 14,
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  kpiCard: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#F8FAFC",
-  },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F8FAFC",
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: "#6B7280",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 16,
-  },
-  greeting: {
-    fontSize: 16,
-    color: "#6B7280",
-    marginBottom: 4,
-  },
-  doctorName: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#111827",
-    marginBottom: 4,
-  },
-  specialty: {
-    fontSize: 16,
-    color: "#2563EB",
-    fontWeight: "600",
-  },
-  notificationButton: {
-    padding: 8,
+    backgroundColor: '#fff',
+    marginHorizontal: 6,
+    paddingVertical: 16,
+    paddingHorizontal: 10,
     borderRadius: 12,
-    backgroundColor: "#F3F4F6",
-    position: "relative",
-  },
-  notificationBadge: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#EF4444",
-  },
-  statsCard: {
-    marginHorizontal: 24,
-    marginVertical: 16,
-    borderRadius: 20,
-    padding: 24,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  statItem: {
-    alignItems: "center",
-    flex: 1,
-  },
-  statNumber: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: "#E5E7EB",
-    fontWeight: "500",
-  },
-  statSeparator: {
-    width: 1,
-    height: 40,
-    backgroundColor: "rgba(255,255,255,0.3)",
-  },
-  quickActions: {
-    paddingHorizontal: 24,
-    marginVertical: 16,
-  },
-  section: {
-    paddingHorizontal: 24,
-    marginVertical: 16,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#111827",
-  },
-  seeAllText: {
-    fontSize: 14,
-    color: "#2563EB",
-    fontWeight: "600",
-  },
-  actionButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 12,
-  },
-  actionButton: {
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    padding: 16,
-    borderRadius: 16,
-    flex: 1,
-    marginHorizontal: 4,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
+    alignItems: 'center',
     elevation: 2,
   },
-  actionText: {
-    marginTop: 8,
-    fontSize: 12,
-    color: "#374151",
-    fontWeight: "500",
-  },
-  appointmentCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  appointmentHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  patientInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  patientName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111827",
-    marginLeft: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+  kpiValue: { fontSize: 20, fontWeight: '800', color: '#064e3b' },
+  kpiLabel: { fontSize: 12, color: '#6b7280', marginTop: 6 },
+
+  // Performance
+  performanceContainer: { marginHorizontal: 16, marginTop: 14 },
+  performanceCard: {
     borderRadius: 12,
+    padding: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    elevation: 2,
+    backgroundColor: '#ffffff',
   },
-  statusText: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  appointmentDetails: {
-    marginBottom: 12,
-  },
-  detailRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 6,
-  },
-  detailText: {
-    fontSize: 14,
-    color: "#6B7280",
-    marginLeft: 8,
-  },
-  appointmentFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  contactButton: {
-    flexDirection: "row",
-    alignItems: "center",
+  performanceTitle: { fontSize: 16, fontWeight: '700', color: '#064e3b' },
+  performanceSubtitle: { fontSize: 13, color: '#6b7280', marginTop: 6, maxWidth: 220 },
+  performanceBtn: {
+    backgroundColor: '#0f766e',
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: "#EFF6FF",
-    borderRadius: 8,
+    paddingVertical: 8,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  contactText: {
-    fontSize: 12,
-    color: "#2563EB",
-    fontWeight: "500",
-    marginLeft: 4,
+  performanceBtnText: { color: '#fff', marginLeft: 8, fontWeight: '600' },
+
+  // Quick Actions list
+  sectionHeader: { marginLeft: 16, marginTop: 20, fontSize: 18, fontWeight: '700', color: '#064e3b' },
+  quickActions: {
+    paddingHorizontal: 12,
+    marginTop: 10,
+    flexDirection: 'column',
   },
-  chevron: {
-    padding: 4,
+  actionCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    elevation: 1,
   },
-  emptyState: {
-    alignItems: "center",
-    paddingVertical: 48,
-    paddingHorizontal: 24,
+  actionLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  actionIconWrap: {
+    width: 46,
+    height: 46,
+    borderRadius: 10,
+    backgroundColor: '#ecfdf5',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  emptyStateTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#374151",
-    marginTop: 16,
-    marginBottom: 8,
+  actionTitle: { fontSize: 15, fontWeight: '700', color: '#064e3b' },
+  actionSub: { fontSize: 12, color: '#6b7280', marginTop: 4 },
+
+  // Recent activity
+  activitySection: { marginHorizontal: 16, marginTop: 16 },
+  activityHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  activityTitle: { fontSize: 16, fontWeight: '700', color: '#064e3b' },
+  seeAllText: { color: '#0f766e', fontWeight: '600' },
+
+  activityCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 10,
+    elevation: 1,
   },
-  emptyStateText: {
-    fontSize: 14,
-    color: "#6B7280",
-    textAlign: "center",
-    lineHeight: 20,
-  },
+  activityText: { fontSize: 14, color: '#0f172a', fontWeight: '600' },
+  activityTime: { fontSize: 11, color: '#94a3b8', marginTop: 6 },
+
+  emptyRow: { padding: 12, alignItems: 'center' },
+  emptyText: { color: '#94a3b8' },
+
+  // Floating action button
+  fab: {
+    position: 'absolute',
+    right: 18,
+    bottom: 24,
+    backgroundColor: '#0f766e',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,
+    shadowColor: '#0f766e',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 6 },
+  },
 });

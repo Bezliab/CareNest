@@ -2,164 +2,220 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
-  ScrollView,
+  FlatList,
+  StyleSheet,
   ActivityIndicator,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import LinearGradient from 'react-native-linear-gradient';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import styles from './AppointmentScreenstyle';
 
-export default function AppointmentScreen({ navigation }) {
+const AppointmentScreen = () => {
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchText, setSearchText] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All'); // All / Pending / Complete
+
+  const currentUser = auth().currentUser;
 
   useEffect(() => {
-    const user = auth().currentUser;
-    if (!user) return;
+    if (!currentUser) return;
 
-    // 🔹 Real-time listener for user's appointments (offline + sync)
     const unsubscribe = firestore()
       .collection('appointments')
-      .where('userId', '==', user.uid)
+      .where('patientId', '==', currentUser.uid)
       .onSnapshot(
         snapshot => {
-          const data = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
+          const data = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .sort((a, b) => {
+              if (!a.createdAt) return 1;
+              if (!b.createdAt) return -1;
+              return b.createdAt.toDate() - a.createdAt.toDate();
+            });
+
           setAppointments(data);
           setLoading(false);
         },
         error => {
-          console.error('Error fetching appointments:', error);
+          console.log('Firestore error:', error);
           setLoading(false);
-        },
+        }
       );
 
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    let data = [...appointments];
+
+    if (statusFilter !== 'All') {
+      data = data.filter(a => a.status === statusFilter.toLowerCase());
+    }
+
+    if (searchText.trim() !== '') {
+      data = data.filter(a =>
+        a.doctorName.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    setFilteredAppointments(data);
+  }, [appointments, searchText, statusFilter]);
+
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#1976d2" />
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#007AFF" />
       </View>
     );
   }
 
-  // Handle empty state
-  if (!appointments || appointments.length === 0) {
+  if (filteredAppointments.length === 0) {
     return (
-      <LinearGradient colors={['#eef2f3', '#f8fbff']} style={styles.container}>
-        <View style={styles.headerContainer}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <Ionicons name="arrow-back" size={24} color="#333" />
-          </TouchableOpacity>
-          <Text style={styles.header}>My Appointments</Text>
-        </View>
-
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-        >
-          <Ionicons name="calendar-outline" size={60} color="#ccc" />
-          <Text style={{ marginTop: 10, color: '#777' }}>
-            No appointments found.
-          </Text>
-        </View>
-      </LinearGradient>
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>No appointments found.</Text>
+      </View>
     );
   }
 
-  // Split into next and upcoming appointments
-  const sortedAppointments = appointments.sort(
-    (a, b) => new Date(a.date) - new Date(b.date),
+  const renderAppointment = ({ item }) => (
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.doctorName}>{item.doctorName}</Text>
+        <View
+          style={[
+            styles.statusBadge,
+            item.status === 'complete' ? styles.statusComplete : styles.statusPending,
+          ]}
+        >
+          <Text
+            style={[
+              styles.statusText,
+              item.status === 'complete' ? styles.statusTextComplete : styles.statusTextPending,
+            ]}
+          >
+            {item.status ? item.status.toUpperCase() : 'PENDING'}
+          </Text>
+        </View>
+      </View>
+      <Text style={styles.info}>Specialty: {item.specialty}</Text>
+      <Text style={styles.info}>Date: {item.date}</Text>
+      <Text style={styles.info}>Time: {item.time}</Text>
+    </View>
   );
-  const nextAppointment = sortedAppointments[0];
-  const upcomingAppointments = sortedAppointments.slice(1);
 
   return (
-    <LinearGradient colors={['#eef2f3', '#f8fbff']} style={styles.container}>
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.header}>My Appointments</Text>
+    <View style={styles.container}>
+      {/* Heading */}
+      <Text style={styles.heading}>My Appointments</Text>
+
+      {/* Search Input */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search by doctor name..."
+        value={searchText}
+        onChangeText={setSearchText}
+      />
+
+      {/* Status Filter */}
+      <View style={styles.filterContainer}>
+        {['All', 'Pending', 'Complete'].map(status => (
+          <TouchableOpacity
+            key={status}
+            style={[
+              styles.filterButton,
+              statusFilter === status && styles.filterButtonSelected,
+            ]}
+            onPress={() => setStatusFilter(status)}
+          >
+            <Text
+              style={[
+                styles.filterText,
+                statusFilter === status && styles.filterTextSelected,
+              ]}
+            >
+              {status}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
-        {/* Next Appointment Card */}
-        <View style={styles.card}>
-          <Ionicons name="calendar-outline" size={36} color="#667eea" />
-          <Text style={styles.title}>Your Next Appointment</Text>
-          <Text style={styles.date}>{nextAppointment.date}</Text>
-          <Text style={styles.time}>{nextAppointment.time}</Text>
-
-          <View style={styles.detailRow}>
-            <Ionicons name="person-circle-outline" size={22} color="#444" />
-            <Text style={styles.detail}>
-              {nextAppointment.doctor || 'Dr. Unknown'}
-            </Text>
-          </View>
-
-          <View style={styles.detailRow}>
-            <Ionicons name="heart-outline" size={22} color="#e53935" />
-            <Text style={styles.detail}>
-              {nextAppointment.type || 'Antenatal Visit'}
-            </Text>
-          </View>
-
-          <View style={styles.detailRow}>
-            <Ionicons name="location-outline" size={22} color="#0288d1" />
-            <Text style={styles.detail}>
-              {nextAppointment.location || 'Clinic'}
-            </Text>
-          </View>
-
-          <TouchableOpacity style={styles.reminderButton}>
-            <Text style={styles.reminderText}>Set Reminder ⏰</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Upcoming Appointments Timeline */}
-        <Text style={styles.subHeader}>Upcoming Appointments</Text>
-        {upcomingAppointments.map(appt => (
-          <View key={appt.id} style={styles.timelineCard}>
-            <View style={styles.timelineDot} />
-            <View style={styles.timelineContent}>
-              <Text style={styles.timelineDate}>{appt.date}</Text>
-              <Text style={styles.timelineTime}>{appt.time}</Text>
-              <Text style={styles.timelineType}>
-                {appt.type || 'Antenatal Visit'}
-              </Text>
-              <Text style={styles.timelineDoctor}>
-                {appt.doctor || 'Doctor'}
-              </Text>
-              <Text style={styles.timelineLocation}>
-                {appt.location || 'Clinic'}
-              </Text>
-            </View>
-          </View>
-        ))}
-
-        {/* Tip Section */}
-        <View style={styles.tipCard}>
-          <Ionicons name="bulb-outline" size={24} color="#ffa000" />
-          <Text style={styles.tipText}>
-            Don’t forget to rest well before your check-ups and keep a small
-            notebook to track your questions.
-          </Text>
-        </View>
-      </ScrollView>
-    </LinearGradient>
+      {/* Appointments List */}
+      <FlatList
+        data={filteredAppointments}
+        renderItem={renderAppointment}
+        keyExtractor={item => item.id}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F9F9F9' },
+  heading: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#007AFF',
+    marginTop: 16,
+    marginBottom: 12,
+    marginHorizontal: 16,
+  },
+  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyText: { fontSize: 16, color: '#999' },
+  searchInput: {
+    marginHorizontal: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    fontSize: 14,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: 16,
+    marginVertical: 12,
+  },
+  filterButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#EDEDED',
+  },
+  filterButtonSelected: { backgroundColor: '#007AFF' },
+  filterText: { fontSize: 14, color: '#666' },
+  filterTextSelected: { color: '#fff', fontWeight: '600' },
+  card: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  doctorName: { fontSize: 18, fontWeight: 'bold', color: '#333' },
+  info: { fontSize: 14, color: '#666', marginBottom: 2 },
+  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  statusPending: { backgroundColor: '#FFF5E5' },
+  statusComplete: { backgroundColor: '#E6F9F1' },
+  statusText: { fontSize: 12, fontWeight: '600' },
+  statusTextPending: { color: '#FFA800' },
+  statusTextComplete: { color: '#00C853' },
+});
+
+export default AppointmentScreen;
