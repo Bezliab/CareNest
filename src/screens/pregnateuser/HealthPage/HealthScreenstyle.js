@@ -1,145 +1,89 @@
-import { StyleSheet } from "react-native";
-
-export default StyleSheet.create({
-  container: {
+const styles = StyleSheet.create({
+  scrollView: {
     flex: 1,
-    backgroundColor: "#f0f4f8",
+    backgroundColor: '#f8f9fa',
+  },
+  container: {
+    paddingHorizontal: 20,
+    paddingVertical: 40,
   },
   headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fcfdfeff",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    // borderBottomLeftRadius: 16,
-    // borderBottomRightRadius: 16,
-    elevation: 5,
-  },
-  backButton: {
-    marginRight: 12,
-    padding: 6,
-    backgroundColor: "#5563c1",
-    borderRadius: 8,
+    marginBottom: 30,
+    alignItems: 'center',
   },
   header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#fff",
+    fontSize: 28, 
+    fontWeight: 'bold',
+    color: '#343a40',
+    marginBottom: 8,
+    textAlign: 'center',
   },
-  subHeader: {
-    fontSize: 25,
-    paddingVertical: 14,
-    gap: 6,
-    lineHeight: 30,
-    fontWeight: "600",
-    color: "#444",
-    marginVertical: 12,
-    lineHeight: 20,
-    textAlign: "center",
+  subheader: {
+    fontSize: 16,
+    color: '#6c757d',
+    textAlign: 'center',
+    paddingHorizontal: 10,
+  },
+  cardGrid: {
+    // Layout for cards: flexWrap creates a grid effect
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  cardWrapper: {
+    // Responsive width: 100% on small screens, ~48% on wider tablets/desktops
+    width: windowWidth > 600 ? (windowWidth / 2) - 30 : '100%', 
+    marginBottom: 20,
   },
   card: {
+    backgroundColor: '#ffffff',
     borderRadius: 16,
-    padding: 16,
+    padding: 24,
+    // Native Shadow (iOS)
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    // Elevation (Android)
+    elevation: 5, 
+    minHeight: 250, 
+    flexGrow: 1, // Ensures all cards in a row try to take up space
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
-    elevation: 3,
+  },
+  iconText: {
+    fontSize: 24, // Size for the emoji icon
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    marginVertical: 8,
-    color: "#222",
+    fontWeight: '700',
+    color: '#343a40',
+    marginBottom: 8,
   },
-  cardText: {
+  cardSummary: {
+    color: '#6c757d',
+    marginBottom: 20,
+    flexGrow: 1, // Pushes the button to the bottom
     fontSize: 14,
-    color: "#555",
-    lineHeight: 20,
+    lineHeight: 18,
   },
-linkText: {
-  alignSelf: "flex-start",
-  marginTop: 12,
-  backgroundColor: "#667eea", // soft indigo/purple
-  color: "#fff",
-  fontSize: 14,
-  fontWeight: "600",
-  paddingVertical: 8,
-  paddingHorizontal: 18,
-  borderRadius: 25, // pill button
-  overflow: "hidden",
-  elevation: 3, // shadow for Android
-  shadowColor: "#000", // shadow for iOS
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.15,
-  shadowRadius: 3,
-},
-
-  cardWarning: {
-    backgroundColor: "#d32f2f",
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 16,
-    elevation: 6,
-  },
-  cardTitleLight: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginVertical: 8,
-    color: "#fff",
-  },
-  cardTextLight: {
-    fontSize: 15,
-    color: "#fff",
-    lineHeight: 22,
-  },
-  tipCard: {
-    flexDirection: "row",
-    backgroundColor: "#fff8e1",
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 30,
-    alignItems: "center",
-    elevation: 4,
-  },
-  tipTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 4,
-    color: "#ff9800",
-  },
-  tipText: {
-    fontSize: 14,
-    color: "#555",
-    lineHeight: 20,
-  },
-    navContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 85,
-    paddingBottom: 8,
-  },
-  navBackground: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255,255,255,0.95)',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 10,
-  },
-  navItem: {
-    flex: 1,
-    justifyContent: 'center',
+  readMoreButton: {
+    width: '100%',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
     alignItems: 'center',
-    paddingVertical: 8,
+    marginTop: 'auto', // Ensures button is always at the bottom of the card
   },
-  navLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    marginTop: 4,
-  }
+  readMoreText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
