@@ -405,7 +405,10 @@ const Dashboard = ({ navigation }) => {
         </View>
 
         {/* Rest of Dashboard (tips, emergency, etc.) unchanged */}
-        <View style={styles.tipCard} onPress={() => navigation.navigate('healthTips')}>
+        <View
+          style={styles.tipCard}
+          onPress={() => navigation.navigate('healthTips')}
+        >
           <View style={styles.tipHeader}>
             <View style={styles.tipIcon}>
               <Icon name="lightbulb" size={24} color="#FFC107" />
@@ -416,7 +419,10 @@ const Dashboard = ({ navigation }) => {
             Take short walks daily to improve circulation and ease back pain.
             Remember to stay hydrated and listen to your body's signals.
           </Text>
-          <TouchableOpacity style={styles.tipAction} onPress={() => navigation.navigate('healthTips')}>
+          <TouchableOpacity
+            style={styles.tipAction}
+            onPress={() => navigation.navigate('healthTips')}
+          >
             <Text style={styles.tipActionText}>Learn More</Text>
             <Icon name="arrow-forward" size={16} color="#667eea" />
           </TouchableOpacity>
