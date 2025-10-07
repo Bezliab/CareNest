@@ -1,0 +1,40 @@
+// Top-level build.gradle for CareNest Android project
+
+buildscript {
+    ext {
+        buildToolsVersion = "36.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 36
+        targetSdkVersion = 36
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "1.9.10" // Fixed Kotlin version
+    }
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        // Android Gradle plugin
+        classpath("com.android.tools.build:gradle:8.6.1")
+
+        // Kotlin Gradle plugin
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+
+        // React Native Gradle plugin
+        classpath("com.facebook.react:react-native-gradle-plugin")
+
+        // Google Services plugin for Firebase
+        classpath("com.google.gms:google-services:4.4.3")
+    }
+}
+
+// Repositories used for all subprojects
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://www.jitpack.io" } // for some React Native libraries
+    }
+}
