@@ -1,0 +1,21 @@
+{
+  "edit_profile": "Edit Profile",
+  "dark_mode": "Dark Mode",
+  "notifications": "Notifications",
+  "language": "Language",
+  "select_language": "Select Language",
+  "done": "Done",
+  "privacy_policy": "Privacy Policy",
+  "about": "About",
+  "logout": "Logout",
+  "logout_success": "Logged Out",
+  "logout_message": "You have been signed out successfully!",
+  "error": "Error",
+  "dashboard": "Dashboard",
+  "welcome": "Welcome",
+  "settings": "Settings",
+  "yo": "Yoruba",
+  "ha": "Hausa",
+  "ig": "Igbo",
+  "en": "English"
+}
