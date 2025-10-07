@@ -4,7 +4,7 @@ import firestore from "@react-native-firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
-import { pushPendingOpGeneric, getLocalList, saveLocalList, flushPendingOps } from "../services/syncService";
+import { pushPendingOpGeneric, getLocalList, saveLocalList, flushPendingOps } from "../Services/syncServices";
 import auth from "@react-native-firebase/auth";
 
 const LOCAL_KEY = "@CareNest:appointments_local";
