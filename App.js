@@ -41,9 +41,6 @@ import LaborDelivery from './src/screens/pregnateuser/LaborDelivery/LaborDeliver
 import RecoveryGuide from './src/screens/pregnateuser/RecoveryGuide/RecoveryGuide';
 import PrivacyPolicy from './src/screens/PrivacyPolicy/PrivacyPolicy';
 
-// Doctor navigation stack
-import DoctorStack from './src/screens/DoctorStack/DoctorStack';
-
 import useFcmToken from './src/hooks/useFCMtoken';
 
 const Stack = createNativeStackNavigator();
@@ -61,14 +58,13 @@ export default function App() {
       <HealthProvider>
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="FirstPage" // Set your initial route here
+            initialRouteName="LandingPage" // Set your initial route here
             screenOptions={{
               headerShown: false,
               animation: 'slide_from_right',
               gestureEnabled: true,
             }}
           >
-            <Stack.Screen name="FirstPage" component={FirstPage} />
             <Stack.Screen name="LandingPage" component={LandingPage} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="SignUp" component={SignUpScreen} />
@@ -109,9 +105,6 @@ export default function App() {
             <Stack.Screen name="delivery" component={LaborDelivery} />
             <Stack.Screen name="Recovery" component={RecoveryGuide} />
             <Stack.Screen name="privacy" component={PrivacyPolicy} />
-
-            {/* ✅ Doctor screens grouped */}
-            <Stack.Screen name="DoctorArea" component={DoctorStack} />
           </Stack.Navigator>
         </NavigationContainer>
       </HealthProvider>
