@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 import { StyleSheet, Dimensions } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 export default styles = StyleSheet.create({
+=======
+const styles = StyleSheet.create({
+>>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
   scrollView: {
     flex: 1,
     backgroundColor: '#f8f9fa',

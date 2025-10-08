@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+//Analytics style
+
+>>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
 import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },

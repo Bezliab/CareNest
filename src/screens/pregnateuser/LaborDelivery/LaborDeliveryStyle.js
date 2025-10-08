@@ -1,5 +1,8 @@
 import { StyleSheet } from 'react-native';
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
 export default styles = StyleSheet.create({
   safeArea: {
     flex: 1, 

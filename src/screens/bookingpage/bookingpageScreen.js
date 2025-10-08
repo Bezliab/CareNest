@@ -212,5 +212,4 @@ const BookingScreen = ({ navigation }) => {
 };
 
 
-
 export default BookingScreen;

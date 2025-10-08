@@ -14,7 +14,11 @@ import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppContext } from '../../utils/AppContext';
 import { useTranslation } from 'react-i18next';
+<<<<<<< HEAD
 import { changeLanguage } from '../../api/translator'; // 🔥 import translator function
+=======
+import { changeLanguage } from '../../js/translator'; // 🔥 import translator function
+>>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
 import styles from './SettingsScreenStyle';
 
 const SettingsScreen = ({ navigation }) => {
