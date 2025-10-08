@@ -219,7 +219,7 @@ const DoctorDashboard = ({ navigation }) => {
               icon: 'groups',
               title: 'Patient Management',
               subtitle: 'View & edit patients',
-              route: 'PatientManagement',
+              route: 'PatientList',
               colors: ['#dff7f4', '#eafefe'],
             },
             {
@@ -233,7 +233,7 @@ const DoctorDashboard = ({ navigation }) => {
               icon: 'analytics',
               title: 'Analytics & Reports',
               subtitle: 'KPIs & exports',
-              route: 'Reports',
+              route: 'AnalyticsReports',
               colors: ['#f0f7f6', '#fffdfa'],
             },
             {

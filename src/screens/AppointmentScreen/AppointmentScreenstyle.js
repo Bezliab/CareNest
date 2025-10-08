@@ -1,162 +1,93 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
-export default StyleSheet.create({
-  container: {
-    flex: 1,
+
+export default styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F9F9F9' },
+  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyText: { fontSize: 16, color: '#999' },
+
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginTop: 16,
   },
-  // --- Header ---
-  headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    backgroundColor: "#fff",
-    elevation: 3,
-    shadowColor: "#000",
+  heading: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#007AFF',
+  },
+  sortButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
+  sortText: {
+    color: '#fff',
+    marginLeft: 4,
+    fontWeight: '600',
+  },
+
+  searchInput: {
+    marginHorizontal: 16,
+    marginTop: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    fontSize: 14,
+    shadowColor: '#000',
     shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
   },
-  backButton: {
-    marginRight: 10,
+  filterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: 16,
+    marginVertical: 12,
   },
-  header: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#333",
-  },
-
-  // --- Next Appointment Card ---
-  card: {
-    backgroundColor: "#fff",
+  filterButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 20,
-    padding: 24,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 6,
-    marginBottom: 24,
+    backgroundColor: '#EDEDED',
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginTop: 12,
-    color: "#444",
-  },
-  date: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginTop: 6,
-    color: "#222",
-  },
-  time: {
-    fontSize: 16,
-    marginBottom: 14,
-    color: "#667eea",
-    fontWeight: "500",
-  },
-  detailRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 6,
-  },
-  detail: {
-    fontSize: 15,
-    marginLeft: 8,
-    color: "#555",
-  },
-  reminderButton: {
-    backgroundColor: "#667eea",
-    borderRadius: 30,
-    paddingVertical: 12,
-    paddingHorizontal: 28,
-    marginTop: 20,
-    shadowColor: "#667eea",
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  reminderText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 16,
-  },
+  filterButtonSelected: { backgroundColor: '#007AFF' },
+  filterText: { fontSize: 14, color: '#666' },
+  filterTextSelected: { color: '#fff', fontWeight: '600' },
 
-  // --- Upcoming Appointments Timeline ---
-  subHeader: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#444",
-    marginBottom: 14,
-    marginLeft: 5,
-  },
-  timelineCard: {
-    flexDirection: "row",
-    marginBottom: 22,
-    alignItems: "flex-start",
-  },
-  timelineDot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: "#667eea",
-    marginTop: 6,
-    marginRight: 14,
-  },
-  timelineContent: {
-    flex: 1,
-    backgroundColor: "#fff",
+  card: {
+    backgroundColor: '#fff',
     padding: 16,
-    borderRadius: 14,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-  },
-  timelineDate: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#222",
-  },
-  timelineTime: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#667eea",
-    marginBottom: 4,
-  },
-  timelineType: {
-    fontSize: 15,
-    fontWeight: "600",
-    marginBottom: 4,
-    color: "#333",
-  },
-  timelineDoctor: {
-    fontSize: 14,
-    color: "#555",
-    marginBottom: 2,
-  },
-  timelineLocation: {
-    fontSize: 13,
-    color: "#777",
-  },
-
-  // --- Tips Section ---
-  tipCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff8e1",
-    padding: 16,
-    borderRadius: 14,
-    marginTop: 20,
-    shadowColor: "#000",
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
     shadowOpacity: 0.05,
-    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
     elevation: 3,
   },
-  tipText: {
-    marginLeft: 10,
-    fontSize: 14,
-    color: "#444",
-    flex: 1,
-    lineHeight: 20,
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
   },
+  doctorName: { fontSize: 18, fontWeight: 'bold', color: '#333' },
+  info: { fontSize: 14, color: '#666', marginBottom: 2 },
+  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  statusPending: { backgroundColor: '#FFF5E5' },
+  statusComplete: { backgroundColor: '#E6F9F1' },
+  statusText: { fontSize: 12, fontWeight: '600' },
+  statusTextPending: { color: '#FFA800' },
+  statusTextComplete: { color: '#00C853' },
 });
+

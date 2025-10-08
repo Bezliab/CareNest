@@ -12,8 +12,11 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
 // 🧠 Import translation setup
-import '../src/js/translator';
+import './src/api/translator';
 import { useTranslation } from 'react-i18next';
+
+// ✅ Import AppProvider for global context
+import { AppProvider } from './src/utils/AppContext';
 
 // Screens
 import LandingPage from './src/screens/LandingScreen/LandingScreen';
@@ -36,7 +39,7 @@ import DoctorScreen from './src/screens/Doctor/DoctorsScreen/DoctorScreen';
 import HelpCenterScreen from './src/screens/HelpCentreScreen/HelpCentreScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen/EditProfileScreen';
 import bookingpageScreen from './src/screens/bookingpage/bookingpageScreen';
-import AddReminderScreen from './src/screens/AddReminder/AddReminderScreen';
+import AddReminderScreen from './src/screens/AddReminder/AddReminderSreen';
 import HealthTipsScreen from './src/screens/pregnateuser/HealthTipsScreen/HealthTipsScreen';
 import Doctor_Sign from './src/screens/Doctor/Doctors_Sign/Doctors_login';
 import DoctorSignUpScreen from './src/screens/Doctor/DoctorSignupScreen/DoctorSignupScreen';
@@ -51,11 +54,11 @@ import LaborDelivery from './src/screens/pregnateuser/LaborDelivery/LaborDeliver
 import RecoveryGuide from './src/screens/pregnateuser/RecoveryGuide/RecoveryGuide';
 import PatientManagement from './src/screens/Doctor/PatientManagement/PatientManagement';
 import AddPatient from './src/screens/Doctor/PatientManagement/AddPatient';
- import PatientDetails from './src/screens/Doctor/PatientManagement/PatientDetails';
+import PatientDetails from './src/screens/Doctor/PatientManagement/PatientDetails';
 import FacilityResources from './src/screens/Doctor/FacultyResources/FacuultyResources';
 import Analytics from './src/screens/Doctor/Analytics/Analytics';
-import DoctorAppointments from './src/screens/Doctor/DoctorsAppointment/DoctorsAppointMent'
-import DoctorProfile from './src/screens/Doctor/DoctorProfile/DoctorProfile'
+import DoctorAppointments from './src/screens/Doctor/DoctorsAppointment/DoctorsAppointMent';
+import DoctorProfile from './src/screens/Doctor/DoctorProfile/DoctorProfile';
 
 import useFcmToken from './src/hooks/useFCMtoken';
 import { enablePersistenceIfAvailable } from './src/api/firebaseConfig';
@@ -66,7 +69,7 @@ function SplashScreen({ navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const { t } = useTranslation(); // ✅ make splash translatable too if needed
+  const { t } = useTranslation(); // ✅ for translations
 
   useEffect(() => {
     Animated.parallel([
@@ -133,67 +136,76 @@ function SplashScreen({ navigation }) {
 export default function App() {
   useFcmToken();
 
-  // Enable Firestore offline persistence
+  // ✅ Enable Firestore offline persistence
   firestore()
     .settings({ persistence: true })
     .then(() => console.log('✅ Firestore offline persistence enabled'))
     .catch(err => console.log('⚠️ Firestore persistence error:', err));
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="SplashScreen"
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen name="SplashScreen" component={SplashScreen} />
-        <Stack.Screen name="FirstPage" component={FirstPage} />
-        <Stack.Screen name="LandingPage" component={LandingPage} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="Dashboard" component={Dashboard} />
-        <Stack.Screen
-          name="BookAppointment"
-          component={BookAppointmentScreen}
-        />
-        <Stack.Screen name="Health" component={HealthScreen} />
-        <Stack.Screen name="Reminder" component={ReminderScreen} />
-        <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
-        <Stack.Screen name="Appointment" component={AppointmentScreen} />
-        <Stack.Screen name="Emergency" component={EmergencyScreen} />
-        <Stack.Screen name="DoctorSignUp" component={DoctorSignUpScreen} />
-        <Stack.Screen name="Doctor_Sign" component={Doctor_Sign} />
-        <Stack.Screen name="doctorDashboard" component={DoctorDshboard} />
-        <Stack.Screen name="Doctor" component={DoctorScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-        <Stack.Screen name="Article" component={ArticleScreen} />
-        <Stack.Screen name="Faq" component={FaqScreen} />
-        <Stack.Screen name="HelpCenter" component={HelpCenterScreen} />
-        <Stack.Screen name="History" component={HistoryScreen} />
-        <Stack.Screen name="bookingpage" component={bookingpageScreen} />
-        <Stack.Screen name="AddReminderScreen" component={AddReminderScreen} />
-        <Stack.Screen name="healthTips" component={HealthTipsScreen} />
-        <Stack.Screen name="healthmetrics" component={HealthMetricsScreen} />
-
-        <Stack.Screen
-          name="AntenatalTracker"
-          component={AntenatalTrackerStyle}
-        />
-        <Stack.Screen name="fetaldeve" component={FetalDevelopment} />
-        <Stack.Screen name="MotherHealth" component={MotherNutrition} />
-        <Stack.Screen name="Pertanal" component={PertanalExcercise} />
-        <Stack.Screen name="mentalwell" component={MentalwellBeing} />
-        <Stack.Screen name="delivery" component={LaborDelivery} />
-        <Stack.Screen name="Recovery" component={RecoveryGuide} />
-              <Stack.Screen name="PatientList" component={PatientManagement} />
-      <Stack.Screen name="AddPatient" component={AddPatient} />
-      <Stack.Screen name="PatientDetails" component={PatientDetails} />
-      <Stack.Screen name="FacilityResources" component={FacilityResources} />
-      <Stack.Screen name="AnalyticsReports" component={Analytics} />
-      <Stack.Screen name="DoctorAppointments" component={DoctorAppointments} /> 
-      </Stack.Navigator>
-    </NavigationContainer>
+    // ✅ Wrap NavigationContainer inside AppProvider
+    <AppProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="SplashScreen"
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen name="SplashScreen" component={SplashScreen} />
+          <Stack.Screen name="FirstPage" component={FirstPage} />
+          <Stack.Screen name="LandingPage" component={LandingPage} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="Dashboard" component={Dashboard} />
+          <Stack.Screen
+            name="BookAppointment"
+            component={BookAppointmentScreen}
+          />
+          <Stack.Screen name="Health" component={HealthScreen} />
+          <Stack.Screen name="Reminder" component={ReminderScreen} />
+          <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
+          <Stack.Screen name="Appointment" component={AppointmentScreen} />
+          <Stack.Screen name="Emergency" component={EmergencyScreen} />
+          <Stack.Screen name="DoctorSignUp" component={DoctorSignUpScreen} />
+          <Stack.Screen name="Doctor_Sign" component={Doctor_Sign} />
+          <Stack.Screen name="doctorDashboard" component={DoctorDshboard} />
+          <Stack.Screen name="Doctor" component={DoctorScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+          <Stack.Screen name="Article" component={ArticleScreen} />
+          <Stack.Screen name="Faq" component={FaqScreen} />
+          <Stack.Screen name="HelpCenter" component={HelpCenterScreen} />
+          <Stack.Screen name="History" component={HistoryScreen} />
+          <Stack.Screen name="bookingpage" component={bookingpageScreen} />
+          <Stack.Screen
+            name="AddReminderScreen"
+            component={AddReminderScreen}
+          />
+          <Stack.Screen name="healthTips" component={HealthTipsScreen} />
+          <Stack.Screen name="healthmetrics" component={HealthMetricsScreen} />
+          <Stack.Screen
+            name="AntenatalTracker"
+            component={AntenatalTrackerStyle}
+          />
+          <Stack.Screen name="fetaldeve" component={FetalDevelopment} />
+          <Stack.Screen name="MotherHealth" component={MotherNutrition} />
+          <Stack.Screen name="Pertanal" component={PertanalExcercise} />
+          <Stack.Screen name="mentalwell" component={MentalwellBeing} />
+          <Stack.Screen name="delivery" component={LaborDelivery} />
+          <Stack.Screen name="Recovery" component={RecoveryGuide} />
+          <Stack.Screen name="PatientList" component={PatientManagement} />
+          <Stack.Screen name="AddPatient" component={AddPatient} />
+          <Stack.Screen name="PatientDetails" component={PatientDetails} />
+          <Stack.Screen name="FacilityResources" component={FacilityResources} />
+          <Stack.Screen name="AnalyticsReports" component={Analytics} />
+          <Stack.Screen
+            name="DoctorAppointments"
+            component={DoctorAppointments}
+          />
+          <Stack.Screen name="DoctorProfile" component={DoctorProfile} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AppProvider>
   );
 }
 
