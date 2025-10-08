@@ -1,261 +1,314 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, FlatList, StyleSheet } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
-import { useTheme } from '../../../utils/themeContext';
+import React from 'react';
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  StatusBar,
+  Dimensions,
+} from 'react-native';
 
-export default function AntenatalJourneyScreen({ route }) {
-  const { theme } = useTheme();
+// --- Mock Data ---
+// In a real app, this data would come from a state management solution or an API.
+const pregnancyData = {
+  currentWeek: 28,
+  totalWeeks: 40,
+  trimester: 3,
+  dueDate: 'January 15, 2025',
+  babySize: 'Large Eggplant',
+  babyWeight: '2.2 lbs',
+  babyLength: '14.8 inches',
+  commonSymptoms: [
+    'Backaches',
+    'Shortness of breath',
+    'Frequent urination',
+    'Swelling of ankles',
+  ],
+  nextAppointment: {
+    date: 'October 24, 2024',
+    time: '11:00 AM',
+    doctor: 'Dr. Adaobi',
+  },
+  weeklyTodos: [
+    { id: 1, task: 'Track daily kick counts', completed: true },
+    { id: 2, task: 'Start packing your hospital bag', completed: false },
+    { id: 3, task: 'Finalize your birth plan', completed: false },
+    { id: 4, task: 'Attend antenatal class', completed: true },
+  ],
+};
 
-  const isDark = theme === 'dark';
+// --- UI Components ---
 
-  const dynamicStyles = {
-    backgroundColor: isDark ? '#121212' : '#fff',
-    color: isDark ? '#fff' : '#000',
-    inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
-    borderColor: isDark ? '#333' : '#ddd',
-  };
-  const [appointments, setAppointments] = useState([]);
-  const [nextAppointment, setNextAppointment] = useState(null);
-  const [gestationalWeeks, setGestationalWeeks] = useState(24); // example: 24 weeks
-  const [trimester, setTrimester] = useState('Second Trimester');
+// A reusable card component for displaying information sections
+const InfoCard = ({ title, children, icon }) => (
+  <View style={styles.card}>
+    <View style={styles.cardHeader}>
+      <Text style={styles.cardIcon}>{icon}</Text>
+      <Text style={styles.cardTitle}>{title}</Text>
+    </View>
+    <View style={styles.cardContent}>{children}</View>
+  </View>
+);
 
-  const userId = route?.params?.userId || 'demoUser';
-
-  useEffect(() => {
-    // Determine trimester based on weeks
-    if (gestationalWeeks <= 12) setTrimester('First Trimester');
-    else if (gestationalWeeks <= 28) setTrimester('Second Trimester');
-    else setTrimester('Third Trimester');
-
-    const unsubscribe = firestore()
-      .collection('appointments')
-      .where('userId', '==', userId)
-      .orderBy('date', 'asc')
-      .onSnapshot(snapshot => {
-        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setAppointments(data);
-
-        const today = new Date();
-        const upcoming = data.find(
-          a => new Date(a.date) >= today && a.status !== 'completed',
-        );
-        setNextAppointment(upcoming || null);
-      });
-
-    return () => unsubscribe();
-  }, [gestationalWeeks]);
-
-  const renderVisit = ({ item }) => (
-    <View
-      style={[
-        styles.visitCard,
-        item.status === 'completed'
-          ? { borderColor: '#16a34a' }
-          : { borderColor: '#f97316' },
-      ]}
-    >
-      <Text style={styles.visitDate}>📅 {item.date}</Text>
-      <Text style={styles.visitDetail}>👩‍⚕️ {item.doctor}</Text>
-      <Text style={styles.visitDetail}>📍 {item.location}</Text>
-      {item.notes && <Text style={styles.visitNote}>📝 {item.notes}</Text>}
-      <Text
-        style={[
-          styles.visitStatus,
-          { color: item.status === 'completed' ? '#16a34a' : '#f97316' },
-        ]}
-      >
-        {item.status === 'completed' ? 'Completed' : 'Upcoming'}
+// A component for the circular progress display
+const ProgressCircle = ({ week, totalWeeks }) => {
+  const progress = (week / totalWeeks) * 100;
+  return (
+    <View style={styles.progressContainer}>
+      <View style={styles.progressCircle}>
+        <Text style={styles.progressWeekText}>{week}</Text>
+        <Text style={styles.progressSubText}>weeks</Text>
+      </View>
+      <Text style={styles.progressFooter}>
+        You are {progress.toFixed(0)}% through your pregnancy!
       </Text>
     </View>
   );
+};
 
+// The main screen component
+const AntenatalTrackerScreen = () => {
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Your Pregnancy Journey</Text>
-
-      {/* Encouragement */}
-      <View style={styles.encourageCard}>
-        <Text style={styles.encourageText}>
-          🌸 You are doing amazing! Keep up with your antenatal visits.
-        </Text>
-      </View>
-
-      {/* Trimester & Progress */}
-      <View style={styles.trimesterCard}>
-        <Text style={styles.trimesterText}>{trimester}</Text>
-        <View style={styles.progressBarBackground}>
-          <View
-            style={[
-              styles.progressBarFill,
-              { width: `${(gestationalWeeks / 40) * 100}%` },
-            ]}
-          />
-        </View>
-        <Text style={styles.weeksText}>{gestationalWeeks} / 40 weeks</Text>
-      </View>
-
-      {/* Next Appointment */}
-      {nextAppointment && (
-        <View style={styles.nextCard}>
-          <Text style={styles.nextTitle}>Next Visit</Text>
-          <Text style={styles.nextDate}>📅 {nextAppointment.date}</Text>
-          <Text style={styles.nextDetail}>
-            👩‍⚕️ {nextAppointment.doctor} at {nextAppointment.location}
+    <SafeAreaView style={styles.screen}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FDF7FA" />
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* --- Header --- */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Antenatal Tracker</Text>
+          <Text style={styles.headerSubtitle}>
+            Welcome, let's see how you and baby are doing!
           </Text>
-          {nextAppointment.notes && (
-            <Text style={styles.nextNote}>📝 {nextAppointment.notes}</Text>
-          )}
         </View>
-      )}
 
-      {/* All Visits */}
-      <Text style={styles.sectionHeader}>Your Visit Timeline</Text>
-      {appointments.length === 0 ? (
-        <Text style={styles.emptyText}>No visits recorded yet.</Text>
-      ) : (
-        <FlatList
-          data={appointments}
-          keyExtractor={item => item.id}
-          renderItem={renderVisit}
+        {/* --- Pregnancy Progress Section --- */}
+        <ProgressCircle
+          week={pregnancyData.currentWeek}
+          totalWeeks={pregnancyData.totalWeeks}
         />
-      )}
+        <View style={styles.dateInfo}>
+          <Text style={styles.trimesterText}>
+            Trimester {pregnancyData.trimester}
+          </Text>
+          <Text style={styles.dueDateText}>
+            Estimated Due Date: {pregnancyData.dueDate}
+          </Text>
+        </View>
 
-      {/* Health Tips */}
-      <Text style={styles.sectionHeader}>Health Tips</Text>
-      <View style={styles.tipCard}>
-        <Text style={styles.tipText}>
-          🥗 Eat a balanced diet with iron and folic acid.
-        </Text>
-        <Text style={styles.tipText}>
-          🏃‍♀️ Engage in safe exercises recommended by your doctor.
-        </Text>
-        <Text style={styles.tipText}>💧 Stay hydrated daily.</Text>
-        <Text style={styles.tipText}>🛌 Ensure sufficient rest and sleep.</Text>
-        <Text style={styles.tipText}>
-          🩺 Attend all scheduled antenatal visits.
-        </Text>
-      </View>
-    </ScrollView>
+        {/* --- Baby Size Card --- */}
+        <InfoCard title="Baby's Size This Week" icon="👶">
+          <Text style={styles.babySizeText}>{pregnancyData.babySize}</Text>
+          <View style={styles.babyStatsContainer}>
+            <Text style={styles.babyStat}>{pregnancyData.babyWeight}</Text>
+            <Text style={styles.babyStat}>{pregnancyData.babyLength}</Text>
+          </View>
+        </InfoCard>
+
+        {/* --- Your Symptoms Card --- */}
+        <InfoCard title="Common Symptoms" icon="📝">
+          {pregnancyData.commonSymptoms.map((symptom, index) => (
+            <Text key={index} style={styles.listItem}>
+              • {symptom}
+            </Text>
+          ))}
+        </InfoCard>
+
+        {/* --- Upcoming Appointment Card --- */}
+        <InfoCard title="Upcoming Appointment" icon="🏥">
+          <Text style={styles.appointmentDate}>
+            {pregnancyData.nextAppointment.date}
+          </Text>
+          <Text style={styles.appointmentTime}>
+            {pregnancyData.nextAppointment.time}
+          </Text>
+          <Text style={styles.appointmentDoctor}>
+            with {pregnancyData.nextAppointment.doctor}
+          </Text>
+        </InfoCard>
+
+        {/* --- To-Do List Card --- */}
+        <InfoCard title="Your Weekly Checklist" icon="✅">
+          {pregnancyData.weeklyTodos.map(item => (
+            <View key={item.id} style={styles.todoItem}>
+              <Text style={styles.todoCheckbox}>
+                {item.completed ? '☑' : '☐'}
+              </Text>
+              <Text
+                style={[
+                  styles.todoText,
+                  item.completed && styles.todoTextCompleted,
+                ]}
+              >
+                {item.task}
+              </Text>
+            </View>
+          ))}
+        </InfoCard>
+      </ScrollView>
+    </SafeAreaView>
   );
-}
+};
+
+// --- Styles ---
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f9fafb', padding: 16 },
+  screen: {
+    flex: 1,
+    backgroundColor: '#FDF7FA', // A very light pink background
+  },
+  scrollContainer: {
+    padding: 20,
+  },
   header: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#1e293b',
-    textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
   },
-
-  encourageCard: {
-    backgroundColor: '#ffe4e6',
-    padding: 14,
-    borderRadius: 16,
-    marginBottom: 15,
-  },
-  encourageText: {
-    color: '#b91c1c',
-    fontWeight: '600',
-    fontSize: 15,
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
     textAlign: 'center',
   },
-
-  trimesterCard: {
-    backgroundColor: '#e0f2fe',
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 20,
+  headerSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  progressContainer: {
     alignItems: 'center',
+    marginBottom: 16,
+  },
+  progressCircle: {
+    width: width * 0.45,
+    height: width * 0.45,
+    borderRadius: (width * 0.45) / 2,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 8,
+    borderColor: '#E6A4B4', // A soft magenta
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  progressWeekText: {
+    fontSize: 52,
+    fontWeight: 'bold',
+    color: '#944E63', // A darker magenta
+  },
+  progressSubText: {
+    fontSize: 16,
+    color: '#B47B84',
+    marginTop: -8,
+  },
+  progressFooter: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#944E63',
+    fontWeight: '500',
+  },
+  dateInfo: {
+    alignItems: 'center',
+    marginBottom: 24,
   },
   trimesterText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1d4ed8',
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
   },
-  progressBarBackground: {
-    width: '100%',
-    height: 12,
-    backgroundColor: '#bae6fd',
-    borderRadius: 6,
-    overflow: 'hidden',
-    marginBottom: 6,
-  },
-  progressBarFill: {
-    height: '100%',
-    backgroundColor: '#2563eb',
-  },
-  weeksText: { fontSize: 14, color: '#1e293b', fontWeight: '600' },
-
-  nextCard: {
-    backgroundColor: '#fef3c7',
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 20,
-  },
-  nextTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#b45309',
-    marginBottom: 6,
-  },
-  nextDate: { fontSize: 18, fontWeight: '600', color: '#78350f' },
-  nextDetail: { fontSize: 15, color: '#713f12', marginTop: 4 },
-  nextNote: {
+  dueDateText: {
     fontSize: 14,
-    color: '#334155',
+    color: '#666',
+    marginTop: 4,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  cardIcon: {
+    fontSize: 20,
+    marginRight: 10,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  cardContent: {
+    // Add specific styles if needed
+  },
+  babySizeText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#944E63',
+    textAlign: 'center',
+  },
+  babyStatsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 12,
+  },
+  babyStat: {
+    fontSize: 16,
+    color: '#666',
+  },
+  listItem: {
+    fontSize: 16,
+    color: '#555',
+    lineHeight: 24,
+  },
+  appointmentDate: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#944E63',
+  },
+  appointmentTime: {
+    fontSize: 16,
+    color: '#333',
+    marginTop: 4,
+  },
+  appointmentDoctor: {
+    fontSize: 16,
+    color: '#666',
     fontStyle: 'italic',
     marginTop: 4,
   },
-
-  sectionHeader: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#334155',
-    marginBottom: 10,
-  },
-
-  emptyText: {
-    textAlign: 'center',
-    color: '#64748b',
-    fontSize: 15,
-    marginBottom: 10,
-  },
-
-  visitCard: {
-    backgroundColor: '#fff',
-    padding: 14,
-    borderRadius: 16,
+  todoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginVertical: 6,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
-  visitDate: {
+  todoCheckbox: {
+    fontSize: 20,
+    marginRight: 12,
+    color: '#944E63',
+  },
+  todoText: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#1e40af',
-    marginBottom: 4,
+    color: '#333',
   },
-  visitDetail: { fontSize: 14, color: '#475569', marginBottom: 2 },
-  visitNote: {
-    fontSize: 13,
-    color: '#334155',
-    fontStyle: 'italic',
-    marginBottom: 2,
+  todoTextCompleted: {
+    textDecorationLine: 'line-through',
+    color: '#aaa',
   },
-  visitStatus: { fontSize: 14, fontWeight: '600', marginTop: 4 },
-
-  tipCard: {
-    backgroundColor: '#d1fae5',
-    padding: 16,
-    borderRadius: 16,
-    marginTop: 10,
-  },
-  tipText: { fontSize: 14, color: '#065f46', marginBottom: 6 },
 });
+
+export default AntenatalTrackerScreen;

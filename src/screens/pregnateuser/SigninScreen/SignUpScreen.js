@@ -149,8 +149,10 @@ export default function SignupScreen({ navigation }) {
           mode="date"
           display="default"
           onChange={(event, selectedDate) => {
+            if (event.type === 'set' && selectedDate) {
+              setDueDate(selectedDate);
+            }
             setShowDatePicker(false);
-            if (selectedDate) setDueDate(selectedDate);
           }}
         />
       )}
@@ -200,40 +202,6 @@ export default function SignupScreen({ navigation }) {
           value={password}
           onChangeText={setPassword}
         />
-      </View>
-
-      {/* Role Selection */}
-      <View style={styles.roleContainer}>
-        <TouchableOpacity
-          style={[styles.roleButton, role === 'Patient' && styles.roleSelected]}
-          onPress={() => setRole('Patient')}
-        >
-          <Text
-            style={[
-              styles.roleText,
-              role === 'Patient' && styles.roleTextSelected,
-            ]}
-          >
-            Patient
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.roleButton,
-            role === 'Health Worker' && styles.roleSelected,
-          ]}
-          onPress={() => setRole('Health Worker')}
-        >
-          <Text
-            style={[
-              styles.roleText,
-              role === 'Health Worker' && styles.roleTextSelected,
-            ]}
-          >
-            Health Worker
-          </Text>
-        </TouchableOpacity>
       </View>
 
       {/* Submit */}
