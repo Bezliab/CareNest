@@ -1,222 +1,306 @@
-// DoctorDashboard.js
-import React, { useEffect, useState } from 'react';
+//UPDATED DOCTOR'S DASHBOARD
+
+
+
+// src/screens/DoctorDashboard/DoctorDashboard.js
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  StyleSheet,
-  ScrollView,
   Image,
-  Alert,
+  TouchableOpacity,
+  Animated,
+  StatusBar,
+  ActivityIndicator,
+  ScrollView,
+  FlatList,
+  StyleSheet,
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { auth, db } from '../../../api/firebaseConfig';
+import {
+  doc,
+  onSnapshot,
+  collection,
+  query,
+  orderBy,
+  limit,
+  getDocs,
+} from 'firebase/firestore';
+import styles from './DoctorDashBoardStyle';
 
-export default function DoctorDashboard({ navigation }) {
-  const [doctor, setDoctor] = useState(null);
+const AbsoluteFill = { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 };
+
+/**
+ * GradientView: lightweight gradient-like background using two overlays.
+ * (No extra libs required — keeps the light theme aesthetic.)
+ */
+const GradientView = ({ colors = ['#e6f7f5', '#dff3f1'], style, children }) => (
+  <View style={[style, { overflow: 'hidden' }]}>
+    <View style={[AbsoluteFill, { backgroundColor: colors[0], opacity: 1 }]} />
+    <View style={[AbsoluteFill, { backgroundColor: colors[1], opacity: 0.9 }]} />
+    {children}
+  </View>
+);
+
+const KPI = ({ label, value }) => (
+  <View style={styles.kpiCard}>
+    <Text style={styles.kpiValue}>{value}</Text>
+    <Text style={styles.kpiLabel}>{label}</Text>
+  </View>
+);
+
+const ActivityRow = ({ item }) => (
+  <View style={styles.activityCard}>
+    <Icon name={item.icon ?? 'notifications'} size={22} color="#0f766e" />
+    <View style={{ marginLeft: 12, flex: 1 }}>
+      <Text style={styles.activityText}>{item.title ?? item.text ?? 'Activity'}</Text>
+      <Text style={styles.activityTime}>
+        {item.createdAt?.toDate ? item.createdAt.toDate().toLocaleString() : item._createdAtString ?? ''}
+      </Text>
+    </View>
+  </View>
+);
+
+const DoctorDashboard = ({ navigation }) => {
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 140],
+    outputRange: [1, 0.88],
+    extrapolate: 'clamp',
+  });
+
+  const [doctorData, setDoctorData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [kpis, setKpis] = useState({ patients: 0, appointmentsToday: 0, pendingReports: 0 });
+  const [activities, setActivities] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged(async user => {
-      if (user) {
-        try {
-          const docRef = firestore().collection('doctors').doc(user.uid);
-          const docSnap = await docRef.get();
-
-          if (docSnap.exists) {
-            setDoctor({ id: user.uid, ...docSnap.data() });
-          } else {
-            Alert.alert('Not Found', 'Doctor profile not found in database.');
-          }
-        } catch (error) {
-          console.log('Error fetching doctor:', error);
-          Alert.alert('Error', 'Could not load doctor profile.');
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        navigation.replace('DoctorLoginScreen');
-      }
-    });
-
-    return unsubscribe;
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await auth().signOut();
-      navigation.replace('DoctorLoginScreen');
-    } catch (error) {
-      Alert.alert('Logout Failed', 'Please try again.');
+    const user = auth.currentUser;
+    if (!user) {
+      setLoading(false);
+      return;
     }
-  };
+
+    // Doctor doc listener (real-time)
+    const docRef = doc(db, 'doctors', user.uid);
+    const unsubscribeDoctor = onSnapshot(
+      docRef,
+      snap => {
+        if (snap.exists()) {
+          const data = snap.data();
+          setDoctorData(data);
+          // If your doctor doc contains aggregated KPI fields, use them; otherwise these are fallbacks.
+          setKpis(prev => ({
+            patients: data.patientsCount ?? prev.patients,
+            appointmentsToday: data.appointmentsToday ?? prev.appointmentsToday,
+            pendingReports: data.pendingReports ?? prev.pendingReports,
+          }));
+        } else {
+          setDoctorData(null);
+        }
+        setLoading(false);
+      },
+      err => {
+        console.error('doctor listener error', err);
+        setLoading(false);
+      },
+    );
+
+    // Recent activities: one-off fetch (keeps things light). Change to onSnapshot if you want live updates.
+    (async () => {
+      try {
+        const activitiesRef = collection(db, 'activities');
+        const q = query(activitiesRef, orderBy('createdAt', 'desc'), limit(8));
+        const snaps = await getDocs(q);
+        const arr = [];
+        snaps.forEach(s => {
+          const data = s.data();
+          // try to normalize createdAt to a readable string if it's a Firestore Timestamp
+          let _createdAtString = '';
+          if (data.createdAt?.toDate) _createdAtString = data.createdAt.toDate().toLocaleString();
+          arr.push({ id: s.id, ...data, _createdAtString });
+        });
+        setActivities(arr);
+      } catch (e) {
+        console.error('activities fetch error', e);
+      }
+    })();
+
+    return () => {
+      unsubscribeDoctor();
+    };
+  }, []);
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
-    );
-  }
-
-  if (!doctor) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>No doctor profile found.</Text>
-        <TouchableOpacity
-          style={styles.retryBtn}
-          onPress={() => navigation.replace('DoctorLoginScreen')}
-        >
-          <Text style={styles.retryText}>Go to Login</Text>
-        </TouchableOpacity>
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#0f766e" />
       </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.profileRow}>
-          <Image
-            source={require('../../../Assets/doctor_avatar.png')}
-            style={styles.avatar}
-          />
-          <View>
-            <Text style={styles.welcomeText}>Welcome back,</Text>
-            <Text style={styles.doctorName}>{doctor.name}</Text>
-            <Text style={styles.specialty}>{doctor.specialty}</Text>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+
+      <Animated.View style={[styles.headerBackground, { opacity: headerOpacity }]} />
+
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+          useNativeDriver: true,
+        })}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.greeting}>
+                Hello, Dr. {doctorData?.lastName ?? doctorData?.name ?? '—'}
+              </Text>
+              <Text style={styles.subGreeting}>
+                {doctorData?.specialization ?? 'General Practitioner'}
+              </Text>
+              {doctorData?.clinic && (
+                <Text style={styles.clinicText}>{doctorData.clinic}</Text>
+              )}
+            </View>
+
+            <TouchableOpacity
+              style={styles.avatarContainer}
+              onPress={() => navigation.navigate('DoctorProfile')}
+            >
+              <Image
+                source={{
+                  uri: doctorData?.avatar || 'https://i.pravatar.cc/150?img=12',
+                }}
+                style={styles.avatar}
+              />
+              <View style={styles.onlineIndicator} />
+            </TouchableOpacity>
           </View>
         </View>
 
-        <TouchableOpacity onPress={handleLogout}>
-          <Icon name="logout" size={24} color="#e63946" />
-        </TouchableOpacity>
-      </View>
+        {/* KPI Row */}
+        <View style={styles.kpiRow}>
+          <KPI label="Active Patients" value={kpis.patients} />
+          <KPI label="Appointments Today" value={kpis.appointmentsToday} />
+          <KPI label="Pending Reports" value={kpis.pendingReports} />
+        </View>
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Profile Information</Text>
-        <View style={styles.infoRow}>
-          <Icon name="email" size={18} color="#007AFF" />
-          <Text style={styles.infoText}>{doctor.email}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Icon name="phone" size={18} color="#007AFF" />
-          <Text style={styles.infoText}>{doctor.phone}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Icon name="hospital-building" size={18} color="#007AFF" />
-          <Text style={styles.infoText}>
-            {doctor.clinicName || 'No clinic info'}
-          </Text>
-        </View>
-      </View>
+        {/* Performance / Quick Summary Card */}
+        <View style={styles.performanceContainer}>
+          <GradientView colors={['#e6f7f5', '#ffffff']} style={styles.performanceCard}>
+            <View>
+              <Text style={styles.performanceTitle}>Today — At a glance</Text>
+              <Text style={styles.performanceSubtitle}>
+                Manage patients, appointments, and resources from one place.
+              </Text>
+            </View>
 
+            <TouchableOpacity
+              style={styles.performanceBtn}
+              onPress={() => navigation.navigate('Reports')}
+            >
+              <Icon name="insert-chart" size={18} color="#fff" />
+              <Text style={styles.performanceBtnText}>Open Reports</Text>
+            </TouchableOpacity>
+          </GradientView>
+        </View>
+
+        {/* Quick Actions */}
+        <Text style={styles.sectionHeader}>Quick Actions</Text>
+        <View style={styles.quickActions}>
+          {[
+            {
+              icon: 'groups',
+              title: 'Patient Management',
+              subtitle: 'View & edit patients',
+              route: 'PatientList',
+              colors: ['#dff7f4', '#eafefe'],
+            },
+            {
+              icon: 'local-hospital',
+              title: 'Facility Resources',
+              subtitle: 'Check equipment & beds',
+              route: 'FacilityResources',
+              colors: ['#eef7f6', '#f7fbfb'],
+            },
+            {
+              icon: 'analytics',
+              title: 'Analytics & Reports',
+              subtitle: 'KPIs & exports',
+              route: 'AnalyticsReports',
+              colors: ['#f0f7f6', '#fffdfa'],
+            },
+            {
+              icon: 'calendar-month',
+              title: 'Appointments',
+              subtitle: 'Manage schedule',
+              route: 'DoctorAppointments',
+              colors: ['#f6fbfa', '#ffffff'],
+            },
+          ].map((item, idx) => (
+            <TouchableOpacity
+              key={idx}
+              style={styles.actionCard}
+              onPress={() => navigation.navigate(item.route)}
+              activeOpacity={0.8}
+            >
+              <View style={styles.actionLeft}>
+                <View style={styles.actionIconWrap}>
+                  <Icon name={item.icon} size={22} color="#0f766e" />
+                </View>
+                <View style={{ marginLeft: 10 }}>
+                  <Text style={styles.actionTitle}>{item.title}</Text>
+                  <Text style={styles.actionSub}>{item.subtitle}</Text>
+                </View>
+              </View>
+
+              <Icon name="chevron-right" size={24} color="#94a3b8" />
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Recent Activity */}
+        <View style={styles.activitySection}>
+          <View style={styles.activityHeader}>
+            <Text style={styles.activityTitle}>Recent Activity</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Reports')}>
+              <Text style={styles.seeAllText}>See all</Text>
+            </TouchableOpacity>
+          </View>
+
+          {activities.length === 0 ? (
+            <View style={styles.emptyRow}>
+              <Text style={styles.emptyText}>No recent activity</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={activities}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => <ActivityRow item={item} />}
+              scrollEnabled={false}
+            />
+          )}
+        </View>
+
+        {/* spacing bottom */}
+        <View style={{ height: 140 }} />
+      </Animated.ScrollView>
+
+      {/* Floating Add Patient Button */}
       <TouchableOpacity
-        style={styles.cardButton}
-        onPress={() => navigation.navigate('DoctorAppointmentsScreen')}
+        style={styles.fab}
+        onPress={() => navigation.navigate('AddPatient')}
       >
-        <Icon name="calendar-month" size={26} color="#fff" />
-        <Text style={styles.cardButtonText}>View My Appointments</Text>
+        <Icon name="person-add" size={22} color="#fff" />
       </TouchableOpacity>
-    </ScrollView>
+    </SafeAreaView>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: '#f9f9f9',
-    padding: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  profileRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 12,
-  },
-  welcomeText: {
-    fontSize: 14,
-    color: '#666',
-  },
-  doctorName: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#111',
-  },
-  specialty: {
-    fontSize: 14,
-    color: '#007AFF',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111',
-    marginBottom: 10,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  infoText: {
-    marginLeft: 8,
-    fontSize: 15,
-    color: '#333',
-  },
-  cardButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 10,
-    padding: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  errorText: {
-    fontSize: 16,
-    color: '#e63946',
-    marginBottom: 20,
-  },
-  retryBtn: {
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-    padding: 10,
-  },
-  retryText: {
-    color: '#fff',
-    fontSize: 15,
-    textAlign: 'center',
-  },
-});
+export default DoctorDashboard;

@@ -1,9 +1,7 @@
-// nutritional page
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import  styles from './MotherNutritionStyle';
-// --- 1. STATIC CONTENT DATA ---
 const HEALTH_GUIDELINES = {
   header: "Nourishing Motherhood: Essential Nutritional Health",
   subheader: "A guide to the key vitamins, minerals, and dietary choices necessary for a healthy pregnancy.",

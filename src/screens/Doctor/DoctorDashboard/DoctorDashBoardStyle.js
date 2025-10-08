@@ -1,6 +1,3 @@
-//Doctors dashboard css
-
-
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
@@ -129,7 +126,6 @@ export default StyleSheet.create({
   emptyRow: { padding: 12, alignItems: 'center' },
   emptyText: { color: '#94a3b8' },
 
-  // Floating action button
   fab: {
     position: 'absolute',
     right: 18,

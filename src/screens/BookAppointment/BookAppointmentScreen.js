@@ -1,4 +1,3 @@
-// BookAppointmentScreen.js
 import React, { useState } from 'react';
 import {
   View,
@@ -29,6 +28,7 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
 
   const timeSlots = ['08:00 AM', '10:00 AM', '11:00 AM', '09:00 PM'];
 
+  // Function to book appointment in Firestore
   const handleBookAppointment = async () => {
     if (!selectedDate || !selectedTime) {
       Alert.alert('Error', 'Please select a date and time');
@@ -42,8 +42,8 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
     }
 
     try {
-      const appointment = {
-        doctorId: specialist.id || specialist.uid, // ensures correct doctor reference
+      await firestore().collection('appointments').add({
+        doctorId: specialist.id,
         doctorName: specialist.name,
         specialty: specialist.specialty,
         patientId: currentUser.uid,
@@ -52,9 +52,7 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
         time: selectedTime,
         status: 'pending',
         createdAt: firestore.FieldValue.serverTimestamp(),
-      };
-
-      await firestore().collection('appointments').add(appointment);
+      });
 
       Alert.alert('Success', 'Appointment booked successfully!');
       navigation.navigate('BookingConfirmation', {
@@ -70,6 +68,7 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerInfo}>
           <Text style={styles.name}>{specialist.name}</Text>
@@ -84,15 +83,56 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
         </View>
       </View>
 
+      {/* Information Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Information</Text>
+        <View style={styles.infoGrid}>
+          <View style={styles.infoItem}>
+            <Text style={styles.infoLabel}>Specialization</Text>
+            <Text style={styles.infoValue}>{specialist.specialty}</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Text style={styles.infoLabel}>Location</Text>
+            <Text style={styles.infoValue}>Eim Street, Springfield</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Text style={styles.infoLabel}>Years experience</Text>
+            <Text style={styles.infoValue}>5+</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Text style={styles.infoLabel}>Phone number</Text>
+            <Text style={styles.infoValue}>(217) 555-1234</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Text style={styles.infoLabel}>Reviews</Text>
+            <Text style={styles.infoValue}>104</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Working Hours */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Working Hours</Text>
+        <View style={styles.hoursContainer}>
+          <View style={styles.hoursRow}>
+            <Text style={styles.hoursDays}>Mon-Fri</Text>
+            <Text style={styles.hoursTime}>08:00-19:00</Text>
+          </View>
+          <View style={styles.hoursRow}>
+            <Text style={styles.hoursDays}>Sat-Sun</Text>
+            <Text style={styles.hoursTime}>09:00-13:00</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Make an Appointment */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Make an appointment</Text>
 
+        {/* Date Selection */}
         <Text style={styles.subSectionTitle}>CHOOSE DAY</Text>
         <View style={styles.datesContainer}>
-          <TouchableOpacity
-            style={styles.todayButton}
-            onPress={() => setSelectedDate('Today')}
-          >
+          <TouchableOpacity style={styles.todayButton} onPress={() => setSelectedDate('Today')}>
             <Text style={styles.todayButtonText}>TODAY</Text>
           </TouchableOpacity>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -119,6 +159,7 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
           </ScrollView>
         </View>
 
+        {/* Time Selection */}
         <Text style={styles.subSectionTitle}>CHOOSE TIME</Text>
         <View style={styles.timesContainer}>
           {timeSlots.map((time, index) => (
@@ -142,10 +183,8 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
           ))}
         </View>
 
-        <TouchableOpacity
-          style={styles.bookButton}
-          onPress={handleBookAppointment}
-        >
+        {/* Book Button */}
+        <TouchableOpacity style={styles.bookButton} onPress={handleBookAppointment}>
           <Text style={styles.bookButtonText}>Book an appointment</Text>
         </TouchableOpacity>
       </View>
@@ -165,55 +204,29 @@ const styles = StyleSheet.create({
   reviewsText: { color: '#007AFF', fontSize: 14, fontWeight: '500' },
   section: { padding: 16, borderBottomWidth: 1, borderBottomColor: '#E5E5E5' },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
-  subSectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-    marginBottom: 8,
-  },
-  datesContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  todayButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 12,
-  },
+  subSectionTitle: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 8 },
+  infoGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  infoItem: { width: '48%', marginBottom: 16 },
+  infoLabel: { fontSize: 12, color: '#666', marginBottom: 4 },
+  infoValue: { fontSize: 14, fontWeight: '500', color: '#000' },
+  hoursContainer: { backgroundColor: '#F8F9FA', borderRadius: 8, padding: 12 },
+  hoursRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8 },
+  hoursDays: { fontSize: 14, fontWeight: '500', color: '#000' },
+  hoursTime: { fontSize: 14, color: '#666' },
+  datesContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
+  todayButton: { backgroundColor: '#007AFF', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 12 },
   todayButtonText: { color: '#fff', fontSize: 12, fontWeight: '500' },
-  dateButton: {
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 12,
-    backgroundColor: '#F5F5F5',
-    marginRight: 8,
-  },
+  dateButton: { alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, backgroundColor: '#F5F5F5', marginRight: 8 },
   dateButtonSelected: { backgroundColor: '#007AFF' },
   dateDay: { fontSize: 10, color: '#666', marginBottom: 2 },
   dateNumber: { fontSize: 14, fontWeight: '500', color: '#000' },
   dateNumberSelected: { color: '#fff' },
   timesContainer: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 16 },
-  timeButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: '#F5F5F5',
-    marginRight: 8,
-    marginBottom: 8,
-  },
+  timeButton: { paddingHorizontal: 16, paddingVertical: 12, borderRadius: 8, backgroundColor: '#F5F5F5', marginRight: 8, marginBottom: 8 },
   timeButtonSelected: { backgroundColor: '#007AFF' },
   timeButtonText: { fontSize: 14, color: '#000' },
   timeButtonTextSelected: { color: '#fff' },
-  bookButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
+  bookButton: { backgroundColor: '#007AFF', paddingVertical: 16, borderRadius: 12, alignItems: 'center' },
   bookButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });
 

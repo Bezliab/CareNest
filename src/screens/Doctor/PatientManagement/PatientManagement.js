@@ -18,10 +18,14 @@ import { collection, query, where, onSnapshot } from 'firebase/firestore';
 const PatientRow = ({ p, onPress }) => (
   <TouchableOpacity style={styles.patientCard} onPress={() => onPress(p)}>
     <View>
-      <Text style={styles.patientName}>{p.name}</Text>
-      <Text style={styles.patientMeta}>
-        {p.age ? ${p.age} yrs : '—'} • {p.lastVisit ? new Date(p.lastVisit.toMillis()).toLocaleDateString() : 'No visits'}
+      <Text style={styles.patientName}>{p.name}
+        
       </Text>
+      <Text style={styles.patientMeta}>
+      <Text style={styles.patientMeta}>
+        {p.age ? `${p.age} yrs` : '—'} • {p.lastVisit && p.lastVisit.toMillis ? new Date(p.lastVisit.toMillis()).toLocaleDateString() : 'No visits'}
+      </Text>     
+       </Text>
     </View>
     <Icon name="chevron-right" size={24} color="#94a3b8" />
   </TouchableOpacity>

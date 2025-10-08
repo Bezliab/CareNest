@@ -21,7 +21,7 @@ import {
   doc,
 } from 'firebase/firestore';
 import { db, auth } from '../../../api/firebaseConfig';
-import styles from './DoctorAppointmentsStyle';
+import styles from './DoctorsAppointmentStyle';
 
 const AppointmentRow = ({ appt, onAction }) => {
   const statusColor =

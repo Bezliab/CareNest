@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import styles from './AnalyticsReportsStyle';
+import styles from './AnalyticsStyle';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { db } from '../../../api/firebaseConfig';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';

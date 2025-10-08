@@ -1,4 +1,4 @@
-// context/AppContext.js
+// src/utils/AppContext.js
 import React, { createContext, useState, useContext, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -29,10 +29,30 @@ export const AppProvider = ({ children }) => {
     await AsyncStorage.setItem("notifications", newValue.toString());
   };
 
+  // 🎨 Define global themes
+  const theme = darkMode
+    ? {
+        background: "#121212",
+        text: "#FFFFFF",
+        card: "#1E1E1E",
+        border: "#333333",
+        primary: "#BB86FC",
+        secondary: "#03DAC6",
+      }
+    : {
+        background: "#FFFFFF",
+        text: "#000000",
+        card: "#F8F8F8",
+        border: "#E0E0E0",
+        primary: "#1976D2",
+        secondary: "#64B5F6",
+      };
+
   return (
     <AppContext.Provider
       value={{
         darkMode,
+        theme,
         toggleTheme,
         notificationsEnabled,
         toggleNotifications,

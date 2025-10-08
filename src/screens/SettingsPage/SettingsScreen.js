@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppContext } from '../../utils/AppContext';
 import { useTranslation } from 'react-i18next';
 import { changeLanguage } from '../../api/translator'; // 🔥 our translator function
+
 import styles from './SettingsScreenStyle';
 
 const SettingsScreen = ({ navigation }) => {
