@@ -20,25 +20,55 @@ import {
   setDoc,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { onAuthStateChanged } from 'firebase/auth';
 import styles from './EditProfileScreenStyle';
 
+// 🟢 i18n + HelpMum translator
+import i18n, { helpMumTranslate } from '../../api/translator';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function EditProfileScreen({ navigation }) {
-  const user = auth.currentUser;
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [name, setName] = useState('');
-  const [email, setEmail] = useState(user?.email || '');
+  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [bio, setBio] = useState('');
+  const [lang, setLang] = useState('en'); // track current language
 
-  // 🔹 Load user profile data from Firestore
+  // 🟡 Load selected language from AsyncStorage
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user) return;
+    const loadLang = async () => {
       try {
-        const userRef = doc(db, 'users', user.uid);
+        const stored = await AsyncStorage.getItem('appLanguage');
+        if (stored) setLang(stored);
+      } catch (err) {
+        console.warn('Language load error:', err);
+      }
+    };
+    loadLang();
+  }, []);
+
+  // 🔹 Wait for Firebase Auth user
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async currentUser => {
+      if (!currentUser) {
+        Alert.alert(
+          await helpMumTranslate('Error', lang),
+          await helpMumTranslate('User not logged in.', lang),
+        );
+        setLoading(false);
+        return;
+      }
+
+      setUser(currentUser);
+      setEmail(currentUser.email || '');
+
+      try {
+        const userRef = doc(db, 'users', currentUser.uid);
         const snapshot = await getDoc(userRef);
 
         if (snapshot.exists()) {
@@ -48,12 +78,11 @@ export default function EditProfileScreen({ navigation }) {
           setAddress(data.address || '');
           setBio(data.bio || '');
           setProfileImage(data.avatar || null);
-          setEmail(data.email || user.email || '');
         } else {
-          // If no document exists, create one
+          // Create user document if not existing
           await setDoc(userRef, {
-            uid: user.uid,
-            email: user.email,
+            uid: currentUser.uid,
+            email: currentUser.email,
             name: '',
             phone: '',
             address: '',
@@ -61,17 +90,20 @@ export default function EditProfileScreen({ navigation }) {
             avatar: '',
             createdAt: serverTimestamp(),
           });
-          setEmail(user.email);
         }
       } catch (error) {
         console.error('Error loading profile:', error);
-        Alert.alert('Error', 'Could not load your profile data.');
+        Alert.alert(
+          await helpMumTranslate('Error', lang),
+          await helpMumTranslate('Could not load your profile data.', lang),
+        );
       } finally {
         setLoading(false);
       }
-    };
-    fetchProfile();
-  }, []);
+    });
+
+    return () => unsubscribe();
+  }, [lang]);
 
   // 🔹 Pick image from gallery
   const pickImage = () => {
@@ -85,7 +117,6 @@ export default function EditProfileScreen({ navigation }) {
   // 🔹 Upload image to Firebase Storage
   const uploadImage = async () => {
     if (!profileImage) return null;
-
     const response = await fetch(profileImage);
     const blob = await response.blob();
 
@@ -96,12 +127,13 @@ export default function EditProfileScreen({ navigation }) {
 
   // 🔹 Save profile changes
   const handleSave = async () => {
+    if (!user) return;
     setSaving(true);
     try {
       const userRef = doc(db, 'users', user.uid);
       let avatarUrl = profileImage;
 
-      // Upload new image if it's a local file
+      // Upload new image if it's local
       if (profileImage && profileImage.startsWith('file://')) {
         avatarUrl = await uploadImage();
       }
@@ -115,11 +147,17 @@ export default function EditProfileScreen({ navigation }) {
         updatedAt: serverTimestamp(),
       });
 
-      Alert.alert('✅ Success', 'Profile updated successfully!');
-      navigation.goBack(); // ProfileScreen auto-updates via onSnapshot
+      Alert.alert(
+        await helpMumTranslate('Success', lang),
+        await helpMumTranslate('Profile updated successfully!', lang),
+      );
+      navigation.goBack();
     } catch (error) {
       console.error('Error updating profile:', error);
-      Alert.alert('❌ Error', 'Failed to update profile.');
+      Alert.alert(
+        await helpMumTranslate('Error', lang),
+        await helpMumTranslate('Failed to update profile.', lang),
+      );
     } finally {
       setSaving(false);
     }
@@ -138,7 +176,9 @@ export default function EditProfileScreen({ navigation }) {
       style={styles.container}
       contentContainerStyle={{ paddingBottom: 60 }}
     >
-      <Text style={styles.header}>Edit Profile</Text>
+      <Text style={styles.header}>
+        {i18n.t('editProfileTitle', { defaultValue: 'Edit Profile' })}
+      </Text>
 
       {/* 🔹 Profile Image */}
       <TouchableOpacity style={styles.imageWrapper} onPress={pickImage}>
@@ -147,24 +187,30 @@ export default function EditProfileScreen({ navigation }) {
         ) : (
           <View style={styles.placeholder}>
             <Icon name="camera" size={28} color="#666" />
-            <Text style={styles.placeholderText}>Add Photo</Text>
+            <Text style={styles.placeholderText}>
+              {i18n.t('addPhoto', { defaultValue: 'Add Photo' })}
+            </Text>
           </View>
         )}
       </TouchableOpacity>
 
       {/* 🔹 Input Fields */}
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Full Name</Text>
+        <Text style={styles.label}>
+          {i18n.t('fullName', { defaultValue: 'Full Name' })}
+        </Text>
         <TextInput
           style={styles.input}
           value={name}
           onChangeText={setName}
-          placeholder="Enter your name"
+          placeholder={i18n.t('enterName', { defaultValue: 'Enter your name' })}
         />
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Email</Text>
+        <Text style={styles.label}>
+          {i18n.t('email', { defaultValue: 'Email' })}
+        </Text>
         <TextInput
           style={[styles.input, { backgroundColor: '#f0f0f0' }]}
           value={email}
@@ -174,34 +220,44 @@ export default function EditProfileScreen({ navigation }) {
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Phone Number</Text>
+        <Text style={styles.label}>
+          {i18n.t('phone', { defaultValue: 'Phone Number' })}
+        </Text>
         <TextInput
           style={styles.input}
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
-          placeholder="Enter your phone number"
+          placeholder={i18n.t('enterPhone', {
+            defaultValue: 'Enter your phone number',
+          })}
         />
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Address</Text>
+        <Text style={styles.label}>
+          {i18n.t('address', { defaultValue: 'Address' })}
+        </Text>
         <TextInput
           style={styles.input}
           value={address}
           onChangeText={setAddress}
-          placeholder="Enter your address"
+          placeholder={i18n.t('enterAddress', {
+            defaultValue: 'Enter your address',
+          })}
         />
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Bio</Text>
+        <Text style={styles.label}>
+          {i18n.t('bio', { defaultValue: 'Bio' })}
+        </Text>
         <TextInput
           style={[styles.input, { height: 80 }]}
           value={bio}
           onChangeText={setBio}
           multiline
-          placeholder="Short bio..."
+          placeholder={i18n.t('shortBio', { defaultValue: 'Short bio...' })}
         />
       </View>
 
@@ -214,7 +270,9 @@ export default function EditProfileScreen({ navigation }) {
         {saving ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.saveButtonText}>Save Changes</Text>
+          <Text style={styles.saveButtonText}>
+            {i18n.t('saveChanges', { defaultValue: 'Save Changes' })}
+          </Text>
         )}
       </TouchableOpacity>
     </ScrollView>
