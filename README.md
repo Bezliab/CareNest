@@ -90,8 +90,6 @@ Enable:
 - Firestore Database
 - Storage
 
-
-
 ---
 
 ### 5️⃣ Android Setup
@@ -195,6 +193,12 @@ Once reconnected, updates sync automatically to Firebase.
 
 ---
 
+## Video link
+
+Youtube link - https://youtu.be/EVcFub7n-Tc?feature=shared
+
+---
+
 ## 👨‍💻 Author
 
 **PregAssist Development Team**
@@ -203,3 +207,4 @@ Built with ❤️ by **Isaac Adeniji & Team**
 📧 Contact: [[boluwarin215@gmail.com](mailto:boluwarin215@gmail.com)]
 
 > _“Empowering mothers with care, knowledge, and technology.”_
+> _“Saving one mother at a time, that's the goal.”_
