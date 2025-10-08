@@ -114,28 +114,31 @@ export default function SignupScreen({ navigation }) {
         />
       </View>
 
-      {/* Due Date Picker */}
-      <TouchableOpacity
-        style={styles.inputContainer}
-        onPress={() => setShowDatePicker(true)}
-      >
-        <Icon name="time-outline" size={20} color="#666" />
-        <Text style={styles.input}>
-          Due Date: {dueDate.toDateString()}
-        </Text>
-      </TouchableOpacity>
+{/* Due Date Picker */}
+<TouchableOpacity
+  style={styles.inputContainer}
+  onPress={() => setShowDatePicker(true)}
+>
+  <Icon name="time-outline" size={20} color="#666" />
+  <Text style={styles.input}>
+    Due Date: {dueDate.toDateString()}
+  </Text>
+</TouchableOpacity>
 
-      {showDatePicker && (
-        <DateTimePicker
-          value={dueDate}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(false);
-            if (selectedDate) setDueDate(selectedDate);
-          }}
-        />
-      )}
+{showDatePicker && (
+  <DateTimePicker
+    value={dueDate}
+    mode="date"
+    display="default"
+    onChange={(event, selectedDate) => {
+      if (event.type === "set" && selectedDate) {
+        setDueDate(selectedDate);
+      }
+      setShowDatePicker(false);
+    }}
+  />
+)}
+
 
       {/* Blood Group */}
       <View style={styles.inputContainer}>
@@ -184,26 +187,6 @@ export default function SignupScreen({ navigation }) {
         />
       </View>
 
-      {/* Role Selection */}
-      <View style={styles.roleContainer}>
-        <TouchableOpacity
-          style={[styles.roleButton, role === "Patient" && styles.roleSelected]}
-          onPress={() => setRole("Patient")}
-        >
-          <Text style={[styles.roleText, role === "Patient" && styles.roleTextSelected]}>
-            Patient
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.roleButton, role === "Health Worker" && styles.roleSelected]}
-          onPress={() => setRole("Health Worker")}
-        >
-          <Text style={[styles.roleText, role === "Health Worker" && styles.roleTextSelected]}>
-            Health Worker
-          </Text>
-        </TouchableOpacity>
-      </View>
 
       {/* Submit */}
       <TouchableOpacity

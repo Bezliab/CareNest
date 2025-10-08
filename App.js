@@ -10,7 +10,6 @@ import { HealthProvider } from './src/utils/HealthContext';
 
 // Screens
 import LandingPage from './src/screens/LandingScreen/LandingScreen';
-import FirstPage from './src/screens/FirstPage/FirstPage';
 import LoginScreen from './src/screens/pregnateuser/Loginscreen/LoginScreen';
 import SignUpScreen from './src/screens/pregnateuser/SigninScreen/SignUpScreen';
 import Dashboard from './src/screens/pregnateuser/Dashboard/Dashboard';
@@ -25,7 +24,7 @@ import ProfileScreen from './src/screens/pregnateuser/ProfilePage/ProfileScreen'
 import ArticleScreen from './src/screens/ArticleScreen/ArticleScreen';
 import FaqScreen from './src/screens/FaqScreen/FaqScreen';
 import HistoryScreen from './src/screens/pregnateuser/HistoryScreen/HistoryScreen';
-import DoctorScreen from './src/screens/Doctor/DoctorsScreen/DoctorScreen';
+import DoctorScreen from './src/screens/pregnateuser/DoctorsScreen/DoctorScreen';
 import HelpCenterScreen from './src/screens/HelpCentreScreen/HelpCentreScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen/EditProfileScreen';
 import bookingpageScreen from './src/screens/bookingpage/bookingpageScreen';

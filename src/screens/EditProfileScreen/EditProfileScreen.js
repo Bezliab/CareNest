@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { auth, db, storage } from '../../api/firebaseConfig';
+import { auth, firestore, storage } from '../../api/firebaseConfig';
 import {
   doc,
   getDoc,
@@ -20,10 +20,8 @@ import {
   setDoc,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { onAuthStateChanged } from 'firebase/auth';
 import styles from './EditProfileScreenStyle';
 
-// 🟢 i18n + HelpMum translator
 import i18n, { helpMumTranslate } from '../../api/translator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -37,9 +35,9 @@ export default function EditProfileScreen({ navigation }) {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [bio, setBio] = useState('');
-  const [lang, setLang] = useState('en'); // track current language
+  const [lang, setLang] = useState('en');
 
-  // 🟡 Load selected language from AsyncStorage
+  // 🔹 Load language preference
   useEffect(() => {
     const loadLang = async () => {
       try {
@@ -52,9 +50,9 @@ export default function EditProfileScreen({ navigation }) {
     loadLang();
   }, []);
 
-  // 🔹 Wait for Firebase Auth user
+  // 🔹 Load user data
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async currentUser => {
+    const unsubscribe = auth().onAuthStateChanged(async currentUser => {
       if (!currentUser) {
         Alert.alert(
           await helpMumTranslate('Error', lang),
@@ -68,7 +66,7 @@ export default function EditProfileScreen({ navigation }) {
       setEmail(currentUser.email || '');
 
       try {
-        const userRef = doc(db, 'users', currentUser.uid);
+        const userRef = doc(firestore, 'users', currentUser.uid);
         const snapshot = await getDoc(userRef);
 
         if (snapshot.exists()) {
@@ -79,7 +77,6 @@ export default function EditProfileScreen({ navigation }) {
           setBio(data.bio || '');
           setProfileImage(data.avatar || null);
         } else {
-          // Create user document if not existing
           await setDoc(userRef, {
             uid: currentUser.uid,
             email: currentUser.email,
@@ -109,12 +106,15 @@ export default function EditProfileScreen({ navigation }) {
   const pickImage = () => {
     launchImageLibrary({ mediaType: 'photo', quality: 1 }, response => {
       if (response.didCancel) return;
-      if (response.errorCode) Alert.alert('Error', response.errorMessage);
-      else setProfileImage(response.assets[0].uri);
+      if (response.errorCode) {
+        Alert.alert('Error', response.errorMessage);
+      } else {
+        setProfileImage(response.assets[0].uri);
+      }
     });
   };
 
-  // 🔹 Upload image to Firebase Storage
+  // 🔹 Upload to Firebase Storage
   const uploadImage = async () => {
     if (!profileImage) return null;
     const response = await fetch(profileImage);
@@ -125,15 +125,14 @@ export default function EditProfileScreen({ navigation }) {
     return await getDownloadURL(fileRef);
   };
 
-  // 🔹 Save profile changes
+  // 🔹 Save changes
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
     try {
-      const userRef = doc(db, 'users', user.uid);
+      const userRef = doc(firestore, 'users', user.uid);
       let avatarUrl = profileImage;
 
-      // Upload new image if it's local
       if (profileImage && profileImage.startsWith('file://')) {
         avatarUrl = await uploadImage();
       }
@@ -163,6 +162,7 @@ export default function EditProfileScreen({ navigation }) {
     }
   };
 
+  // 🔄 Loading UI
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -172,10 +172,7 @@ export default function EditProfileScreen({ navigation }) {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: 60 }}
-    >
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 60 }}>
       <Text style={styles.header}>
         {i18n.t('editProfileTitle', { defaultValue: 'Edit Profile' })}
       </Text>
@@ -194,11 +191,9 @@ export default function EditProfileScreen({ navigation }) {
         )}
       </TouchableOpacity>
 
-      {/* 🔹 Input Fields */}
+      {/* 🔹 Name */}
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>
-          {i18n.t('fullName', { defaultValue: 'Full Name' })}
-        </Text>
+        <Text style={styles.label}>{i18n.t('fullName', { defaultValue: 'Full Name' })}</Text>
         <TextInput
           style={styles.input}
           value={name}
@@ -207,51 +202,40 @@ export default function EditProfileScreen({ navigation }) {
         />
       </View>
 
+      {/* 🔹 Email - display only */}
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>
-          {i18n.t('email', { defaultValue: 'Email' })}
-        </Text>
-        <TextInput
-          style={[styles.input, { backgroundColor: '#f0f0f0' }]}
-          value={email}
-          editable={false}
-          keyboardType="email-address"
-        />
+        <Text style={styles.label}>Email</Text>
+        <View style={[styles.input, { backgroundColor: '#f0f0f0' }]}>
+          <Text>{email || 'No email found'}</Text>
+        </View>
       </View>
 
+      {/* 🔹 Phone */}
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>
-          {i18n.t('phone', { defaultValue: 'Phone Number' })}
-        </Text>
+        <Text style={styles.label}>{i18n.t('phone', { defaultValue: 'Phone Number' })}</Text>
         <TextInput
           style={styles.input}
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
-          placeholder={i18n.t('enterPhone', {
-            defaultValue: 'Enter your phone number',
-          })}
+          placeholder={i18n.t('enterPhone', { defaultValue: 'Enter your phone number' })}
         />
       </View>
 
+      {/* 🔹 Address */}
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>
-          {i18n.t('address', { defaultValue: 'Address' })}
-        </Text>
+        <Text style={styles.label}>{i18n.t('address', { defaultValue: 'Address' })}</Text>
         <TextInput
           style={styles.input}
           value={address}
           onChangeText={setAddress}
-          placeholder={i18n.t('enterAddress', {
-            defaultValue: 'Enter your address',
-          })}
+          placeholder={i18n.t('enterAddress', { defaultValue: 'Enter your address' })}
         />
       </View>
 
+      {/* 🔹 Bio */}
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>
-          {i18n.t('bio', { defaultValue: 'Bio' })}
-        </Text>
+        <Text style={styles.label}>{i18n.t('bio', { defaultValue: 'Bio' })}</Text>
         <TextInput
           style={[styles.input, { height: 80 }]}
           value={bio}
