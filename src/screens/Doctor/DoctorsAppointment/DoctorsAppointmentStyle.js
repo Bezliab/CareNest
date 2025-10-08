@@ -12,3 +12,5 @@ export default StyleSheet.create({
   acceptBtn: { backgroundColor: '#10b981', padding: 8, borderRadius: 8, marginRight: 8 },
   rejectBtn: { backgroundColor: '#ef4444', padding: 8, borderRadius: 8 },
 });
+
+//

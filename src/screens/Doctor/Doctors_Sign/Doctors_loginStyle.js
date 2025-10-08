@@ -1,73 +1,90 @@
-import { StyleSheet } from 'react-native';
+// src/screens/Doctor/Doctors_loginStyle.js
+import { StyleSheet } from "react-native";
 
-export default StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#f5f7fb" },
-  container: { flex: 1, padding: 20, justifyContent: "center" },
-  card: {
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: "#f4f8fc",
+  },
+
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 25,
+  },
+
+  title: {
+    fontSize: 30,
+    fontWeight: "700",
+    color: "#0b72ff",
+    textAlign: "center",
+    marginBottom: 5,
+  },
+
+  subtitle: {
+    fontSize: 16,
+    color: "#555",
+    textAlign: "center",
+    marginBottom: 40,
+  },
+
+  inputGroup: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#fff",
-    borderRadius: 14,
-    padding: 20,
-    shadowColor: "#0a0a0a",
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 6,
+    borderRadius: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    marginBottom: 20,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
-  headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 12 },
-  logo: {
-    width: 64,
-    height: 64,
-    borderRadius: 10,
-    marginRight: 12,
-    backgroundColor: "#e2e8f0",
-  },
-  titleBox: { flex: 1 },
-  title: { fontSize: 22, fontWeight: "700", color: "#0b1226" },
-  subtitle: { fontSize: 13, color: "#6b7280", marginTop: 3 },
-  inputLabelRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 8,
-  },
-  inputLabel: { fontSize: 13, fontWeight: "600", color: "#0b1226" },
-  helperText: { fontSize: 11, color: "#6b7280" },
-  inputRow: {
-    marginTop: 8,
-    backgroundColor: "#f8fafc",
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    alignItems: "center",
-    flexDirection: "row",
-    height: 46,
-  },
+
   input: {
     flex: 1,
-    marginLeft: 8,
-    fontSize: 15,
-    height: "100%",
-    color: "#0b1226", // visible star color
+    marginLeft: 10,
+    fontSize: 16,
+    color: "#333",
   },
-  eyeBtn: { padding: 6 },
-  rowBetween: {
-    marginTop: 10,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  linkText: { color: "#2563eb", fontWeight: "600" },
+
   submitBtn: {
-    marginTop: 16,
     backgroundColor: "#0b72ff",
-    paddingVertical: 12,
-    borderRadius: 10,
+    paddingVertical: 15,
+    borderRadius: 12,
     alignItems: "center",
+    marginTop: 10,
+    elevation: 4,
+    shadowColor: "#0b72ff",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
-  submitText: { color: "#fff", fontWeight: "700", fontSize: 16 },
-  smallRow: {
-    marginTop: 12,
+
+  submitText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+
+  loginRow: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
+    marginTop: 25,
   },
-  smallText: { color: "#6b7280" },
+
+  loginText: {
+    fontSize: 15,
+    color: "#555",
+  },
+
+  loginLink: {
+    fontSize: 15,
+    color: "#0b72ff",
+    fontWeight: "600",
+  },
 });
+
+export default styles;

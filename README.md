@@ -1,97 +1,231 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+````markdown
+# 🚀 Codefest GWR Hackathon – Submissions Portal
 
-# Getting Started
+Welcome to the official submission repo for the **Codefest GWR Hackathon**  
+Theme: _Build for Nigeria_ 🇳🇬
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
 
-## Step 1: Start Metro
+# 🍼 PregAssist (React Native CLI)
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+PregAssist is a **React Native CLI mobile application** built to support pregnant mothers with features like pregnancy tracking, appointment scheduling, health reminders, and clinic connections.  
+It is powered by **Firebase** and supports **offline data sync** using Firestore persistence.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+---
 
-```sh
-# Using npm
-npm start
+## 📖 Project Overview
 
-# OR using Yarn
-yarn start
+PregAssist helps expectant mothers manage their pregnancy with ease.  
+It tracks their expected delivery date (EDD), connects them with doctors, and provides personalized health information and reminders.
+
+### ✨ Core Features
+
+- 👩‍🍼 **Mother Registration:** Capture mother’s details and Expected Delivery Date (EDD)
+- 🗓️ **Pregnancy Tracker:** Automatically calculates weeks and days remaining
+- 🧑‍⚕️ **Doctor Dashboard:** Displays assigned doctor and quick access to contact
+- 🕒 **Appointments:** Create and view appointments with reminders
+- 🔔 **Reminders:** Notify mothers for medications or checkups
+- 📍 **Nearby Clinics:** Integrates geolocation for available clinics
+- 🌐 **Multi-language Support (i18n):** Switch between multiple languages
+- 🛜 **Offline Mode:** Firestore automatically syncs data when online again
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology                              | Purpose                 |
+| --------------------------------------- | ----------------------- |
+| **React Native CLI**                    | App development         |
+| **Firebase (Auth, Firestore, Storage)** | Backend services        |
+| **React Navigation**                    | Screen routing          |
+| **AsyncStorage**                        | Local data persistence  |
+| **React Native Vector Icons**           | Icons                   |
+| **Geolocation API**                     | Location-based features |
+| **Moment.js / Date-fns**                | Date calculations       |
+
+---
+
+## ⚙️ Installation & Setup
+
+### 1️⃣ Prerequisites
+
+Before starting, make sure you have installed:
+
+- [Node.js](https://nodejs.org/)
+- [Java JDK 11+](https://adoptium.net/)
+- [Android Studio](https://developer.android.com/studio)
+- React Native CLI:
+  ```bash
+  npm install -g react-native-cli
+  ```
+````
+
+---
+
+### 2️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/Bezliab/Team-04---CareNest.git
+cd CareNest
 ```
 
-## Step 2: Build and run your app
+---
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### 3️⃣ Install Dependencies
 
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```bash
+npm install
+# or
+yarn install
 ```
 
-### iOS
+---
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+### 4️⃣ Firebase Configuration
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Go to [Firebase Console](https://console.firebase.google.com) → Create a project.
+Enable:
 
-```sh
-bundle install
+- Authentication
+- Firestore Database
+- Storage
+
+Then, create a file:
+
+```
+src/api/firebaseConfig.js
 ```
 
-Then, and every time you update your native dependencies, run:
+Paste your Firebase credentials:
 
-```sh
-bundle exec pod install
+```js
+import { initializeApp } from 'firebase/app';
+import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+
+const firebaseConfig = {
+  apiKey: 'YOUR_API_KEY',
+  authDomain: 'YOUR_PROJECT.firebaseapp.com',
+  projectId: 'YOUR_PROJECT_ID',
+  storageBucket: 'YOUR_PROJECT.appspot.com',
+  messagingSenderId: 'YOUR_SENDER_ID',
+  appId: 'YOUR_APP_ID',
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Enable offline persistence
+enableIndexedDbPersistence(db).catch(console.warn);
+
+export { db, auth };
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+---
 
-```sh
-# Using npm
-npm run ios
+### 5️⃣ Android Setup
 
-# OR using Yarn
-yarn ios
+- Make sure you have an Android emulator installed, or connect a physical device.
+- Then run:
+
+```bash
+npx react-native run-android
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+If you get build errors:
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+cd android && ./gradlew clean
+cd ..
+npx react-native run-android
+```
 
-## Step 3: Modify your app
+---
 
-Now that you have successfully run the app, let's make changes!
+### 6️⃣ iOS Setup (macOS Only)
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+If you’re developing on macOS:
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+```bash
+cd ios
+pod install
+cd ..
+npx react-native run-ios
+```
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+---
 
-## Congratulations! :tada:
+## 🧮 Pregnancy Tracking Logic
 
-You've successfully run and modified your React Native App. :partying_face:
+When a mother registers, she provides an **Expected Delivery Date (EDD)**.
+The app automatically calculates:
 
-### Now what?
+- The **current pregnancy week**
+- **Days remaining** to delivery
+- The **trimester** (1st, 2nd, or 3rd)
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+This data is displayed dynamically on the **Dashboard** and updates daily.
 
-# Troubleshooting
+---
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## 🔥 Firestore Collections
 
-# Learn More
+| Collection         | Example Fields                                              |
+| ------------------ | ----------------------------------------------------------- |
+| **users**          | name, email, expectedDeliveryDate, doctor, emergencyContact |
+| **appointments**   | userId, doctorId, date, notes, status                       |
+| **reminders**      | userId, message, scheduledAt                                |
+| **health_records** | userId, bloodPressure, weight, heartRate                    |
+| **emergencies**    | userId, location, status                                    |
 
-To learn more about React Native, take a look at the following resources:
+---
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## 🧩 Key Files
+
+| File                     | Description                              |
+| ------------------------ | ---------------------------------------- |
+| `firebaseService_rnf.js` | Handles Firestore read/write and caching |
+| `Dashboard.js`           | Displays live pregnancy progress         |
+| `SignupScreen.js`        | Registers new mothers and saves EDD      |
+| `DashboardStyle.js`      | Contains dashboard layout and colors     |
+
+---
+
+## 🔄 Offline Mode
+
+Firestore automatically caches user data locally.
+This means users can continue using the app without an internet connection.
+Once reconnected, updates sync automatically to Firebase.
+
+---
+
+## 🧪 Testing Checklist
+
+✅ Create a new account using Firebase Authentication
+✅ Enter EDD and verify correct pregnancy progress
+✅ Add reminders and appointments
+✅ Simulate offline use (disable internet, re-enable to test sync)
+✅ Confirm Firestore data under the correct user document
+
+---
+
+## ⚠️ Common Issues
+
+| Issue                                                | Solution                                       |
+| ---------------------------------------------------- | ---------------------------------------------- |
+| `FirebaseError: Missing or insufficient permissions` | Update Firestore security rules                |
+| `Task :app:mergeDexDebug FAILED`                     | Run `cd android && ./gradlew clean`            |
+| `Emulator not found`                                 | Launch AVD manually in Android Studio          |
+| `Network Error` when offline                         | Ensure `enableIndexedDbPersistence` is enabled |
+
+---
+
+## 👨‍💻 Author
+
+**PregAssist Development Team**
+Built with ❤️ by **Isaac Adeniji & Team**
+
+📧 Contact: [[boluwarin215@gmail.com](mailto:boluwarin215@gmail.com)]
+
+> _“Empowering mothers with care, knowledge, and technology.”_

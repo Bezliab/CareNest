@@ -1,99 +1,64 @@
 // DoctorLoginScreen.js
-import React, { useState, useRef } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Animated,
   Alert,
   SafeAreaView,
   ActivityIndicator,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import styles from './Doctors_loginStyle';
+} from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
+import styles from "./Doctors_loginStyle";
 
-export default function DoctorLoginScreen({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function Doctors_login({ navigation }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const cardLift = useRef(new Animated.Value(0)).current;
-
-  const liftCard = toValue => {
-    Animated.timing(cardLift, {
-      toValue,
-      duration: 220,
-      useNativeDriver: true,
-    }).start();
-  };
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Missing Fields', 'Please enter your email and password.');
+      Alert.alert("Missing Fields", "Please enter your email and password.");
       return;
     }
 
     setLoading(true);
     try {
-      // Firebase Auth
-      const userCredential = await auth().signInWithEmailAndPassword(
-        email,
-        password,
-      );
+      const userCredential = await auth().signInWithEmailAndPassword(email, password);
       const userId = userCredential.user.uid;
 
-      // Fetch doctor data from Firestore
-      const doctorDoc = await firestore()
-        .collection('doctors')
-        .doc(userId)
-        .get();
+      const doctorDoc = await firestore().collection("doctors").doc(userId).get();
 
       if (!doctorDoc.exists) {
         await auth().signOut();
-        Alert.alert(
-          'Access Denied',
-          'This account is not registered as a doctor.',
-        );
-        setLoading(false);
+        Alert.alert("Access Denied", "This account is not registered as a doctor.");
         return;
       }
 
       const doctorData = doctorDoc.data();
 
-      // Store doctor info globally (optional improvement)
-      global.currentDoctor = { id: userId, ...doctorData };
+      if (!doctorData.verified) {
+        await auth().signOut();
+        Alert.alert("Verification Pending", "Your account is awaiting verification.");
+        return;
+      }
 
-      Alert.alert(
-        'Login Successful',
-        `Welcome back, Dr. ${doctorData.name || 'User'}!`,
-      );
-
-      // Navigate with doctor info
-      navigation.replace('doctorDashboard', {
+      Alert.alert("Login Successful", `Welcome back, Dr. ${doctorData.fullName || "User"}!`);
+      navigation.replace("doctorDashboard", {
         doctor: doctorData,
         doctorId: userId,
       });
     } catch (error) {
-      console.log('Doctor Login Error:', error);
-      let message = 'Login failed. Please try again.';
-
-      if (error.code === 'auth/invalid-email')
-        message = 'Invalid email format.';
-      else if (error.code === 'auth/user-not-found')
-        message = 'No account found with this email.';
-      else if (error.code === 'auth/wrong-password')
-        message = 'Incorrect password.';
-      else if (error.code === 'auth/too-many-requests')
-        message = 'Too many attempts. Please try again later.';
-
-      Alert.alert('Login Failed', message);
+      console.log("Login Error:", error);
+      let message = "Login failed. Please try again.";
+      if (error.code === "auth/invalid-email") message = "Invalid email format.";
+      else if (error.code === "auth/user-not-found") message = "No account found with this email.";
+      else if (error.code === "auth/wrong-password") message = "Incorrect password.";
+      Alert.alert("Login Failed", message);
     } finally {
       setLoading(false);
     }
@@ -101,117 +66,48 @@ export default function DoctorLoginScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
-        <Animated.View
-          style={[
-            styles.card,
-            {
-              transform: [
-                {
-                  translateY: cardLift.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, -8],
-                  }),
-                },
-              ],
-            },
-          ]}
-        >
-          <View style={styles.headerRow}>
-            <View style={styles.logoBox}>
-              <Image
-                source={require('../../../Assets/LOGO.png')}
-                style={styles.logo}
-              />
-            </View>
-            <View style={styles.titleBox}>
-              <Text style={styles.title}>Welcome Back, Doctor</Text>
-              <Text style={styles.subtitle}>
-                Sign in to access your dashboard
-              </Text>
-            </View>
-          </View>
+      <View style={styles.container}>
+        <Text style={styles.title}>Doctor Login</Text>
+        <Text style={styles.subtitle}>Access your dashboard</Text>
 
-          <View style={styles.form}>
-            <View style={styles.inputLabelRow}>
-              <Text style={styles.inputLabel}>Email</Text>
-              <Text style={styles.helperText}>Use your registered email</Text>
-            </View>
-            <View style={styles.inputRow}>
-              <Icon name="email" size={20} color="#111827" />
-              <TextInput
-                autoCapitalize="none"
-                keyboardType="email-address"
-                placeholder="doctor@example.com"
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                onFocus={() => liftCard(1)}
-                onBlur={() => liftCard(0)}
-              />
-            </View>
-
-            <View style={[styles.inputLabelRow, { marginTop: 12 }]}>
-              <Text style={styles.inputLabel}>Password</Text>
-            </View>
-
-            <View style={styles.inputRow}>
-              <Icon name="lock" size={20} color="#111827" />
-              <TextInput
-                secureTextEntry={!showPassword}
-                placeholder="••••••••"
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                onFocus={() => liftCard(1)}
-                onBlur={() => liftCard(0)}
-                onSubmitEditing={handleLogin}
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword(s => !s)}
-                style={styles.eyeBtn}
-              >
-                <Icon
-                  name={showPassword ? 'visibility' : 'visibility-off'}
-                  size={20}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity
-              style={[styles.submitBtn, loading && { opacity: 0.7 }]}
-              onPress={handleLogin}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.submitText}>Log In</Text>
-              )}
-            </TouchableOpacity>
-
-            <View style={styles.smallRow}>
-              <Text style={styles.smallText}>Don’t have an account?</Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('DoctorSignUp')}
-              >
-                <Text style={[styles.linkText, { marginLeft: 8 }]}>
-                  Sign Up
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Animated.View>
-
-        <View style={styles.footerNote}>
-          <Text style={styles.footerText}>
-            Secure · Encrypted Healthcare Access
-          </Text>
+        <View style={styles.inputGroup}>
+          <Icon name="email" size={20} color="#0b72ff" />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
         </View>
-      </KeyboardAvoidingView>
+
+        <View style={styles.inputGroup}>
+          <Icon name="lock" size={20} color="#0b72ff" />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={[styles.submitBtn, loading && { opacity: 0.7 }]}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitText}>Log In</Text>}
+        </TouchableOpacity>
+
+        <View style={styles.loginRow}>
+          <Text style={styles.loginText}>Don’t have an account?</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("DoctorSignUp")}>
+            <Text style={styles.loginLink}> Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }

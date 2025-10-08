@@ -31,7 +31,7 @@ export default function ChooseRoleScreen({ navigation }) {
 
           <TouchableOpacity
             style={styles.roleButton}
-            onPress={() => navigation.navigate('Doctor_Sign')}
+            onPress={() => navigation.navigate('DoctorArea', { screen: 'login_doctor' })}
           >
             <Icon name="medical-services" size={26} color="#0b72ff" />
             <Text style={styles.roleText}>Sign in as Doctor</Text>

@@ -39,4 +39,14 @@ export default StyleSheet.create({
   loginRow: { flexDirection: "row", justifyContent: "center", marginTop: 16 },
   loginText: { color: "#6b7280" },
   loginLink: { color: "#0b72ff", fontWeight: "600" },
+  previewImage: {
+  width: "100%",
+  height: 180,
+  borderRadius: 10,
+  marginVertical: 10,
+  resizeMode: "cover",
+  borderWidth: 1,
+  borderColor: "#dcdcdc",
+},
+
 });

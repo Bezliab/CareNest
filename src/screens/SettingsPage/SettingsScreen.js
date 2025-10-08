@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
@@ -14,25 +15,27 @@ import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppContext } from '../../utils/AppContext';
 import { useTranslation } from 'react-i18next';
-import { changeLanguage } from '../../api/translator'; // 🔥 import translator function
+import { changeLanguage } from '../../api/translator'; // 🔥 our translator function
+
 import styles from './SettingsScreenStyle';
 
 const SettingsScreen = ({ navigation }) => {
   const { darkMode, toggleTheme, notificationsEnabled, toggleNotifications } =
     useAppContext();
 
-  const { t, i18n } = useTranslation(); // hook from i18next
+  const { t, i18n } = useTranslation();
 
   const [language, setLanguage] = useState(i18n.language || 'en');
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
+  const [loadingLang, setLoadingLang] = useState(false);
 
-  // ✅ Load saved language from AsyncStorage when screen opens
   useEffect(() => {
     const loadLanguage = async () => {
       try {
         const storedLang = await AsyncStorage.getItem('appLanguage');
         if (storedLang) {
           setLanguage(storedLang);
+          await changeLanguage(storedLang); // apply on load
         }
       } catch (error) {
         console.log('Error loading saved language:', error);
@@ -51,11 +54,21 @@ const SettingsScreen = ({ navigation }) => {
     }
   };
 
-  // ✅ Function to switch language when user selects new one
-  const handleLanguageChange = async value => {
-    setLanguage(value);
+  // ✅ Change app language using HelpMumHQ AI Translator
+  const changeLanguage = async value => {
     setShowLanguagePicker(false);
-    await changeLanguage(value); // change language globally
+    setLoadingLang(true);
+    try {
+      await changeLanguage(value); // calls HelpMumHQ Translator API internally
+      setLanguage(value);
+      await AsyncStorage.setItem('appLanguage', value);
+      Alert.alert('Success', `Language changed to ${value.toUpperCase()}`);
+    } catch (err) {
+      console.error('Language switch failed:', err);
+      Alert.alert('Error', 'Could not change language at this time.');
+    } finally {
+      setLoadingLang(false);
+    }
   };
 
   return (
@@ -105,12 +118,12 @@ const SettingsScreen = ({ navigation }) => {
       >
         <Icon name="language" size={24} color="#1976d2" />
         <Text style={[styles.itemText, { color: darkMode ? '#fff' : '#000' }]}>
-          {t('language')} ({t(language)})
+          {t('language')} ({language.toUpperCase()})
         </Text>
         <Icon name="chevron-forward" size={20} color="#555" />
       </TouchableOpacity>
 
-      {/* MODAL for language picker */}
+      {/* Modal for Language Picker */}
       <Modal
         visible={showLanguagePicker}
         transparent
@@ -122,7 +135,7 @@ const SettingsScreen = ({ navigation }) => {
             <Text style={styles.modalTitle}>{t('select_language')}</Text>
             <Picker
               selectedValue={language}
-              onValueChange={handleLanguageChange}
+              onValueChange={changeLanguage}
               style={styles.picker}
             >
               <Picker.Item label="English" value="en" />
@@ -131,12 +144,16 @@ const SettingsScreen = ({ navigation }) => {
               <Picker.Item label="Igbo" value="ig" />
             </Picker>
 
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => setShowLanguagePicker(false)}
-            >
-              <Text style={styles.modalButtonText}>{t('done')}</Text>
-            </TouchableOpacity>
+            {loadingLang ? (
+              <ActivityIndicator size="large" color="#1976d2" />
+            ) : (
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setShowLanguagePicker(false)}
+              >
+                <Text style={styles.modalButtonText}>{t('done')}</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </Modal>
