@@ -1,183 +1,350 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, FlatList, StyleSheet } from "react-native";
-import firestore from "@react-native-firebase/firestore";
+import React from 'react';
+import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function AntenatalJourneyScreen({ route }) {
-  const [appointments, setAppointments] = useState([]);
-  const [nextAppointment, setNextAppointment] = useState(null);
-  const [gestationalWeeks, setGestationalWeeks] = useState(24); // example: 24 weeks
-  const [trimester, setTrimester] = useState("Second Trimester");
+// --- Reusable Components ---
 
-  const userId = route?.params?.userId || "demoUser";
-
-  useEffect(() => {
-    // Determine trimester based on weeks
-    if (gestationalWeeks <= 12) setTrimester("First Trimester");
-    else if (gestationalWeeks <= 28) setTrimester("Second Trimester");
-    else setTrimester("Third Trimester");
-
-    const unsubscribe = firestore()
-      .collection("appointments")
-      .where("userId", "==", userId)
-      .orderBy("date", "asc")
-      .onSnapshot((snapshot) => {
-        const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setAppointments(data);
-
-        const today = new Date();
-        const upcoming = data.find(
-          (a) => new Date(a.date) >= today && a.status !== "completed"
-        );
-        setNextAppointment(upcoming || null);
-      });
-
-    return () => unsubscribe();
-  }, [gestationalWeeks]);
-
-  const renderVisit = ({ item }) => (
-    <View
-      style={[
-        styles.visitCard,
-        item.status === "completed" ? { borderColor: "#16a34a" } : { borderColor: "#f97316" },
-      ]}
-    >
-      <Text style={styles.visitDate}>📅 {item.date}</Text>
-      <Text style={styles.visitDetail}>👩‍⚕️ {item.doctor}</Text>
-      <Text style={styles.visitDetail}>📍 {item.location}</Text>
-      {item.notes && <Text style={styles.visitNote}>📝 {item.notes}</Text>}
-      <Text
-        style={[
-          styles.visitStatus,
-          { color: item.status === "completed" ? "#16a34a" : "#f97316" },
-        ]}
-      >
-        {item.status === "completed" ? "Completed" : "Upcoming"}
-      </Text>
+const ShortcutButton = ({ icon, label }) => (
+  <View style={styles.shortcutItem}>
+    <View style={styles.shortcutIconContainer}>
+      {icon}
     </View>
-  );
+  </View>
+);
 
+const StatCard = ({ title, value, children }) => (
+  <View style={styles.statCard}>
+    <View style={styles.statHeader}>
+      <Text style={styles.statTitle}>{title}</Text>
+      <Text style={styles.statValue}>{value}</Text>
+    </View>
+    <View style={styles.statGraph}>{children}</View>
+  </View>
+);
+
+// --- Main Screen Component ---
+
+export default function AntenatalScreen() {
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Your Pregnancy Journey</Text>
-
-      {/* Encouragement */}
-      <View style={styles.encourageCard}>
-        <Text style={styles.encourageText}>
-          🌸 You are doing amazing! Keep up with your antenatal visits.
-        </Text>
-      </View>
-
-      {/* Trimester & Progress */}
-      <View style={styles.trimesterCard}>
-        <Text style={styles.trimesterText}>{trimester}</Text>
-        <View style={styles.progressBarBackground}>
-          <View
-            style={[styles.progressBarFill, { width: `${(gestationalWeeks / 40) * 100}%` }]}
+    <SafeAreaView style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        
+        {/* --- Header --- */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Elena Patricia</Text>
+          <Image
+            source={{ uri: 'https://placehold.co/40x40/FFC0CB/333333?text=EP' }}
+            style={styles.profileImage}
           />
         </View>
-        <Text style={styles.weeksText}>{gestationalWeeks} / 40 weeks</Text>
-      </View>
 
-      {/* Next Appointment */}
-      {nextAppointment && (
-        <View style={styles.nextCard}>
-          <Text style={styles.nextTitle}>Next Visit</Text>
-          <Text style={styles.nextDate}>📅 {nextAppointment.date}</Text>
-          <Text style={styles.nextDetail}>
-            👩‍⚕️ {nextAppointment.doctor} at {nextAppointment.location}
-          </Text>
-          {nextAppointment.notes && (
-            <Text style={styles.nextNote}>📝 {nextAppointment.notes}</Text>
-          )}
+        {/* --- Fetus Info Card --- */}
+        <View style={styles.fetusCard}>
+          <View style={styles.fetusCardHeader}>
+            <View style={styles.dayInfo}>
+              <Feather name="sun" size={20} color="#fff" />
+              <Text style={styles.dayText}>34</Text>
+            </View>
+          </View>
+
+          <Image
+            source={{ uri: 'https://i.imgur.com/k4dY41Y.png' }}
+            style={styles.fetusImage}
+            resizeMode="contain"
+          />
+
+          <View style={styles.fetusMeasurements}>
+            <View style={styles.measurement}>
+              <View style={styles.measurementIcon}>
+                <Ionicons name="rose-outline" size={20} color="#D97596" />
+              </View>
+              <Text style={styles.measurementValue}>8.5 g</Text>
+              <Text style={styles.measurementLabel}>WEIGHT</Text>
+            </View>
+
+            <View style={styles.measurement}>
+              <Text style={styles.measurementValue}>18.5 cm</Text>
+              <Text style={styles.measurementLabel}>LENGTH</Text>
+            </View>
+          </View>
         </View>
-      )}
 
-      {/* All Visits */}
-      <Text style={styles.sectionHeader}>Your Visit Timeline</Text>
-      {appointments.length === 0 ? (
-        <Text style={styles.emptyText}>No visits recorded yet.</Text>
-      ) : (
-        <FlatList
-          data={appointments}
-          keyExtractor={(item) => item.id}
-          renderItem={renderVisit}
+        {/* --- Due Date Card --- */}
+        <View style={styles.dueDateCard}>
+          <View style={styles.dueDateIcon}>
+            <MaterialCommunityIcons name="pulse" size={24} color="#D97596" />
+          </View>
+          <View>
+            <Text style={styles.dueDateLabel}>Due Date</Text>
+            <Text style={styles.dueDateText}>18 January 2025</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={24} color="#D97596" />
+        </View>
+
+        {/* --- Stats Section --- */}
+        <View style={styles.statsContainer}>
+          <StatCard title="KICKS TODAY" value="30">
+            <View style={styles.barChart}>
+              {[...Array(12)].map((_, i) => (
+                <View
+                  key={i}
+                  style={[styles.bar, { height: Math.random() * 30 + 10 }]}
+                />
+              ))}
+            </View>
+          </StatCard>
+
+          <StatCard title="CONTRACTIONS" value="5/h">
+            <View style={styles.lineChart}>
+              <View style={styles.line} />
+            </View>
+          </StatCard>
+        </View>
+
+        {/* --- Shortcuts --- */}
+        <Text style={styles.sectionTitle}>Shortcut</Text>
+        <View style={styles.shortcutContainer}>
+          <ShortcutButton
+            icon={<MaterialCommunityIcons name="food-apple-outline" size={24} color="#D97596" />}
+          />
+          <ShortcutButton
+            icon={<Ionicons name="walk-outline" size={24} color="#D97596" />}
+          />
+          <ShortcutButton
+            icon={<MaterialCommunityIcons name="baby-bottle-outline" size={24} color="#D97596" />}
+          />
+          <ShortcutButton
+            icon={<Feather name="plus" size={24} color="#D97596" />}
+          />
+        </View>
+
+      </ScrollView>
+
+      {/* --- Bottom Navigation --- */}
+      <View style={styles.navBar}>
+        <Ionicons
+          name="home-outline"
+          size={26}
+          color="#D97596"
+          style={styles.navIconActive}
         />
-      )}
-
-      {/* Health Tips */}
-      <Text style={styles.sectionHeader}>Health Tips</Text>
-      <View style={styles.tipCard}>
-        <Text style={styles.tipText}>🥗 Eat a balanced diet with iron and folic acid.</Text>
-        <Text style={styles.tipText}>🏃‍♀️ Engage in safe exercises recommended by your doctor.</Text>
-        <Text style={styles.tipText}>💧 Stay hydrated daily.</Text>
-        <Text style={styles.tipText}>🛌 Ensure sufficient rest and sleep.</Text>
-        <Text style={styles.tipText}>🩺 Attend all scheduled antenatal visits.</Text>
+        <Feather name="calendar" size={26} color="#BDBDBD" />
+        <Feather name="bell" size={26} color="#BDBDBD" />
+        <Feather name="heart" size={26} color="#BDBDBD" />
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 
+// --- Styles ---
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9fafb", padding: 16 },
-  header: { fontSize: 26, fontWeight: "700", color: "#1e293b", textAlign: "center", marginBottom: 20 },
-
-  encourageCard: {
-    backgroundColor: "#ffe4e6",
-    padding: 14,
-    borderRadius: 16,
-    marginBottom: 15,
+  container: {
+    flex: 1,
+    backgroundColor: '#FFF6F6',
   },
-  encourageText: { color: "#b91c1c", fontWeight: "600", fontSize: 15, textAlign: "center" },
-
-  trimesterCard: {
-    backgroundColor: "#e0f2fe",
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 20,
-    alignItems: "center",
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
   },
-  trimesterText: { fontSize: 18, fontWeight: "700", color: "#1d4ed8", marginBottom: 10 },
-  progressBarBackground: {
-    width: "100%",
-    height: 12,
-    backgroundColor: "#bae6fd",
-    borderRadius: 6,
-    overflow: "hidden",
-    marginBottom: 6,
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
   },
-  progressBarFill: {
-    height: "100%",
-    backgroundColor: "#2563eb",
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
-  weeksText: { fontSize: 14, color: "#1e293b", fontWeight: "600" },
-
-  nextCard: { backgroundColor: "#fef3c7", padding: 16, borderRadius: 16, marginBottom: 20 },
-  nextTitle: { fontSize: 16, fontWeight: "700", color: "#b45309", marginBottom: 6 },
-  nextDate: { fontSize: 18, fontWeight: "600", color: "#78350f" },
-  nextDetail: { fontSize: 15, color: "#713f12", marginTop: 4 },
-  nextNote: { fontSize: 14, color: "#334155", fontStyle: "italic", marginTop: 4 },
-
-  sectionHeader: { fontSize: 18, fontWeight: "700", color: "#334155", marginBottom: 10 },
-
-  emptyText: { textAlign: "center", color: "#64748b", fontSize: 15, marginBottom: 10 },
-
-  visitCard: {
-    backgroundColor: "#fff",
-    padding: 14,
-    borderRadius: 16,
-    marginVertical: 6,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+  fetusCard: {
+    backgroundColor: '#FFDBC9',
+    borderRadius: 25,
+    marginHorizontal: 20,
+    padding: 20,
+    alignItems: 'center',
+  },
+  fetusCardHeader: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  dayInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  dayText: {
+    color: '#fff',
+    marginLeft: 5,
+    fontWeight: 'bold',
+  },
+  fetusImage: {
+    width: 200,
+    height: 250,
+    marginVertical: 10,
+  },
+  fetusMeasurements: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 20,
+    padding: 15,
+    width: '100%',
+  },
+  measurement: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  measurementIcon: {
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  measurementValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  measurementLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+  },
+  dueDateCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 15,
+    marginHorizontal: 20,
+    marginTop: 20,
+    justifyContent: 'space-between',
     elevation: 2,
   },
-  visitDate: { fontSize: 16, fontWeight: "700", color: "#1e40af", marginBottom: 4 },
-  visitDetail: { fontSize: 14, color: "#475569", marginBottom: 2 },
-  visitNote: { fontSize: 13, color: "#334155", fontStyle: "italic", marginBottom: 2 },
-  visitStatus: { fontSize: 14, fontWeight: "600", marginTop: 4 },
-
-  tipCard: { backgroundColor: "#d1fae5", padding: 16, borderRadius: 16, marginTop: 10 },
-  tipText: { fontSize: 14, color: "#065f46", marginBottom: 6 },
+  dueDateIcon: {
+    backgroundColor: '#FFEFF4',
+    padding: 12,
+    borderRadius: 15,
+  },
+  dueDateLabel: {
+    color: '#888',
+    fontSize: 14,
+  },
+  dueDateText: {
+    color: '#333',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
+  statCard: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 15,
+    width: '48%',
+    elevation: 2,
+  },
+  statHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  statTitle: {
+    color: '#888',
+    fontSize: 12,
+  },
+  statValue: {
+    color: '#D97596',
+    fontWeight: 'bold',
+  },
+  statGraph: {
+    height: 40,
+    marginTop: 10,
+  },
+  barChart: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    height: '100%',
+  },
+  bar: {
+    width: 4,
+    backgroundColor: '#FFEFF4',
+    borderRadius: 2,
+  },
+  lineChart: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  line: {
+    width: '100%',
+    height: 2,
+    backgroundColor: '#D97596',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 50,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 10,
+    transform: [{ rotate: '-5deg' }],
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginHorizontal: 20,
+    marginTop: 25,
+    marginBottom: 10,
+  },
+  shortcutContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: 20,
+  },
+  shortcutItem: {
+    alignItems: 'center',
+  },
+  shortcutIconContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    elevation: 2,
+  },
+  navBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingVertical: 20,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    elevation: 10,
+  },
+  navIconActive: {
+    color: '#D97596',
+    backgroundColor: '#FFEFF4',
+    padding: 10,
+    borderRadius: 15,
+  },
 });

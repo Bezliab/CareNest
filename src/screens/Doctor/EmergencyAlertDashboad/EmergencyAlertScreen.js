@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   Linking,
   Platform,
 } from 'react-native';
-import { styles } from './EmergencyAlertsDashboard.styles';
+import styles from './EmergencyAlertsDashboard.styles';
 
 const EmergencyAlertsDashboard = () => {
   const [emergencyAlerts, setEmergencyAlerts] = useState([

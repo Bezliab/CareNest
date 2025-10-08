@@ -1,4 +1,3 @@
-// src/screens/Dashboard/Dashboard.js
 import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
@@ -15,10 +14,11 @@ import { Dimensions } from 'react-native';
 import styles from './DashboardStyle';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Firebase (your existing firebaseConfig)
 import { auth, db } from '../../../api/firebaseConfig';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, orderBy, limit } from 'firebase/firestore';
 
 const { width } = Dimensions.get('window');
 
@@ -29,6 +29,8 @@ const Dashboard = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pregnancyProgress, setPregnancyProgress] = useState(null);
+  const [latestHealthData, setLatestHealthData] = useState(null);
+  const [healthLoading, setHealthLoading] = useState(true);
 
   // Header animation
   const headerOpacity = scrollY.interpolate({
@@ -42,6 +44,7 @@ const Dashboard = ({ navigation }) => {
     const user = auth.currentUser;
     if (!user) {
       setLoading(false);
+      setHealthLoading(false);
       return;
     }
 
@@ -65,6 +68,61 @@ const Dashboard = ({ navigation }) => {
     );
 
     return () => unsubscribe();
+  }, []);
+
+  // Load health metrics from Firebase or fallback to AsyncStorage
+  useEffect(() => {
+    const loadHealthMetrics = async () => {
+      const user = auth.currentUser;
+      
+      if (user) {
+        // Try Firebase first
+        try {
+          const healthMetricsRef = collection(db, 'users', user.uid, 'healthMetrics');
+          const healthQuery = query(healthMetricsRef, orderBy('timestamp', 'desc'), limit(1));
+          
+          const unsubscribe = onSnapshot(healthQuery, (querySnapshot) => {
+            if (!querySnapshot.empty) {
+              const latestHealthDoc = querySnapshot.docs[0];
+              setLatestHealthData(latestHealthDoc.data());
+            } else {
+              // Fallback to AsyncStorage if no Firebase data
+              loadFromAsyncStorage();
+            }
+            setHealthLoading(false);
+          }, (error) => {
+            console.warn('Firebase health metrics error, falling back to local storage:', error);
+            loadFromAsyncStorage();
+          });
+          
+          return unsubscribe;
+        } catch (error) {
+          console.warn('Firebase health metrics setup failed:', error);
+          loadFromAsyncStorage();
+        }
+      } else {
+        // No user logged in, use AsyncStorage only
+        loadFromAsyncStorage();
+      }
+    };
+
+    const loadFromAsyncStorage = async () => {
+      try {
+        const raw = await AsyncStorage.getItem('@health_entries_v1');
+        if (raw) {
+          const entries = JSON.parse(raw);
+          if (entries.length > 0) {
+            setLatestHealthData(entries[0]);
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load health data from storage', err);
+      } finally {
+        setHealthLoading(false);
+      }
+    };
+
+    loadHealthMetrics();
   }, []);
 
   // Compute pregnancy progress from expectedDeliveryDate (EDD)
@@ -243,11 +301,14 @@ const Dashboard = ({ navigation }) => {
               </Text>
 
               <Text style={styles.subGreeting}>
-                {userData?.role === 'mother'
-                  ? doctorDisplay === 'No doctor picked'
-                    ? 'You haven’t selected a doctor yet.'
-                    : `Your doctor: ${doctorDisplay}`
-                  : 'You are logged in as a health worker'}
+                 {
+                  userData?.role === 'mother'
+                    ? doctorDisplay === 'No doctor picked'
+                      ? "You haven't selected a doctor yet."
+                      : `Your doctor: ${doctorDisplay}`
+                    : 'You are logged in as a health worker'
+                }
+
               </Text>
             </View>
 
@@ -376,7 +437,7 @@ const Dashboard = ({ navigation }) => {
           ))}
         </View>
 
-        {/* Health Metrics (unchanged) */}
+        {/* Health Metrics - UPDATED WITH REAL DATA */}
         <View style={styles.healthSection}>
           <View style={styles.sectionTitleRow}>
             <Text style={styles.sectionTitle}>Health Metrics</Text>
@@ -390,25 +451,53 @@ const Dashboard = ({ navigation }) => {
 
           <View style={styles.metricsGrid}>
             {[
-              { icon: 'favorite', value: '78 bpm', label: 'Heart Rate' },
-              { icon: 'water-drop', value: '120/80', label: 'Blood Pressure' },
-              { icon: 'scale', value: '68 kg', label: 'Weight' },
-              { icon: 'local-drink', value: '2.5 L', label: 'Water Intake' },
+              { 
+                icon: 'favorite', 
+                value: '78 bpm', 
+                label: 'Heart Rate',
+                subLabel: 'bpm'
+              },
+              { 
+                icon: 'water-drop', 
+                value: latestHealthData?.bp ? `${latestHealthData.bp.systolic}/${latestHealthData.bp.diastolic}` : '--/--', 
+                label: 'Blood Pressure',
+                subLabel: 'mmHg'
+              },
+              { 
+                icon: 'scale', 
+                value: latestHealthData?.weight ? `${latestHealthData.weight}` : '--', 
+                label: 'Weight',
+                subLabel: 'kg'
+              },
+              { 
+                icon: 'local-drink', 
+                value: latestHealthData?.bloodSugar ? `${latestHealthData.bloodSugar}` : '--', 
+                label: 'Blood Sugar',
+                subLabel: 'mg/dL'
+              },
             ].map((metric, i) => (
               <View key={i} style={styles.metricCard}>
                 <Icon name={metric.icon} size={26} color="#667eea" />
                 <Text style={styles.metricValue}>{metric.value}</Text>
                 <Text style={styles.metricLabel}>{metric.label}</Text>
+                <Text style={styles.metricSubLabel}>{metric.subLabel}</Text>
               </View>
             ))}
           </View>
+          
+          {/* Additional sleep metric if available */}
+          {latestHealthData?.sleepHours && (
+            <View style={styles.additionalMetric}>
+              <Icon name="hotel" size={20} color="#667eea" />
+              <Text style={styles.additionalMetricText}>
+                Sleep: {latestHealthData.sleepHours} hours
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Rest of Dashboard (tips, emergency, etc.) unchanged */}
-        <View
-          style={styles.tipCard}
-          onPress={() => navigation.navigate('healthTips')}
-        >
+        <View style={styles.tipCard}>
           <View style={styles.tipHeader}>
             <View style={styles.tipIcon}>
               <Icon name="lightbulb" size={24} color="#FFC107" />

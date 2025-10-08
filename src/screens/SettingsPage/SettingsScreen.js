@@ -145,7 +145,7 @@ const SettingsScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.item} onPress={() => {}}>
         <Icon name="lock-closed" size={24} color="#1976d2" />
         <Text style={[styles.itemText, { color: darkMode ? '#fff' : '#000' }]}>
-          {t('privacy_policy')}
+          {t('privacy')}
         </Text>
       </TouchableOpacity>
 

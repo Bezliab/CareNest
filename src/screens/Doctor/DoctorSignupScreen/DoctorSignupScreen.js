@@ -1,6 +1,3 @@
-// DoctorSignUpScreen.js
-// React Native CLI — Doctor registration with document uploads & Firebase Auth
-
 import React, { useState } from "react";
 import {
   View,
@@ -11,13 +8,15 @@ import {
   SafeAreaView,
   Alert,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import storage from "@react-native-firebase/storage";
 import { launchImageLibrary } from "react-native-image-picker";
-import styles from "./DoctorSignupStyle"; // ✅ Import external styles
+import RNFS from "react-native-fs";
+import styles from "./DoctorSignupStyle";
 
 export default function DoctorSignUpScreen({ navigation }) {
   const [fullName, setFullName] = useState("");
@@ -33,12 +32,25 @@ export default function DoctorSignUpScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   const pickDocument = async (setFileUri) => {
-    const result = await launchImageLibrary({
-      mediaType: "photo",
-      quality: 0.8,
-    });
-    if (!result.didCancel && result.assets && result.assets.length > 0) {
-      setFileUri(result.assets[0].uri);
+    const result = await launchImageLibrary({ mediaType: "photo", quality: 0.8 });
+
+    if (result.didCancel || !result.assets || result.assets.length === 0) {
+      return;
+    }
+
+    const uri = result.assets[0].uri;
+
+    try {
+      if (Platform.OS === "android" && uri.startsWith("content://")) {
+        const filePath = `${RNFS.TemporaryDirectoryPath}${Date.now()}.jpg`;
+        await RNFS.copyFile(uri, filePath);
+        setFileUri(filePath);
+      } else {
+        setFileUri(uri.replace("file://", ""));
+      }
+    } catch (error) {
+      console.error("File handling error:", error);
+      Alert.alert("Error", "Failed to process the file.");
     }
   };
 
@@ -64,16 +76,26 @@ export default function DoctorSignUpScreen({ navigation }) {
     try {
       setLoading(true);
 
+      // Firebase Auth
       const userCredential = await auth().createUserWithEmailAndPassword(email, password);
       const userId = userCredential.user.uid;
 
+      // Upload files
       const licenseRef = storage().ref(`doctors/${userId}/license.jpg`);
       const idRef = storage().ref(`doctors/${userId}/id_card.jpg`);
+
+      console.log("Uploading license...");
       await licenseRef.putFile(licenseUri);
+      console.log("License uploaded");
+
+      console.log("Uploading ID card...");
       await idRef.putFile(idUri);
+      console.log("ID uploaded");
+
       const licenseUrl = await licenseRef.getDownloadURL();
       const idUrl = await idRef.getDownloadURL();
 
+      // Firestore
       await firestore().collection("doctors").doc(userId).set({
         fullName,
         email,
@@ -87,16 +109,13 @@ export default function DoctorSignUpScreen({ navigation }) {
         createdAt: new Date().toISOString(),
       });
 
-      Alert.alert(
-        "Success",
-        "Your account has been created. Please wait while we verify your credentials."
-      );
+      Alert.alert("Success", "Account created. Wait for credential verification.");
       navigation.reset({
         index: 0,
-        routes: [{ name: "DoctorSignIn" }],
+        routes: [{ name: "doctorDashboard" }],
       });
     } catch (error) {
-      console.error("Signup Error:", error);
+      console.error("Signup error:", error);
       let message = "Signup failed. Please try again.";
       if (error.code === "auth/email-already-in-use") message = "This email is already in use.";
       else if (error.code === "auth/invalid-email") message = "Invalid email address.";
@@ -139,7 +158,7 @@ export default function DoctorSignUpScreen({ navigation }) {
           <Icon name="medical-services" size={20} color="#0b72ff" />
           <TextInput
             style={styles.input}
-            placeholder="Specialization (e.g., Gynecologist)"
+            placeholder="Specialization"
             value={specialization}
             onChangeText={setSpecialization}
           />
