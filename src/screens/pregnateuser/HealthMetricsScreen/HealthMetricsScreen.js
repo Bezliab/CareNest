@@ -10,6 +10,18 @@ import {
   ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../../../utils/themeContext';
+
+const { theme } = useTheme();
+
+const isDark = theme === 'dark';
+
+const dynamicStyles = {
+  backgroundColor: isDark ? '#121212' : '#fff',
+  color: isDark ? '#fff' : '#000',
+  inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+  borderColor: isDark ? '#333' : '#ddd',
+};
 
 // HealthTrackerScreen
 // Single-file React Native screen for inputting BP, Weight, Blood Sugar and Sleep

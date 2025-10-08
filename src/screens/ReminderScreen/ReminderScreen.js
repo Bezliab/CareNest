@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,49 +9,61 @@ import {
   Modal,
   Platform,
   FlatList,
-} from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import PushNotification from "react-native-push-notification";
-import { Calendar } from "react-native-calendars";
-import styles from "./ReminderScreenStyle";
+} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import PushNotification from 'react-native-push-notification';
+import { Calendar } from 'react-native-calendars';
+import styles from './ReminderScreenStyle';
+import { useTheme } from '../../utils/themeContext';
 
 const ReminderScreen = () => {
   // 🔔 Reminder States
   const [reminders, setReminders] = useState([
     {
       id: 1,
-      title: "Antenatal Checkup",
-      description: "Next hospital visit",
-      date: "2025-10-08",
+      title: 'Antenatal Checkup',
+      description: 'Next hospital visit',
+      date: '2025-10-08',
       time: new Date(),
-      icon: "medkit-outline",
-      color: "#b22222",
+      icon: 'medkit-outline',
+      color: '#b22222',
     },
     {
       id: 2,
-      title: "Take Iron / Folic Acid",
-      description: "Take every morning after breakfast",
-      date: "2025-10-09",
+      title: 'Take Iron / Folic Acid',
+      description: 'Take every morning after breakfast',
+      date: '2025-10-09',
       time: new Date(),
-      icon: "fitness-outline",
-      color: "#667eea",
+      icon: 'fitness-outline',
+      color: '#667eea',
     },
     {
       id: 3,
-      title: "Hydrate & Exercise",
-      description: "Drink water and do light stretches",
-      date: "2025-10-10",
+      title: 'Hydrate & Exercise',
+      description: 'Drink water and do light stretches',
+      date: '2025-10-10',
       time: new Date(),
-      icon: "water-outline",
-      color: "#00bfff",
+      icon: 'water-outline',
+      color: '#00bfff',
     },
   ]);
 
-  const [selectedDate, setSelectedDate] = useState("");
+  const { theme } = useTheme();
+
+  const isDark = theme === 'dark';
+
+  const dynamicStyles = {
+    backgroundColor: isDark ? '#121212' : '#fff',
+    color: isDark ? '#fff' : '#000',
+    inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+    borderColor: isDark ? '#333' : '#ddd',
+  };
+
+  const [selectedDate, setSelectedDate] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newDescription, setNewDescription] = useState("");
+  const [newTitle, setNewTitle] = useState('');
+  const [newDescription, setNewDescription] = useState('');
   const [showPicker, setShowPicker] = useState(false);
   const [selectedReminder, setSelectedReminder] = useState(null);
   const [isEditing, setIsEditing] = useState(false); // 👈 for edit mode
@@ -59,13 +71,13 @@ const ReminderScreen = () => {
   // 🕒 Notification setup
   useEffect(() => {
     PushNotification.configure({
-      onNotification: (notification) =>
-        console.log("Notification:", notification),
-      requestPermissions: Platform.OS === "ios",
+      onNotification: notification =>
+        console.log('Notification:', notification),
+      requestPermissions: Platform.OS === 'ios',
     });
   }, []);
 
-  const scheduleNotification = (reminder) => {
+  const scheduleNotification = reminder => {
     PushNotification.localNotificationSchedule({
       id: reminder.id.toString(),
       message: `${reminder.title} - ${reminder.description}`,
@@ -73,21 +85,21 @@ const ReminderScreen = () => {
       allowWhileIdle: true,
     });
     Alert.alert(
-      "Reminder Set!",
-      `${reminder.title} at ${reminder.time.toLocaleTimeString()}`
+      'Reminder Set!',
+      `${reminder.title} at ${reminder.time.toLocaleTimeString()}`,
     );
   };
 
   // 🕓 Time Picker
   const onChangeTime = (event, selectedTime) => {
-    if (event.type === "dismissed") {
+    if (event.type === 'dismissed') {
       setShowPicker(false);
       return;
     }
 
     if (selectedTime && selectedReminder) {
-      const updatedReminders = reminders.map((rem) =>
-        rem.id === selectedReminder.id ? { ...rem, time: selectedTime } : rem
+      const updatedReminders = reminders.map(rem =>
+        rem.id === selectedReminder.id ? { ...rem, time: selectedTime } : rem,
       );
       setReminders(updatedReminders);
       scheduleNotification({ ...selectedReminder, time: selectedTime });
@@ -100,13 +112,13 @@ const ReminderScreen = () => {
   // ➕ Add or Update reminder
   const saveReminder = () => {
     if (!newTitle || !newDescription || !selectedDate) {
-      Alert.alert("Error", "Please fill in all fields and select a date.");
+      Alert.alert('Error', 'Please fill in all fields and select a date.');
       return;
     }
 
     if (isEditing && selectedReminder) {
       // ✏️ Update existing reminder
-      const updated = reminders.map((r) =>
+      const updated = reminders.map(r =>
         r.id === selectedReminder.id
           ? {
               ...r,
@@ -114,12 +126,12 @@ const ReminderScreen = () => {
               description: newDescription,
               date: selectedDate,
             }
-          : r
+          : r,
       );
       setReminders(updated);
       setIsEditing(false);
       setSelectedReminder(null);
-      Alert.alert("Updated!", "Reminder has been updated successfully.");
+      Alert.alert('Updated!', 'Reminder has been updated successfully.');
     } else {
       // ➕ Add new reminder
       const newReminder = {
@@ -128,29 +140,29 @@ const ReminderScreen = () => {
         description: newDescription,
         date: selectedDate,
         time: new Date(),
-        icon: "notifications-outline",
-        color: "#4a90e2",
+        icon: 'notifications-outline',
+        color: '#4a90e2',
       };
       setReminders([...reminders, newReminder]);
-      Alert.alert("Added!", "New reminder created successfully.");
+      Alert.alert('Added!', 'New reminder created successfully.');
     }
 
-    setNewTitle("");
-    setNewDescription("");
-    setSelectedDate("");
+    setNewTitle('');
+    setNewDescription('');
+    setSelectedDate('');
     setModalVisible(false);
   };
 
   // 🗑 Delete reminder
-  const deleteReminder = (id) => {
-    Alert.alert("Delete Reminder", "Are you sure you want to delete this?", [
-      { text: "Cancel", style: "cancel" },
+  const deleteReminder = id => {
+    Alert.alert('Delete Reminder', 'Are you sure you want to delete this?', [
+      { text: 'Cancel', style: 'cancel' },
       {
-        text: "Delete",
-        style: "destructive",
+        text: 'Delete',
+        style: 'destructive',
         onPress: () => {
-          setReminders(reminders.filter((r) => r.id !== id));
-          Alert.alert("Deleted", "Reminder removed successfully.");
+          setReminders(reminders.filter(r => r.id !== id));
+          Alert.alert('Deleted', 'Reminder removed successfully.');
         },
       },
     ]);
@@ -192,7 +204,7 @@ const ReminderScreen = () => {
 
         {/* ✏️ Edit */}
         <TouchableOpacity
-          style={[styles.editBtn, { backgroundColor: "#4b5563" }]}
+          style={[styles.editBtn, { backgroundColor: '#4b5563' }]}
           onPress={() => {
             setIsEditing(true);
             setSelectedReminder(item);
@@ -208,7 +220,7 @@ const ReminderScreen = () => {
 
         {/* 🗑 Delete */}
         <TouchableOpacity
-          style={[styles.editBtn, { backgroundColor: "#dc2626" }]}
+          style={[styles.editBtn, { backgroundColor: '#dc2626' }]}
           onPress={() => deleteReminder(item.id)}
         >
           <Ionicons name="trash-outline" size={18} color="#fff" />
@@ -224,19 +236,19 @@ const ReminderScreen = () => {
 
       {/* 📅 Calendar Section */}
       <Calendar
-        onDayPress={(day) => setSelectedDate(day.dateString)}
+        onDayPress={day => setSelectedDate(day.dateString)}
         markedDates={{
           ...markedDates,
           [selectedDate]: {
             selected: true,
-            selectedColor: "#2563eb",
+            selectedColor: '#2563eb',
             marked: markedDates[selectedDate]?.marked,
           },
         }}
         theme={{
-          todayTextColor: "#2563eb",
-          selectedDayBackgroundColor: "#2563eb",
-          arrowColor: "#2563eb",
+          todayTextColor: '#2563eb',
+          selectedDayBackgroundColor: '#2563eb',
+          arrowColor: '#2563eb',
         }}
       />
 
@@ -246,8 +258,8 @@ const ReminderScreen = () => {
         onPress={() => {
           setIsEditing(false);
           setModalVisible(true);
-          setNewTitle("");
-          setNewDescription("");
+          setNewTitle('');
+          setNewDescription('');
         }}
       >
         <Ionicons name="add-circle-outline" size={22} color="#fff" />
@@ -259,7 +271,7 @@ const ReminderScreen = () => {
       <FlatList
         data={reminders}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={item => item.id.toString()}
       />
 
       {/* 🕓 Time Picker */}
@@ -278,7 +290,7 @@ const ReminderScreen = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalHeader}>
-              {isEditing ? "Edit Reminder" : "Add Reminder"}
+              {isEditing ? 'Edit Reminder' : 'Add Reminder'}
             </Text>
             <TextInput
               placeholder="Reminder Title"
@@ -295,12 +307,12 @@ const ReminderScreen = () => {
             <Text style={styles.selectedDateText}>
               {selectedDate
                 ? `Selected Date: ${selectedDate}`
-                : "Select a date from calendar"}
+                : 'Select a date from calendar'}
             </Text>
 
             <TouchableOpacity onPress={saveReminder} style={styles.saveBtn}>
               <Text style={styles.saveText}>
-                {isEditing ? "Update Reminder" : "Save Reminder"}
+                {isEditing ? 'Update Reminder' : 'Save Reminder'}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity

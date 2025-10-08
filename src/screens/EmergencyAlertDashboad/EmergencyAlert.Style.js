@@ -1,6 +1,18 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { useTheme } from '../../utils/themeContext';
 
 const { width } = Dimensions.get('window');
+
+const { theme } = useTheme();
+
+const isDark = theme === 'dark';
+
+const dynamicStyles = {
+  backgroundColor: isDark ? '#121212' : '#fff',
+  color: isDark ? '#fff' : '#000',
+  inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+  borderColor: isDark ? '#333' : '#ddd',
+};
 
 export default styles = StyleSheet.create({
   container: {

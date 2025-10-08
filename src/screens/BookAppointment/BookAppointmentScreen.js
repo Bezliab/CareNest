@@ -10,11 +10,23 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import { useTheme } from '../../utils/themeContext';
 
 const SpecialistDetailScreen = ({ route, navigation }) => {
   const { specialist } = route.params;
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
+
+  const { theme } = useTheme();
+
+  const isDark = theme === 'dark';
+
+  const dynamicStyles = {
+    backgroundColor: isDark ? '#121212' : '#fff',
+    color: isDark ? '#fff' : '#000',
+    inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+    borderColor: isDark ? '#333' : '#ddd',
+  };
 
   const dates = [
     { day: 'MON', date: 25 },
@@ -42,17 +54,19 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
     }
 
     try {
-      await firestore().collection('appointments').add({
-        doctorId: specialist.id,
-        doctorName: specialist.name,
-        specialty: specialist.specialty,
-        patientId: currentUser.uid,
-        patientName: currentUser.displayName || 'Anonymous',
-        date: selectedDate,
-        time: selectedTime,
-        status: 'pending',
-        createdAt: firestore.FieldValue.serverTimestamp(),
-      });
+      await firestore()
+        .collection('appointments')
+        .add({
+          doctorId: specialist.id,
+          doctorName: specialist.name,
+          specialty: specialist.specialty,
+          patientId: currentUser.uid,
+          patientName: currentUser.displayName || 'Anonymous',
+          date: selectedDate,
+          time: selectedTime,
+          status: 'pending',
+          createdAt: firestore.FieldValue.serverTimestamp(),
+        });
 
       Alert.alert('Success', 'Appointment booked successfully!');
       navigation.navigate('BookingConfirmation', {
@@ -132,7 +146,10 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
         {/* Date Selection */}
         <Text style={styles.subSectionTitle}>CHOOSE DAY</Text>
         <View style={styles.datesContainer}>
-          <TouchableOpacity style={styles.todayButton} onPress={() => setSelectedDate('Today')}>
+          <TouchableOpacity
+            style={styles.todayButton}
+            onPress={() => setSelectedDate('Today')}
+          >
             <Text style={styles.todayButtonText}>TODAY</Text>
           </TouchableOpacity>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -184,7 +201,10 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
         </View>
 
         {/* Book Button */}
-        <TouchableOpacity style={styles.bookButton} onPress={handleBookAppointment}>
+        <TouchableOpacity
+          style={styles.bookButton}
+          onPress={handleBookAppointment}
+        >
           <Text style={styles.bookButtonText}>Book an appointment</Text>
         </TouchableOpacity>
       </View>
@@ -204,29 +224,72 @@ const styles = StyleSheet.create({
   reviewsText: { color: '#007AFF', fontSize: 14, fontWeight: '500' },
   section: { padding: 16, borderBottomWidth: 1, borderBottomColor: '#E5E5E5' },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
-  subSectionTitle: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 8 },
-  infoGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  subSectionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 8,
+  },
+  infoGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
   infoItem: { width: '48%', marginBottom: 16 },
   infoLabel: { fontSize: 12, color: '#666', marginBottom: 4 },
   infoValue: { fontSize: 14, fontWeight: '500', color: '#000' },
   hoursContainer: { backgroundColor: '#F8F9FA', borderRadius: 8, padding: 12 },
-  hoursRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8 },
+  hoursRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
   hoursDays: { fontSize: 14, fontWeight: '500', color: '#000' },
   hoursTime: { fontSize: 14, color: '#666' },
-  datesContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
-  todayButton: { backgroundColor: '#007AFF', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 12 },
+  datesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  todayButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 12,
+  },
   todayButtonText: { color: '#fff', fontSize: 12, fontWeight: '500' },
-  dateButton: { alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, backgroundColor: '#F5F5F5', marginRight: 8 },
+  dateButton: {
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    backgroundColor: '#F5F5F5',
+    marginRight: 8,
+  },
   dateButtonSelected: { backgroundColor: '#007AFF' },
   dateDay: { fontSize: 10, color: '#666', marginBottom: 2 },
   dateNumber: { fontSize: 14, fontWeight: '500', color: '#000' },
   dateNumberSelected: { color: '#fff' },
   timesContainer: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 16 },
-  timeButton: { paddingHorizontal: 16, paddingVertical: 12, borderRadius: 8, backgroundColor: '#F5F5F5', marginRight: 8, marginBottom: 8 },
+  timeButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: '#F5F5F5',
+    marginRight: 8,
+    marginBottom: 8,
+  },
   timeButtonSelected: { backgroundColor: '#007AFF' },
   timeButtonText: { fontSize: 14, color: '#000' },
   timeButtonTextSelected: { color: '#fff' },
-  bookButton: { backgroundColor: '#007AFF', paddingVertical: 16, borderRadius: 12, alignItems: 'center' },
+  bookButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
   bookButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });
 

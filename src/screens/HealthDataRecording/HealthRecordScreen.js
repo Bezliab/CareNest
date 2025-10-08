@@ -10,6 +10,18 @@ import {
 } from 'react-native';
 import { styles } from './HealthDataRecording.styles';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useTheme } from '../../utils/themeContext';
+
+const { theme } = useTheme();
+
+const isDark = theme === 'dark';
+
+const dynamicStyles = {
+  backgroundColor: isDark ? '#121212' : '#fff',
+  color: isDark ? '#fff' : '#000',
+  inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+  borderColor: isDark ? '#333' : '#ddd',
+};
 
 const HealthDataRecording = ({ route }) => {
   const { patientId, patientName } = route.params || {};

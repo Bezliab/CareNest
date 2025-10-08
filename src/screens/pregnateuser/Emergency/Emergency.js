@@ -13,6 +13,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ensureLocationPermissionWithAlert } from '../../../utils/permissions';
+import { useTheme } from '../../../utils/themeContext';
+
+const { theme } = useTheme();
+
+const isDark = theme === 'dark';
+
+const dynamicStyles = {
+  backgroundColor: isDark ? '#121212' : '#fff',
+  color: isDark ? '#fff' : '#000',
+  inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+  borderColor: isDark ? '#333' : '#ddd',
+};
 
 // Demo JSON data (clinics with coordinates)
 const clinics = [
@@ -69,7 +81,10 @@ const EmergencyScreen = () => {
 
   const saveContact = async contact => {
     try {
-      await AsyncStorage.setItem(EMERGENCY_CONTACT_KEY, JSON.stringify(contact));
+      await AsyncStorage.setItem(
+        EMERGENCY_CONTACT_KEY,
+        JSON.stringify(contact),
+      );
       setEmergencyContact(contact);
       Alert.alert('Saved', `${contact.name} set as your emergency contact`);
     } catch (err) {
@@ -93,7 +108,12 @@ const EmergencyScreen = () => {
         let nearest = null;
         let minDist = Number.POSITIVE_INFINITY;
         for (const clinic of clinics) {
-          const dist = _distanceSq(latitude, longitude, clinic.latitude, clinic.longitude);
+          const dist = _distanceSq(
+            latitude,
+            longitude,
+            clinic.latitude,
+            clinic.longitude,
+          );
           if (dist < minDist) {
             minDist = dist;
             nearest = clinic;
@@ -103,7 +123,10 @@ const EmergencyScreen = () => {
       },
       error => {
         console.warn('Location error:', error);
-        Alert.alert('Location error', error.message || 'Unable to fetch location.');
+        Alert.alert(
+          'Location error',
+          error.message || 'Unable to fetch location.',
+        );
       },
       {
         enableHighAccuracy: true,
@@ -154,7 +177,9 @@ const EmergencyScreen = () => {
     const { latitude, longitude } = userLocation;
     const message = `🚨 Emergency! I need help. My location: https://maps.google.com/?q=${latitude},${longitude}`;
 
-    const smsUrl = `sms:${emergencyContact.phone}${Platform.OS === 'ios' ? '&' : '?'}body=${encodeURIComponent(message)}`;
+    const smsUrl = `sms:${emergencyContact.phone}${
+      Platform.OS === 'ios' ? '&' : '?'
+    }body=${encodeURIComponent(message)}`;
     Linking.openURL(smsUrl).catch(err => {
       console.warn('SMS error', err);
       Alert.alert('Error', 'Unable to open SMS app.');
@@ -202,7 +227,8 @@ const EmergencyScreen = () => {
 
       {emergencyContact && (
         <Text style={styles.savedContact}>
-          ⭐ Emergency Contact: {emergencyContact.name} ({emergencyContact.phone})
+          ⭐ Emergency Contact: {emergencyContact.name} (
+          {emergencyContact.phone})
         </Text>
       )}
     </View>
@@ -213,7 +239,12 @@ export default EmergencyScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#f8f8f8' },
-  title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
   button: {
     flexDirection: 'row',
     alignItems: 'center',

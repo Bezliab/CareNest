@@ -26,6 +26,7 @@ import styles from './EditProfileScreenStyle';
 // 🟢 i18n + HelpMum translator
 import i18n, { helpMumTranslate } from '../../api/translator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../../utils/themeContext';
 
 export default function EditProfileScreen({ navigation }) {
   const [user, setUser] = useState(null);
@@ -33,6 +34,16 @@ export default function EditProfileScreen({ navigation }) {
   const [saving, setSaving] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [name, setName] = useState('');
+  const { theme } = useTheme();
+
+  const isDark = theme === 'dark';
+
+  const dynamicStyles = {
+    backgroundColor: isDark ? '#121212' : '#fff',
+    color: isDark ? '#fff' : '#000',
+    inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+    borderColor: isDark ? '#333' : '#ddd',
+  };
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TextInput,
 } from 'react-native';
+import { useTheme } from '../../utils/themeContext';
 
 const BookingScreen = ({ navigation }) => {
   const [selectedSpecialist, setSelectedSpecialist] = useState('');
@@ -15,7 +16,18 @@ const BookingScreen = ({ navigation }) => {
   const [selectedTimeOfDay, setSelectedTimeOfDay] = useState('');
 
   const specialists = ['Leslie Alexander', 'Ronald Richards', 'Annette Black'];
-  
+
+  const { theme } = useTheme();
+
+  const isDark = theme === 'dark';
+
+  const dynamicStyles = {
+    backgroundColor: isDark ? '#121212' : '#fff',
+    color: isDark ? '#fff' : '#000',
+    inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+    borderColor: isDark ? '#333' : '#ddd',
+  };
+
   const dates = [
     { day: 'SUN', date: 25 },
     { day: 'MON', date: 26 },
@@ -46,24 +58,36 @@ const BookingScreen = ({ navigation }) => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Choose specialist</Text>
         <View style={styles.dropdown}>
-          <Text style={selectedSpecialist ? styles.dropdownText : styles.dropdownPlaceholder}>
+          <Text
+            style={
+              selectedSpecialist
+                ? styles.dropdownText
+                : styles.dropdownPlaceholder
+            }
+          >
             {selectedSpecialist || 'Choose specialist'}
           </Text>
         </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.specialistScroll}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.specialistScroll}
+        >
           {specialists.map((specialist, index) => (
             <TouchableOpacity
               key={index}
               style={[
                 styles.specialistOption,
-                selectedSpecialist === specialist && styles.specialistOptionSelected,
+                selectedSpecialist === specialist &&
+                  styles.specialistOptionSelected,
               ]}
               onPress={() => setSelectedSpecialist(specialist)}
             >
               <Text
                 style={[
                   styles.specialistOptionText,
-                  selectedSpecialist === specialist && styles.specialistOptionTextSelected,
+                  selectedSpecialist === specialist &&
+                    styles.specialistOptionTextSelected,
                 ]}
               >
                 {specialist}
@@ -77,11 +101,13 @@ const BookingScreen = ({ navigation }) => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Choose a date</Text>
         <Text style={styles.monthYear}>August 2024</Text>
-        
+
         {/* Calendar Header */}
         <View style={styles.calendarHeader}>
           {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(day => (
-            <Text key={day} style={styles.calendarDayHeader}>{day}</Text>
+            <Text key={day} style={styles.calendarDayHeader}>
+              {day}
+            </Text>
           ))}
         </View>
 
@@ -132,7 +158,8 @@ const BookingScreen = ({ navigation }) => {
                 <Text
                   style={[
                     styles.quickDateNumber,
-                    selectedDate === date.date && styles.quickDateNumberSelected,
+                    selectedDate === date.date &&
+                      styles.quickDateNumberSelected,
                   ]}
                 >
                   {date.date}
@@ -146,7 +173,7 @@ const BookingScreen = ({ navigation }) => {
       {/* Choose Time */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Choose time</Text>
-        
+
         {/* Time of Day Selection */}
         <View style={styles.timeOfDayContainer}>
           {Object.keys(timeSlots).map(timeOfDay => (
@@ -154,14 +181,16 @@ const BookingScreen = ({ navigation }) => {
               key={timeOfDay}
               style={[
                 styles.timeOfDayButton,
-                selectedTimeOfDay === timeOfDay && styles.timeOfDayButtonSelected,
+                selectedTimeOfDay === timeOfDay &&
+                  styles.timeOfDayButtonSelected,
               ]}
               onPress={() => setSelectedTimeOfDay(timeOfDay)}
             >
               <Text
                 style={[
                   styles.timeOfDayText,
-                  selectedTimeOfDay === timeOfDay && styles.timeOfDayTextSelected,
+                  selectedTimeOfDay === timeOfDay &&
+                    styles.timeOfDayTextSelected,
                 ]}
               >
                 {timeOfDay}
@@ -173,25 +202,26 @@ const BookingScreen = ({ navigation }) => {
         {/* Time Slots */}
         <Text style={styles.subSectionTitle}>CHOOSE TIME</Text>
         <View style={styles.timeSlotsContainer}>
-          {selectedTimeOfDay && timeSlots[selectedTimeOfDay].map((time, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.timeSlot,
-                selectedTime === time && styles.timeSlotSelected,
-              ]}
-              onPress={() => setSelectedTime(time)}
-            >
-              <Text
+          {selectedTimeOfDay &&
+            timeSlots[selectedTimeOfDay].map((time, index) => (
+              <TouchableOpacity
+                key={index}
                 style={[
-                  styles.timeSlotText,
-                  selectedTime === time && styles.timeSlotTextSelected,
+                  styles.timeSlot,
+                  selectedTime === time && styles.timeSlotSelected,
                 ]}
+                onPress={() => setSelectedTime(time)}
               >
-                {time}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  style={[
+                    styles.timeSlotText,
+                    selectedTime === time && styles.timeSlotTextSelected,
+                  ]}
+                >
+                  {time}
+                </Text>
+              </TouchableOpacity>
+            ))}
         </View>
       </View>
 
@@ -200,7 +230,7 @@ const BookingScreen = ({ navigation }) => {
         <TouchableOpacity style={styles.resetButton}>
           <Text style={styles.resetButtonText}>Reset</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.findButton}
           onPress={() => navigation.navigate('SpecialistList')}
         >
@@ -210,6 +240,5 @@ const BookingScreen = ({ navigation }) => {
     </ScrollView>
   );
 };
-
 
 export default BookingScreen;

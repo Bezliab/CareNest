@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,18 +6,30 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
-} from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import LinearGradient from "react-native-linear-gradient";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import styles from "./AddReminderstyle";
+} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import LinearGradient from 'react-native-linear-gradient';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import styles from './AddReminderstyle';
+import { useTheme } from '../../utils/themeContext';
 
 export default function AddReminderScreen({ navigation }) {
-  const [title, setTitle] = useState("");
-  const [note, setNote] = useState("");
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+
+  const { theme } = useTheme();
+
+  const isDark = theme === 'dark';
+
+  const dynamicStyles = {
+    backgroundColor: isDark ? '#121212' : '#fff',
+    color: isDark ? '#fff' : '#000',
+    inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+    borderColor: isDark ? '#333' : '#ddd',
+  };
 
   const onDateChange = (event, selectedDate) => {
     setShowDatePicker(false);
@@ -35,16 +47,19 @@ export default function AddReminderScreen({ navigation }) {
   };
 
   const handleAddReminder = () => {
-    if (!title) return alert("Please enter a reminder title");
-    alert("Reminder added successfully ✅");
+    if (!title) return alert('Please enter a reminder title');
+    alert('Reminder added successfully ✅');
     navigation.goBack();
   };
 
   return (
-    <LinearGradient colors={["#eef2f3", "#f8fbff"]} style={styles.container}>
+    <LinearGradient colors={['#eef2f3', '#f8fbff']} style={styles.container}>
       {/* Header */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.header}>Add Reminder</Text>
@@ -71,7 +86,7 @@ export default function AddReminderScreen({ navigation }) {
             placeholderTextColor="#999"
             value={note}
             onChangeText={setNote}
-            style={[styles.input, { height: 100, textAlignVertical: "top" }]}
+            style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
             multiline
           />
         </View>
@@ -83,9 +98,7 @@ export default function AddReminderScreen({ navigation }) {
             onPress={() => setShowDatePicker(true)}
           >
             <Ionicons name="calendar-outline" size={20} color="#667eea" />
-            <Text style={styles.dateText}>
-              {date.toDateString()}
-            </Text>
+            <Text style={styles.dateText}>{date.toDateString()}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -94,7 +107,10 @@ export default function AddReminderScreen({ navigation }) {
           >
             <Ionicons name="time-outline" size={20} color="#667eea" />
             <Text style={styles.dateText}>
-              {date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+              {date.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
             </Text>
           </TouchableOpacity>
         </View>
@@ -103,7 +119,7 @@ export default function AddReminderScreen({ navigation }) {
           <DateTimePicker
             value={date}
             mode="date"
-            display={Platform.OS === "ios" ? "spinner" : "default"}
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
             onChange={onDateChange}
           />
         )}
@@ -112,7 +128,7 @@ export default function AddReminderScreen({ navigation }) {
           <DateTimePicker
             value={date}
             mode="time"
-            display={Platform.OS === "ios" ? "spinner" : "default"}
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
             onChange={onTimeChange}
           />
         )}
@@ -120,7 +136,7 @@ export default function AddReminderScreen({ navigation }) {
         {/* Save Button */}
         <TouchableOpacity style={styles.addButton} onPress={handleAddReminder}>
           <LinearGradient
-            colors={["#667eea", "#764ba2"]}
+            colors={['#667eea', '#764ba2']}
             style={styles.gradientButton}
           >
             <Ionicons name="add-circle-outline" size={22} color="#fff" />

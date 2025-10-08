@@ -1,10 +1,22 @@
 // screens/ArticleScreen.js
-import React from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
-import styles from "./ArticleScreenStyle";
+import React from 'react';
+import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import styles from './ArticleScreenStyle';
+import { useTheme } from '../../utils/themeContext';
 
 const ArticleScreen = ({ navigation }) => {
+  const { theme } = useTheme();
+
+  const isDark = theme === 'dark';
+
+  const dynamicStyles = {
+    backgroundColor: isDark ? '#121212' : '#fff',
+    color: isDark ? '#fff' : '#000',
+    inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+    borderColor: isDark ? '#333' : '#ddd',
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -19,10 +31,15 @@ const ArticleScreen = ({ navigation }) => {
       </View>
 
       {/* Scrollable Article Content */}
-      <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {/* Cover Image */}
         <Image
-          source={{ uri: "https://img.freepik.com/free-photo/pregnant-woman_1098-14738.jpg" }}
+          source={{
+            uri: 'https://img.freepik.com/free-photo/pregnant-woman_1098-14738.jpg',
+          }}
           style={styles.coverImage}
         />
 
@@ -36,20 +53,19 @@ const ArticleScreen = ({ navigation }) => {
 
         {/* Article Body */}
         <Text style={styles.body}>
-          Pregnancy is a beautiful journey, but it requires proper care and attention. 
-          Maintaining a balanced diet, getting enough rest, and attending regular 
-          checkups are essential to ensure the safety of both mother and baby.{"\n\n"}
-          
-          Staying hydrated and avoiding harmful substances like alcohol and smoking 
-          play a vital role in your health. Gentle exercises such as walking and 
-          prenatal yoga can also help reduce stress and improve circulation.{"\n\n"}
-          
-          Always listen to your body. If you notice unusual symptoms like heavy 
-          bleeding, dizziness, or severe headaches, consult your healthcare 
-          provider immediately. Remember, every pregnancy is unique, so never 
-          hesitate to ask for support.{"\n\n"}
-          
-          With the right knowledge and lifestyle choices, you can enjoy a safe, 
+          Pregnancy is a beautiful journey, but it requires proper care and
+          attention. Maintaining a balanced diet, getting enough rest, and
+          attending regular checkups are essential to ensure the safety of both
+          mother and baby.{'\n\n'}
+          Staying hydrated and avoiding harmful substances like alcohol and
+          smoking play a vital role in your health. Gentle exercises such as
+          walking and prenatal yoga can also help reduce stress and improve
+          circulation.{'\n\n'}
+          Always listen to your body. If you notice unusual symptoms like heavy
+          bleeding, dizziness, or severe headaches, consult your healthcare
+          provider immediately. Remember, every pregnancy is unique, so never
+          hesitate to ask for support.{'\n\n'}
+          With the right knowledge and lifestyle choices, you can enjoy a safe,
           happy, and healthy pregnancy.
         </Text>
       </ScrollView>

@@ -1,36 +1,48 @@
 // screens/FaqScreen.js
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
-import styles from "./FaqScreenStyle";
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import styles from './FaqScreenStyle';
+import { useTheme } from '../../utils/themeContext';
+
+const { theme } = useTheme();
+
+const isDark = theme === 'dark';
+
+const dynamicStyles = {
+  backgroundColor: isDark ? '#121212' : '#fff',
+  color: isDark ? '#fff' : '#000',
+  inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+  borderColor: isDark ? '#333' : '#ddd',
+};
 
 const faqs = [
   {
-    question: "What is maternal healthcare?",
+    question: 'What is maternal healthcare?',
     answer:
-      "Maternal healthcare involves the health services provided to women during pregnancy, childbirth, and postnatal care to ensure the best outcomes for mother and baby.",
+      'Maternal healthcare involves the health services provided to women during pregnancy, childbirth, and postnatal care to ensure the best outcomes for mother and baby.',
   },
   {
-    question: "How often should I visit the hospital during pregnancy?",
+    question: 'How often should I visit the hospital during pregnancy?',
     answer:
-      "It is recommended to have at least 4 antenatal visits, but more regular visits are encouraged depending on your health and your doctor’s advice.",
+      'It is recommended to have at least 4 antenatal visits, but more regular visits are encouraged depending on your health and your doctor’s advice.',
   },
   {
-    question: "What foods should I avoid during pregnancy?",
+    question: 'What foods should I avoid during pregnancy?',
     answer:
-      "Avoid unpasteurized milk, raw or undercooked meat, excessive caffeine, and alcohol. Focus on a balanced diet rich in fruits, vegetables, and proteins.",
+      'Avoid unpasteurized milk, raw or undercooked meat, excessive caffeine, and alcohol. Focus on a balanced diet rich in fruits, vegetables, and proteins.',
   },
   {
-    question: "Can I exercise while pregnant?",
+    question: 'Can I exercise while pregnant?',
     answer:
-      "Yes, moderate exercise like walking, swimming, or yoga is safe. However, consult your healthcare provider before starting any new routine.",
+      'Yes, moderate exercise like walking, swimming, or yoga is safe. However, consult your healthcare provider before starting any new routine.',
   },
 ];
 
 export default function FaqScreen({ navigation }) {
   const [activeIndex, setActiveIndex] = useState(null);
 
-  const toggleExpand = (index) => {
+  const toggleExpand = index => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
@@ -46,7 +58,7 @@ export default function FaqScreen({ navigation }) {
           >
             <Text style={styles.questionText}>{item.question}</Text>
             <Icon
-              name={activeIndex === index ? "chevron-up" : "chevron-down"}
+              name={activeIndex === index ? 'chevron-up' : 'chevron-down'}
               size={20}
               color="#1976d2"
             />

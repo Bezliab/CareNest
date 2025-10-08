@@ -12,6 +12,18 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { auth, firestore } from '../../../api/firebaseConfig';
 import styles from './ProfileScreenStyle';
+import { useTheme } from '../../../utils/themeContext';
+
+const { theme } = useTheme();
+
+const isDark = theme === 'dark';
+
+const dynamicStyles = {
+  backgroundColor: isDark ? '#121212' : '#fff',
+  color: isDark ? '#fff' : '#000',
+  inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+  borderColor: isDark ? '#333' : '#ddd',
+};
 
 const ProfileScreen = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -100,7 +112,7 @@ const ProfileScreen = ({ navigation }) => {
           <Text style={styles.infoText}>
             {userData?.phone || 'No phone number'}
           </Text>
-        </View> 
+        </View>
 
         <View style={styles.infoRow}>
           <Icon name="location-outline" size={20} color="#1976d2" />

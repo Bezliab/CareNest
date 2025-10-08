@@ -20,6 +20,19 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { auth, db } from '../../../api/firebaseConfig';
 import { doc, onSnapshot } from 'firebase/firestore';
 
+import { useTheme } from '../../../utils/themeContext';
+
+const { theme } = useTheme();
+
+const isDark = theme === 'dark';
+
+const dynamicStyles = {
+  backgroundColor: isDark ? '#121212' : '#fff',
+  color: isDark ? '#fff' : '#000',
+  inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+  borderColor: isDark ? '#333' : '#ddd',
+};
+
 const { width } = Dimensions.get('window');
 
 const msPerDay = 1000 * 60 * 60 * 24;

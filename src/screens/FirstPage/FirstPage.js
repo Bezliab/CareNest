@@ -2,9 +2,29 @@
 // React Native CLI — page where user chooses to sign in as Doctor or User
 
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  SafeAreaView,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from './FirstPageStyle';
+import { useTheme } from '../../utils/themeContext';
+
+const { theme } = useTheme();
+
+const isDark = theme === 'dark';
+
+const dynamicStyles = {
+  backgroundColor: isDark ? '#121212' : '#fff',
+  color: isDark ? '#fff' : '#000',
+  inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+  borderColor: isDark ? '#333' : '#ddd',
+};
+
 export default function ChooseRoleScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe}>
@@ -12,7 +32,9 @@ export default function ChooseRoleScreen({ navigation }) {
         {/* Logo Section */}
         <View style={styles.logoContainer}>
           <Image
-            source={{ uri: 'https://placehold.co/100x100/0f172a/ffffff?text=H' }}
+            source={{
+              uri: 'https://placehold.co/100x100/0f172a/ffffff?text=H',
+            }}
             style={styles.logo}
           />
           <Text style={styles.appName}>MediConnect</Text>
@@ -40,11 +62,11 @@ export default function ChooseRoleScreen({ navigation }) {
 
         {/* Footer Note */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Secure healthcare access for everyone</Text>
+          <Text style={styles.footerText}>
+            Secure healthcare access for everyone
+          </Text>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-

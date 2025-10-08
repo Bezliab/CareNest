@@ -12,6 +12,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './AppointmentScreenstyle';
+import { useTheme } from '../../utils/themeContext';
 
 const AppointmentScreen = () => {
   const [appointments, setAppointments] = useState([]);
@@ -22,6 +23,17 @@ const AppointmentScreen = () => {
   const [sortOrder, setSortOrder] = useState('desc'); // 'asc' or 'desc'
 
   const currentUser = auth().currentUser;
+
+  const { theme } = useTheme();
+
+  const isDark = theme === 'dark';
+
+  const dynamicStyles = {
+    backgroundColor: isDark ? '#121212' : '#fff',
+    color: isDark ? '#fff' : '#000',
+    inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+    borderColor: isDark ? '#333' : '#ddd',
+  };
 
   useEffect(() => {
     if (!currentUser) return;
@@ -42,7 +54,7 @@ const AppointmentScreen = () => {
         error => {
           console.log('Firestore error:', error);
           setLoading(false);
-        }
+        },
       );
 
     return () => unsubscribe();
@@ -59,7 +71,7 @@ const AppointmentScreen = () => {
     // Search by doctor name
     if (searchText.trim() !== '') {
       data = data.filter(a =>
-        a.doctorName.toLowerCase().includes(searchText.toLowerCase())
+        a.doctorName.toLowerCase().includes(searchText.toLowerCase()),
       );
     }
 
@@ -101,7 +113,9 @@ const AppointmentScreen = () => {
         <View
           style={[
             styles.statusBadge,
-            item.status === 'complete' ? styles.statusComplete : styles.statusPending,
+            item.status === 'complete'
+              ? styles.statusComplete
+              : styles.statusPending,
           ]}
         >
           <Text
@@ -183,6 +197,5 @@ const AppointmentScreen = () => {
     </View>
   );
 };
-
 
 export default AppointmentScreen;

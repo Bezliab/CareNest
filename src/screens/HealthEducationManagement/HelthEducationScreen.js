@@ -11,6 +11,18 @@ import {
   FlatList,
 } from 'react-native';
 import { styles } from './HealthEducationManagementStyles';
+import { useTheme } from '../../utils/themeContext';
+
+const { theme } = useTheme();
+
+const isDark = theme === 'dark';
+
+const dynamicStyles = {
+  backgroundColor: isDark ? '#121212' : '#fff',
+  color: isDark ? '#fff' : '#000',
+  inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+  borderColor: isDark ? '#333' : '#ddd',
+};
 
 const HealthEducationManagement = () => {
   const [selectedTab, setSelectedTab] = useState('weeklyTips');

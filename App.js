@@ -17,6 +17,8 @@ import { useTranslation } from 'react-i18next';
 
 // ✅ Import AppProvider for global context
 import { AppProvider } from './src/utils/AppContext';
+// Import theme context
+import { ThemeProvider } from './src/utils/themeContext';
 
 // Screens
 import LandingPage from './src/screens/LandingScreen/LandingScreen';
@@ -144,68 +146,76 @@ export default function App() {
 
   return (
     // ✅ Wrap NavigationContainer inside AppProvider
-    <AppProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="SplashScreen"
-          screenOptions={{ headerShown: false }}
-        >
-          <Stack.Screen name="SplashScreen" component={SplashScreen} />
-          <Stack.Screen name="FirstPage" component={FirstPage} />
-          <Stack.Screen name="LandingPage" component={LandingPage} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="SignUp" component={SignUpScreen} />
-          <Stack.Screen name="Dashboard" component={Dashboard} />
-          <Stack.Screen
-            name="BookAppointment"
-            component={BookAppointmentScreen}
-          />
-          <Stack.Screen name="Health" component={HealthScreen} />
-          <Stack.Screen name="Reminder" component={ReminderScreen} />
-          <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
-          <Stack.Screen name="Appointment" component={AppointmentScreen} />
-          <Stack.Screen name="Emergency" component={EmergencyScreen} />
-          <Stack.Screen name="DoctorSignUp" component={DoctorSignUpScreen} />
-          <Stack.Screen name="Doctor_Sign" component={Doctor_Sign} />
-          <Stack.Screen name="doctorDashboard" component={DoctorDshboard} />
-          <Stack.Screen name="Doctor" component={DoctorScreen} />
-          <Stack.Screen name="Settings" component={SettingsScreen} />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
-          <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-          <Stack.Screen name="Article" component={ArticleScreen} />
-          <Stack.Screen name="Faq" component={FaqScreen} />
-          <Stack.Screen name="HelpCenter" component={HelpCenterScreen} />
-          <Stack.Screen name="History" component={HistoryScreen} />
-          <Stack.Screen name="bookingpage" component={bookingpageScreen} />
-          <Stack.Screen
-            name="AddReminderScreen"
-            component={AddReminderScreen}
-          />
-          <Stack.Screen name="healthTips" component={HealthTipsScreen} />
-          <Stack.Screen name="healthmetrics" component={HealthMetricsScreen} />
-          <Stack.Screen
-            name="AntenatalTracker"
-            component={AntenatalTrackerStyle}
-          />
-          <Stack.Screen name="fetaldeve" component={FetalDevelopment} />
-          <Stack.Screen name="MotherHealth" component={MotherNutrition} />
-          <Stack.Screen name="Pertanal" component={PertanalExcercise} />
-          <Stack.Screen name="mentalwell" component={MentalwellBeing} />
-          <Stack.Screen name="delivery" component={LaborDelivery} />
-          <Stack.Screen name="Recovery" component={RecoveryGuide} />
-          <Stack.Screen name="PatientList" component={PatientManagement} />
-          <Stack.Screen name="AddPatient" component={AddPatient} />
-          <Stack.Screen name="PatientDetails" component={PatientDetails} />
-          <Stack.Screen name="FacilityResources" component={FacilityResources} />
-          <Stack.Screen name="AnalyticsReports" component={Analytics} />
-          <Stack.Screen
-            name="DoctorAppointments"
-            component={DoctorAppointments}
-          />
-          <Stack.Screen name="DoctorProfile" component={DoctorProfile} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AppProvider>
+    <ThemeProvider>
+      <AppProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="SplashScreen"
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name="SplashScreen" component={SplashScreen} />
+            <Stack.Screen name="FirstPage" component={FirstPage} />
+            <Stack.Screen name="LandingPage" component={LandingPage} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+            <Stack.Screen name="Dashboard" component={Dashboard} />
+            <Stack.Screen
+              name="BookAppointment"
+              component={BookAppointmentScreen}
+            />
+            <Stack.Screen name="Health" component={HealthScreen} />
+            <Stack.Screen name="Reminder" component={ReminderScreen} />
+            <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
+            <Stack.Screen name="Appointment" component={AppointmentScreen} />
+            <Stack.Screen name="Emergency" component={EmergencyScreen} />
+            <Stack.Screen name="DoctorSignUp" component={DoctorSignUpScreen} />
+            <Stack.Screen name="Doctor_Sign" component={Doctor_Sign} />
+            <Stack.Screen name="doctorDashboard" component={DoctorDshboard} />
+            <Stack.Screen name="Doctor" component={DoctorScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="Article" component={ArticleScreen} />
+            <Stack.Screen name="Faq" component={FaqScreen} />
+            <Stack.Screen name="HelpCenter" component={HelpCenterScreen} />
+            <Stack.Screen name="History" component={HistoryScreen} />
+            <Stack.Screen name="bookingpage" component={bookingpageScreen} />
+            <Stack.Screen
+              name="AddReminderScreen"
+              component={AddReminderScreen}
+            />
+            <Stack.Screen name="healthTips" component={HealthTipsScreen} />
+            <Stack.Screen
+              name="healthmetrics"
+              component={HealthMetricsScreen}
+            />
+            <Stack.Screen
+              name="AntenatalTracker"
+              component={AntenatalTrackerStyle}
+            />
+            <Stack.Screen name="fetaldeve" component={FetalDevelopment} />
+            <Stack.Screen name="MotherHealth" component={MotherNutrition} />
+            <Stack.Screen name="Pertanal" component={PertanalExcercise} />
+            <Stack.Screen name="mentalwell" component={MentalwellBeing} />
+            <Stack.Screen name="delivery" component={LaborDelivery} />
+            <Stack.Screen name="Recovery" component={RecoveryGuide} />
+            <Stack.Screen name="PatientList" component={PatientManagement} />
+            <Stack.Screen name="AddPatient" component={AddPatient} />
+            <Stack.Screen name="PatientDetails" component={PatientDetails} />
+            <Stack.Screen
+              name="FacilityResources"
+              component={FacilityResources}
+            />
+            <Stack.Screen name="AnalyticsReports" component={Analytics} />
+            <Stack.Screen
+              name="DoctorAppointments"
+              component={DoctorAppointments}
+            />
+            <Stack.Screen name="DoctorProfile" component={DoctorProfile} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AppProvider>
+    </ThemeProvider>
   );
 }
 

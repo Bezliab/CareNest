@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,19 +10,31 @@ import {
   SafeAreaView,
   Animated,
   Image,
-} from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import auth from "@react-native-firebase/auth";
-import styles from "./LoginScreenStyle";
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import auth from '@react-native-firebase/auth';
+import styles from './LoginScreenStyle';
+import { useTheme } from '../../../utils/themeContext';
+
+const { theme } = useTheme();
+
+const isDark = theme === 'dark';
+
+const dynamicStyles = {
+  backgroundColor: isDark ? '#121212' : '#fff',
+  color: isDark ? '#fff' : '#000',
+  inputBg: isDark ? '#1e1e1e' : '#f9f9f9',
+  borderColor: isDark ? '#333' : '#ddd',
+};
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const cardLift = useRef(new Animated.Value(0)).current;
 
-  const liftCard = (toValue) => {
+  const liftCard = toValue => {
     Animated.timing(cardLift, {
       toValue,
       duration: 220,
@@ -32,22 +44,25 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Missing Fields", "Please enter your email and password.");
+      Alert.alert('Missing Fields', 'Please enter your email and password.');
       return;
     }
 
     setLoading(true);
     try {
       await auth().signInWithEmailAndPassword(email, password);
-      Alert.alert("Success", "Welcome back!");
-      navigation.replace("Dashboard");
+      Alert.alert('Success', 'Welcome back!');
+      navigation.replace('Dashboard');
     } catch (error) {
-      console.log("Login Error:", error);
-      let message = "Login failed. Please try again.";
-      if (error.code === "auth/invalid-email") message = "Invalid email format.";
-      else if (error.code === "auth/user-not-found") message = "No account found with this email.";
-      else if (error.code === "auth/wrong-password") message = "Incorrect password.";
-      Alert.alert("Login Failed", message);
+      console.log('Login Error:', error);
+      let message = 'Login failed. Please try again.';
+      if (error.code === 'auth/invalid-email')
+        message = 'Invalid email format.';
+      else if (error.code === 'auth/user-not-found')
+        message = 'No account found with this email.';
+      else if (error.code === 'auth/wrong-password')
+        message = 'Incorrect password.';
+      Alert.alert('Login Failed', message);
     } finally {
       setLoading(false);
     }
@@ -56,7 +71,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
         <Animated.View
@@ -77,12 +92,14 @@ export default function LoginScreen({ navigation }) {
           {/* Header */}
           <View style={styles.headerRow}>
             <Image
-              source={require("../../../Assets/LOGO.png")}
+              source={require('../../../Assets/LOGO.png')}
               style={styles.logo}
             />
             <View style={styles.titleBox}>
               <Text style={styles.title}>Welcome Back</Text>
-              <Text style={styles.subtitle}>Sign in to continue to your dashboard</Text>
+              <Text style={styles.subtitle}>
+                Sign in to continue to your dashboard
+              </Text>
             </View>
           </View>
 
@@ -130,7 +147,7 @@ export default function LoginScreen({ navigation }) {
               style={styles.eyeBtn}
             >
               <Icon
-                name={showPassword ? "visibility" : "visibility-off"}
+                name={showPassword ? 'visibility' : 'visibility-off'}
                 size={20}
                 color="#6b7280"
               />
@@ -139,7 +156,9 @@ export default function LoginScreen({ navigation }) {
 
           {/* Forgot Password */}
           <View style={styles.rowBetween}>
-            <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ForgotPassword')}
+            >
               <Text style={styles.linkText}>Forgot password?</Text>
             </TouchableOpacity>
           </View>
@@ -151,14 +170,14 @@ export default function LoginScreen({ navigation }) {
             disabled={loading}
           >
             <Text style={styles.submitText}>
-              {loading ? "Logging in..." : "Sign in"}
+              {loading ? 'Logging in...' : 'Sign in'}
             </Text>
           </TouchableOpacity>
 
           {/* Sign Up Redirect */}
           <View style={styles.smallRow}>
             <Text style={styles.smallText}>Don’t have an account?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
               <Text style={[styles.linkText, { marginLeft: 6 }]}>Sign Up</Text>
             </TouchableOpacity>
           </View>
