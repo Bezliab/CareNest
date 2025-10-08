@@ -1,10 +1,4 @@
-<<<<<<< HEAD
 import { StyleSheet } from 'react-native';
-=======
-// DoctorSignUpStyle.js
-
-import { StyleSheet } from "react-native";
->>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
 
 export default StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#f5f7fb" },

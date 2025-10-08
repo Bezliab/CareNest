@@ -28,10 +28,7 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
 
   const timeSlots = ['08:00 AM', '10:00 AM', '11:00 AM', '09:00 PM'];
 
-<<<<<<< HEAD
   // Function to book appointment in Firestore
-=======
->>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
   const handleBookAppointment = async () => {
     if (!selectedDate || !selectedTime) {
       Alert.alert('Error', 'Please select a date and time');
@@ -45,13 +42,8 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
     }
 
     try {
-<<<<<<< HEAD
       await firestore().collection('appointments').add({
         doctorId: specialist.id,
-=======
-      const appointment = {
-        doctorId: specialist.id || specialist.uid, // ensures correct doctor reference
->>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
         doctorName: specialist.name,
         specialty: specialist.specialty,
         patientId: currentUser.uid,
@@ -60,13 +52,7 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
         time: selectedTime,
         status: 'pending',
         createdAt: firestore.FieldValue.serverTimestamp(),
-<<<<<<< HEAD
       });
-=======
-      };
-
-      await firestore().collection('appointments').add(appointment);
->>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
 
       Alert.alert('Success', 'Appointment booked successfully!');
       navigation.navigate('BookingConfirmation', {
@@ -82,10 +68,7 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-<<<<<<< HEAD
       {/* Header */}
-=======
->>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
       <View style={styles.header}>
         <View style={styles.headerInfo}>
           <Text style={styles.name}>{specialist.name}</Text>
@@ -100,7 +83,6 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
         </View>
       </View>
 
-<<<<<<< HEAD
       {/* Information Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Information</Text>
@@ -151,17 +133,6 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
         <Text style={styles.subSectionTitle}>CHOOSE DAY</Text>
         <View style={styles.datesContainer}>
           <TouchableOpacity style={styles.todayButton} onPress={() => setSelectedDate('Today')}>
-=======
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Make an appointment</Text>
-
-        <Text style={styles.subSectionTitle}>CHOOSE DAY</Text>
-        <View style={styles.datesContainer}>
-          <TouchableOpacity
-            style={styles.todayButton}
-            onPress={() => setSelectedDate('Today')}
-          >
->>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
             <Text style={styles.todayButtonText}>TODAY</Text>
           </TouchableOpacity>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -188,10 +159,7 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
           </ScrollView>
         </View>
 
-<<<<<<< HEAD
         {/* Time Selection */}
-=======
->>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
         <Text style={styles.subSectionTitle}>CHOOSE TIME</Text>
         <View style={styles.timesContainer}>
           {timeSlots.map((time, index) => (
@@ -215,15 +183,8 @@ const SpecialistDetailScreen = ({ route, navigation }) => {
           ))}
         </View>
 
-<<<<<<< HEAD
         {/* Book Button */}
         <TouchableOpacity style={styles.bookButton} onPress={handleBookAppointment}>
-=======
-        <TouchableOpacity
-          style={styles.bookButton}
-          onPress={handleBookAppointment}
-        >
->>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
           <Text style={styles.bookButtonText}>Book an appointment</Text>
         </TouchableOpacity>
       </View>
@@ -243,7 +204,6 @@ const styles = StyleSheet.create({
   reviewsText: { color: '#007AFF', fontSize: 14, fontWeight: '500' },
   section: { padding: 16, borderBottomWidth: 1, borderBottomColor: '#E5E5E5' },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
-<<<<<<< HEAD
   subSectionTitle: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 8 },
   infoGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
   infoItem: { width: '48%', marginBottom: 16 },
@@ -257,65 +217,16 @@ const styles = StyleSheet.create({
   todayButton: { backgroundColor: '#007AFF', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 12 },
   todayButtonText: { color: '#fff', fontSize: 12, fontWeight: '500' },
   dateButton: { alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, backgroundColor: '#F5F5F5', marginRight: 8 },
-=======
-  subSectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-    marginBottom: 8,
-  },
-  datesContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  todayButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  todayButtonText: { color: '#fff', fontSize: 12, fontWeight: '500' },
-  dateButton: {
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 12,
-    backgroundColor: '#F5F5F5',
-    marginRight: 8,
-  },
->>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
   dateButtonSelected: { backgroundColor: '#007AFF' },
   dateDay: { fontSize: 10, color: '#666', marginBottom: 2 },
   dateNumber: { fontSize: 14, fontWeight: '500', color: '#000' },
   dateNumberSelected: { color: '#fff' },
   timesContainer: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 16 },
-<<<<<<< HEAD
   timeButton: { paddingHorizontal: 16, paddingVertical: 12, borderRadius: 8, backgroundColor: '#F5F5F5', marginRight: 8, marginBottom: 8 },
   timeButtonSelected: { backgroundColor: '#007AFF' },
   timeButtonText: { fontSize: 14, color: '#000' },
   timeButtonTextSelected: { color: '#fff' },
   bookButton: { backgroundColor: '#007AFF', paddingVertical: 16, borderRadius: 12, alignItems: 'center' },
-=======
-  timeButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: '#F5F5F5',
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  timeButtonSelected: { backgroundColor: '#007AFF' },
-  timeButtonText: { fontSize: 14, color: '#000' },
-  timeButtonTextSelected: { color: '#fff' },
-  bookButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
->>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
   bookButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });
 

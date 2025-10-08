@@ -126,11 +126,6 @@ export default StyleSheet.create({
   emptyRow: { padding: 12, alignItems: 'center' },
   emptyText: { color: '#94a3b8' },
 
-<<<<<<< HEAD
-
-=======
-  // Floating action button
->>>>>>> 5127c4afb24ee62764005d63ff9586aebf229fea
   fab: {
     position: 'absolute',
     right: 18,
